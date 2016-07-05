@@ -1,0 +1,8 @@
+# Settings
+.envrc
+
+# Generated Content
+/.nyc_output
+/coverage
+/build
+/doc

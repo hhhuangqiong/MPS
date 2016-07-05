@@ -1,0 +1,74 @@
+{
+  "name": "maaii-provisioning-service",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A microservice for Service Provisioning",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm run build",
+    "start": "npm run server",
+    "dev": "nodemon --exec 'npm start' --watch src/server --ext js,jsx,json",
+    "server": "node build/server",
+    "build": "npm-run-all build:js build:bpmn",
+    "build:js": "babel src --out-dir build --source-maps",
+    "build:bpmn": "cp src/processes/diagram.bpmn build/processes/diagram.bpmn",
+    "test": "mocha --compilers js:babel-core/register --recursive test",
+    "coverage": "nyc npm test",
+    "doc:api": "apidoc -i src/server/ -o doc/api/"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "lines": 80,
+    "statements": 80,
+    "functions": 80,
+    "branches": 80,
+    "include": [
+      "src/**/*.js"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://georgejor@gerrit.dev.maaii.com:29418/maaii-provisioning-service"
+  },
+  "devDependencies": {
+    "apidoc": "^0.16.1",
+    "babel-cli": "^6.10.1",
+    "babel-core": "^6.10.4",
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-istanbul": "^1.0.3",
+    "babel-plugin-transform-export-extensions": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-2": "^6.11.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb-base": "^3.0.1",
+    "eslint-plugin-import": "^1.9.2",
+    "mocha": "^2.5.3",
+    "npm-run-all": "^2.3.0",
+    "nyc": "^7.1.0-candidate3",
+    "supertest": "^1.2.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.9.1",
+    "bluebird": "^3.4.1",
+    "body-parser": "^1.15.2",
+    "bottlejs": "^1.3.0",
+    "bpmn": "^0.2.2",
+    "common-errors": "^0.5.7",
+    "express": "^4.14.0",
+    "faker": "^3.1.0",
+    "joi": "^8.4.2",
+    "lodash": "^4.13.1",
+    "m800-health-check": "^0.3.2",
+    "m800-winston": "^0.1.1",
+    "method-override": "^2.3.6",
+    "mongoose": "^4.5.3",
+    "morgan": "^1.7.0",
+    "nodemon": "^1.9.2",
+    "sinon": "^1.17.4",
+    "superagent": "^2.0.0",
+    "uuid": "^2.0.2",
+    "winston": "^2.2.0"
+  }
+}
