@@ -29,6 +29,24 @@ export default class CpsRequest {
     return validateSchema(params, rules);
   }
 
+  get(uri) {
+    const url = this.getUrl(uri);
+
+    return new Promise((resolve, reject) => {
+      request
+        .get(url)
+        .set('Accept', 'application/json')
+        .end((responseError, response) => {
+          if (response.body.error) {
+            reject(response.body.error);
+            return;
+          }
+
+          resolve(response);
+        });
+    });
+  }
+
   post(uri, params) {
     const url = this.getUrl(uri);
     const normalizedParams = this.normalizeParams(params);
