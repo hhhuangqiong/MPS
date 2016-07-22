@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.1.1">
-  <bpmn:process id="Process_08sxqjx">
-    <bpmn:startEvent id="StartEvent_1ooszcp" name="PROVISIONING_START">
+  <bpmn:process id="mps" name="mps">
+    <bpmn:startEvent id="provisioning_start" name="PROVISIONING_START">
       <bpmn:outgoing>SequenceFlow_1wi174z</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:parallelGateway id="ParallelGateway_04389r9" name="PARALLEL_ALL_START">
+    <bpmn:parallelGateway id="parallel_all_start" name="PARALLEL_ALL_START">
       <bpmn:incoming>SequenceFlow_0s3keeu</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1x6rg4e</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0mbuh53</bpmn:outgoing>
@@ -21,26 +21,26 @@
       <bpmn:outgoing>SequenceFlow_17cwuni</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0sl2d48</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1x6rg4e" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_0rooh68" />
-    <bpmn:sequenceFlow id="SequenceFlow_0mbuh53" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_130a2zp" />
-    <bpmn:sequenceFlow id="SequenceFlow_1c63ucl" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_0r1l8zq" />
-    <bpmn:sequenceFlow id="SequenceFlow_1aiahz2" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_0x58ekf" />
-    <bpmn:sequenceFlow id="SequenceFlow_0s3keeu" sourceRef="ServiceTask_12vksms" targetRef="ParallelGateway_04389r9" />
-    <bpmn:sequenceFlow id="SequenceFlow_11jpmtt" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_0o7p6jf" />
-    <bpmn:sequenceFlow id="SequenceFlow_0vfierx" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_178lzqv" />
-    <bpmn:sequenceFlow id="SequenceFlow_1m50e06" sourceRef="ServiceTask_0rooh68" targetRef="ParallelGateway_1nksy5c" />
-    <bpmn:parallelGateway id="ParallelGateway_1nksy5c" name="JOIN_CAPABILITY_AND_FEATURE_SET">
+    <bpmn:sequenceFlow id="SequenceFlow_1x6rg4e" sourceRef="parallel_all_start" targetRef="api_capability_activation" />
+    <bpmn:sequenceFlow id="SequenceFlow_0mbuh53" sourceRef="parallel_all_start" targetRef="get_notification_template" />
+    <bpmn:sequenceFlow id="SequenceFlow_1c63ucl" sourceRef="parallel_all_start" targetRef="user_carrier_profile_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_1aiahz2" sourceRef="parallel_all_start" targetRef="ServiceTask_0x58ekf" />
+    <bpmn:sequenceFlow id="SequenceFlow_0s3keeu" sourceRef="receive_prefix" targetRef="parallel_all_start" />
+    <bpmn:sequenceFlow id="SequenceFlow_11jpmtt" sourceRef="parallel_all_start" targetRef="carrier_profile_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_0vfierx" sourceRef="parallel_all_start" targetRef="im_capability_activation" />
+    <bpmn:sequenceFlow id="SequenceFlow_1m50e06" sourceRef="api_capability_activation" targetRef="join_capability_and_feature_set" />
+    <bpmn:parallelGateway id="join_capability_and_feature_set" name="JOIN_CAPABILITY_AND_FEATURE_SET">
       <bpmn:incoming>SequenceFlow_1m50e06</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0jn4dsx</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1721ibi</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0jn4dsx" sourceRef="ServiceTask_02v10en" targetRef="ParallelGateway_1nksy5c" />
-    <bpmn:sequenceFlow id="SequenceFlow_1721ibi" sourceRef="ParallelGateway_1nksy5c" targetRef="ServiceTask_09ws78d" />
-    <bpmn:sequenceFlow id="SequenceFlow_1wi174z" sourceRef="StartEvent_1ooszcp" targetRef="ServiceTask_1eyxgbs" />
-    <bpmn:sequenceFlow id="SequenceFlow_02ceci2" sourceRef="ServiceTask_1eyxgbs" targetRef="ServiceTask_12vksms" />
-    <bpmn:sequenceFlow id="SequenceFlow_0tjxu6r" sourceRef="ServiceTask_09ws78d" targetRef="ServiceTask_0z84fm6" />
-    <bpmn:sequenceFlow id="SequenceFlow_00aimey" sourceRef="ServiceTask_0z84fm6" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:parallelGateway id="ParallelGateway_19og1nd" name="PARALLEL_ALL_END">
+    <bpmn:sequenceFlow id="SequenceFlow_0jn4dsx" sourceRef="set_feature_set" targetRef="join_capability_and_feature_set" />
+    <bpmn:sequenceFlow id="SequenceFlow_1721ibi" sourceRef="join_capability_and_feature_set" targetRef="save_application" />
+    <bpmn:sequenceFlow id="SequenceFlow_1wi174z" sourceRef="provisioning_start" targetRef="carrier_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_02ceci2" sourceRef="carrier_creation" targetRef="receive_prefix" />
+    <bpmn:sequenceFlow id="SequenceFlow_0tjxu6r" sourceRef="save_application" targetRef="certification_on_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_00aimey" sourceRef="certification_on_creation" targetRef="parallel_all_end" />
+    <bpmn:parallelGateway id="parallel_all_end" name="PARALLEL_ALL_END">
       <bpmn:incoming>SequenceFlow_00aimey</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1vbt40r</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0qzgyeb</bpmn:incoming>
@@ -56,37 +56,37 @@
       <bpmn:incoming>SequenceFlow_0hw1dbd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1x3mjg1</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:endEvent id="EndEvent_049g7a4" name="PROVISIONING_END">
+    <bpmn:endEvent id="provisioning_end" name="PROVISIONING_END">
       <bpmn:incoming>SequenceFlow_1x3mjg1</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1x3mjg1" sourceRef="ParallelGateway_19og1nd" targetRef="EndEvent_049g7a4" />
-    <bpmn:sequenceFlow id="SequenceFlow_1vbt40r" sourceRef="ServiceTask_178lzqv" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_0qzgyeb" sourceRef="ServiceTask_1bssn0v" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_15v9qi7" sourceRef="ServiceTask_0o7p6jf" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_1r0cua1" sourceRef="ServiceTask_046sqda" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_1tjsc86" sourceRef="ServiceTask_0r1l8zq" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_1je10c2" sourceRef="ServiceTask_0x58ekf" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:serviceTask id="ServiceTask_1eyxgbs" name="CARRIER_CREATION">
+    <bpmn:sequenceFlow id="SequenceFlow_1x3mjg1" sourceRef="parallel_all_end" targetRef="provisioning_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_1vbt40r" sourceRef="im_capability_activation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_0qzgyeb" sourceRef="voice_capability_activation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_15v9qi7" sourceRef="carrier_profile_creation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_1r0cua1" sourceRef="save_notification" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_1tjsc86" sourceRef="user_carrier_profile_creation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_1je10c2" sourceRef="ServiceTask_0x58ekf" targetRef="parallel_all_end" />
+    <bpmn:serviceTask id="carrier_creation" name="CARRIER_CREATION">
       <bpmn:incoming>SequenceFlow_1wi174z</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_02ceci2</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_12vksms" name="RECEIVE_PREFIX">
+    <bpmn:serviceTask id="receive_prefix" name="RECEIVE_PREFIX">
       <bpmn:incoming>SequenceFlow_02ceci2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0s3keeu</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_1wwuzlz" name="SIP_GATEWAY_CREATION">
+    <bpmn:serviceTask id="sip_gateway_creation" name="SIP_GATEWAY_CREATION">
       <bpmn:incoming>SequenceFlow_0pe3atd</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1pabbir</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0q2luq2" name="SIP_ROUTING_CREATION">
+    <bpmn:serviceTask id="sip_routing_creation" name="SIP_ROUTING_CREATION">
       <bpmn:incoming>SequenceFlow_1pabbir</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0dzlmez</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_178lzqv" name="IM_CAPABILITY_ACTIVATION">
+    <bpmn:serviceTask id="im_capability_activation" name="IM_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_0vfierx</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1vbt40r</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_1bssn0v" name="VOICE_CAPABILITY_ACTIVATION">
+    <bpmn:serviceTask id="voice_capability_activation" name="VOICE_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_1r94da8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0qzgyeb</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -94,89 +94,89 @@
       <bpmn:incoming>SequenceFlow_1aiahz2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1je10c2</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0rooh68" name="API_CAPABILITY_ACTIVATION">
+    <bpmn:serviceTask id="api_capability_activation" name="API_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_1x6rg4e</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1m50e06</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0c6p5rm" name="GET_FEATURE_SET_TEMPLATE">
+    <bpmn:serviceTask id="get_feature_set_template" name="GET_FEATURE_SET_TEMPLATE">
       <bpmn:incoming>SequenceFlow_1ljxits</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0cwzmcm</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_02v10en" name="SET_FEATURE_SET">
+    <bpmn:serviceTask id="set_feature_set" name="SET_FEATURE_SET">
       <bpmn:incoming>SequenceFlow_0cwzmcm</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0jn4dsx</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_130a2zp" name="GET_NOTIFICATION_TEMPLATE">
+    <bpmn:serviceTask id="get_notification_template" name="GET_NOTIFICATION_TEMPLATE">
       <bpmn:incoming>SequenceFlow_0mbuh53</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0o58wji</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0r1l8zq" name="USER_CARRIER_PROFILE_CREATION">
+    <bpmn:serviceTask id="user_carrier_profile_creation" name="USER_CARRIER_PROFILE_CREATION">
       <bpmn:incoming>SequenceFlow_1c63ucl</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1tjsc86</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0o7p6jf" name="CARRIER_PROFILE_CREATION">
+    <bpmn:serviceTask id="carrier_profile_creation" name="CARRIER_PROFILE_CREATION">
       <bpmn:incoming>SequenceFlow_11jpmtt</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15v9qi7</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_046sqda" name="SAVE_NOTIFICATION">
+    <bpmn:serviceTask id="save_notification" name="SAVE_NOTIFICATION">
       <bpmn:incoming>SequenceFlow_0o58wji</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1r0cua1</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_09ws78d" name="SAVE_APPLICATION">
+    <bpmn:serviceTask id="save_application" name="SAVE_APPLICATION">
       <bpmn:incoming>SequenceFlow_1721ibi</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0tjxu6r</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0z84fm6" name="CERTIFICATION_CREATION">
+    <bpmn:serviceTask id="certification_on_creation" name="CERTIFICATION_CREATION">
       <bpmn:incoming>SequenceFlow_0tjxu6r</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_00aimey</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_0cwzmcm" sourceRef="ServiceTask_0c6p5rm" targetRef="ServiceTask_02v10en" />
-    <bpmn:sequenceFlow id="SequenceFlow_1ljxits" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_0c6p5rm" />
-    <bpmn:sequenceFlow id="SequenceFlow_0o58wji" sourceRef="ServiceTask_130a2zp" targetRef="ServiceTask_046sqda" />
-    <bpmn:sequenceFlow id="SequenceFlow_1pabbir" sourceRef="ServiceTask_1wwuzlz" targetRef="ServiceTask_0q2luq2" />
-    <bpmn:sequenceFlow id="SequenceFlow_0pe3atd" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_1wwuzlz" />
-    <bpmn:sequenceFlow id="SequenceFlow_0dzlmez" sourceRef="ServiceTask_0q2luq2" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_1r94da8" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_1bssn0v" />
-    <bpmn:sequenceFlow id="SequenceFlow_0s8jvss" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_03r656h" />
-    <bpmn:serviceTask id="ServiceTask_03r656h" name="BOSS_PROVISION">
+    <bpmn:sequenceFlow id="SequenceFlow_0cwzmcm" sourceRef="get_feature_set_template" targetRef="set_feature_set" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ljxits" sourceRef="parallel_all_start" targetRef="get_feature_set_template" />
+    <bpmn:sequenceFlow id="SequenceFlow_0o58wji" sourceRef="get_notification_template" targetRef="save_notification" />
+    <bpmn:sequenceFlow id="SequenceFlow_1pabbir" sourceRef="sip_gateway_creation" targetRef="sip_routing_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_0pe3atd" sourceRef="parallel_all_start" targetRef="sip_gateway_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_0dzlmez" sourceRef="sip_routing_creation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_1r94da8" sourceRef="parallel_all_start" targetRef="voice_capability_activation" />
+    <bpmn:sequenceFlow id="SequenceFlow_0s8jvss" sourceRef="parallel_all_start" targetRef="boss_provision" />
+    <bpmn:serviceTask id="boss_provision" name="BOSS_PROVISION">
       <bpmn:incoming>SequenceFlow_0s8jvss</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1fk4lng</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1fk4lng" sourceRef="ServiceTask_03r656h" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_1ocayp7" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_03v0zr6" />
-    <bpmn:sequenceFlow id="SequenceFlow_1xlg66f" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_153gv7m" />
-    <bpmn:sequenceFlow id="SequenceFlow_17cwuni" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_12chc67" />
-    <bpmn:sequenceFlow id="SequenceFlow_1dnj8si" sourceRef="ServiceTask_03v0zr6" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_0z19slt" sourceRef="ServiceTask_153gv7m" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:serviceTask id="ServiceTask_03v0zr6" name="OFFNET_CAPABILITY_ACTIVATION">
+    <bpmn:sequenceFlow id="SequenceFlow_1fk4lng" sourceRef="boss_provision" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ocayp7" sourceRef="parallel_all_start" targetRef="offnet_capability_activation" />
+    <bpmn:sequenceFlow id="SequenceFlow_1xlg66f" sourceRef="parallel_all_start" targetRef="onnet_capability_activation" />
+    <bpmn:sequenceFlow id="SequenceFlow_17cwuni" sourceRef="parallel_all_start" targetRef="push_capability_activation" />
+    <bpmn:sequenceFlow id="SequenceFlow_1dnj8si" sourceRef="offnet_capability_activation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_0z19slt" sourceRef="onnet_capability_activation" targetRef="parallel_all_end" />
+    <bpmn:serviceTask id="offnet_capability_activation" name="OFFNET_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_1ocayp7</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1dnj8si</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_153gv7m" name="ONNET_CAPABILITY_ACTIVATION">
+    <bpmn:serviceTask id="onnet_capability_activation" name="ONNET_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_1xlg66f</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0z19slt</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_12chc67" name="PUSH_CAPABILITY_ACTIVATION">
+    <bpmn:serviceTask id="push_capability_activation" name="PUSH_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_17cwuni</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_08z5tar</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_1ncermv" name="TOPUP_CAPABILITY_ACTIVATION">
+    <bpmn:serviceTask id="topup_capability_activation" name="TOPUP_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_0sl2d48</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0hw1dbd</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_0sl2d48" sourceRef="ParallelGateway_04389r9" targetRef="ServiceTask_1ncermv" />
-    <bpmn:sequenceFlow id="SequenceFlow_08z5tar" sourceRef="ServiceTask_12chc67" targetRef="ParallelGateway_19og1nd" />
-    <bpmn:sequenceFlow id="SequenceFlow_0hw1dbd" sourceRef="ServiceTask_1ncermv" targetRef="ParallelGateway_19og1nd" />
+    <bpmn:sequenceFlow id="SequenceFlow_0sl2d48" sourceRef="parallel_all_start" targetRef="topup_capability_activation" />
+    <bpmn:sequenceFlow id="SequenceFlow_08z5tar" sourceRef="push_capability_activation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_0hw1dbd" sourceRef="topup_capability_activation" targetRef="parallel_all_end" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_08sxqjx">
-      <bpmndi:BPMNShape id="StartEvent_1ooszcp_di" bpmnElement="StartEvent_1ooszcp">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="mps">
+      <bpmndi:BPMNShape id="StartEvent_1ooszcp_di" bpmnElement="provisioning_start">
         <dc:Bounds x="791.6843100189036" y="-146.6852551984877" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="764.6843100189036" y="-110.68525519848771" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ParallelGateway_04389r9_di" bpmnElement="ParallelGateway_04389r9">
+      <bpmndi:BPMNShape id="ParallelGateway_04389r9_di" bpmnElement="parallel_all_start">
         <dc:Bounds x="941" y="135" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="921" y="185" width="90" height="20" />
@@ -247,7 +247,7 @@
           <dc:Bounds x="1341.5" y="-24" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ParallelGateway_1nksy5c_di" bpmnElement="ParallelGateway_1nksy5c">
+      <bpmndi:BPMNShape id="ParallelGateway_1nksy5c_di" bpmnElement="join_capability_and_feature_set">
         <dc:Bounds x="1511" y="135" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1490.0462863293865" y="184.39935414424116" width="90" height="20" />
@@ -295,13 +295,13 @@
           <dc:Bounds x="1975" y="22" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ParallelGateway_19og1nd_di" bpmnElement="ParallelGateway_19og1nd">
+      <bpmndi:BPMNShape id="ParallelGateway_19og1nd_di" bpmnElement="parallel_all_end">
         <dc:Bounds x="2066" y="135" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2045.222972972973" y="185" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_049g7a4_di" bpmnElement="EndEvent_049g7a4">
+      <bpmndi:BPMNShape id="EndEvent_049g7a4_di" bpmnElement="provisioning_end">
         <dc:Bounds x="2199.222972972973" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="2172.222972972973" y="178" width="90" height="20" />
@@ -362,52 +362,52 @@
           <dc:Bounds x="1604" y="-155" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_1eyxgbs_di" bpmnElement="ServiceTask_1eyxgbs">
+      <bpmndi:BPMNShape id="ServiceTask_1eyxgbs_di" bpmnElement="carrier_creation">
         <dc:Bounds x="760" y="-32" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_12vksms_di" bpmnElement="ServiceTask_12vksms">
+      <bpmndi:BPMNShape id="ServiceTask_12vksms_di" bpmnElement="receive_prefix">
         <dc:Bounds x="760" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_1wwuzlz_di" bpmnElement="ServiceTask_1wwuzlz">
+      <bpmndi:BPMNShape id="ServiceTask_1wwuzlz_di" bpmnElement="sip_gateway_creation">
         <dc:Bounds x="1107" y="352" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0q2luq2_di" bpmnElement="ServiceTask_0q2luq2">
+      <bpmndi:BPMNShape id="ServiceTask_0q2luq2_di" bpmnElement="sip_routing_creation">
         <dc:Bounds x="1305" y="352" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_178lzqv_di" bpmnElement="ServiceTask_178lzqv">
+      <bpmndi:BPMNShape id="ServiceTask_178lzqv_di" bpmnElement="im_capability_activation">
         <dc:Bounds x="1107" y="-336" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_1bssn0v_di" bpmnElement="ServiceTask_1bssn0v">
+      <bpmndi:BPMNShape id="ServiceTask_1bssn0v_di" bpmnElement="voice_capability_activation">
         <dc:Bounds x="1107" y="-225" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_0x58ekf_di" bpmnElement="ServiceTask_0x58ekf">
         <dc:Bounds x="1107" y="-107" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0rooh68_di" bpmnElement="ServiceTask_0rooh68">
+      <bpmndi:BPMNShape id="ServiceTask_0rooh68_di" bpmnElement="api_capability_activation">
         <dc:Bounds x="1107" y="2" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0c6p5rm_di" bpmnElement="ServiceTask_0c6p5rm">
+      <bpmndi:BPMNShape id="ServiceTask_0c6p5rm_di" bpmnElement="get_feature_set_template">
         <dc:Bounds x="1107" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_02v10en_di" bpmnElement="ServiceTask_02v10en">
+      <bpmndi:BPMNShape id="ServiceTask_02v10en_di" bpmnElement="set_feature_set">
         <dc:Bounds x="1305" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_130a2zp_di" bpmnElement="ServiceTask_130a2zp">
+      <bpmndi:BPMNShape id="ServiceTask_130a2zp_di" bpmnElement="get_notification_template">
         <dc:Bounds x="1107" y="234" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0r1l8zq_di" bpmnElement="ServiceTask_0r1l8zq">
+      <bpmndi:BPMNShape id="ServiceTask_0r1l8zq_di" bpmnElement="user_carrier_profile_creation">
         <dc:Bounds x="1107" y="466" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0o7p6jf_di" bpmnElement="ServiceTask_0o7p6jf">
+      <bpmndi:BPMNShape id="ServiceTask_0o7p6jf_di" bpmnElement="carrier_profile_creation">
         <dc:Bounds x="1107" y="579" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_046sqda_di" bpmnElement="ServiceTask_046sqda">
+      <bpmndi:BPMNShape id="ServiceTask_046sqda_di" bpmnElement="save_notification">
         <dc:Bounds x="1305" y="234" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_09ws78d_di" bpmnElement="ServiceTask_09ws78d">
+      <bpmndi:BPMNShape id="ServiceTask_09ws78d_di" bpmnElement="save_application">
         <dc:Bounds x="1675" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0z84fm6_di" bpmnElement="ServiceTask_0z84fm6">
+      <bpmndi:BPMNShape id="ServiceTask_0z84fm6_di" bpmnElement="certification_on_creation">
         <dc:Bounds x="1862" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0cwzmcm_di" bpmnElement="SequenceFlow_0cwzmcm">
@@ -470,7 +470,7 @@
           <dc:Bounds x="936" y="448.5" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_03r656h_di" bpmnElement="ServiceTask_03r656h">
+      <bpmndi:BPMNShape id="ServiceTask_03r656h_di" bpmnElement="boss_provision">
         <dc:Bounds x="1107" y="693" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1fk4lng_di" bpmnElement="SequenceFlow_1fk4lng">
@@ -521,16 +521,16 @@
           <dc:Bounds x="1604" y="-541" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_03v0zr6_di" bpmnElement="ServiceTask_03v0zr6">
+      <bpmndi:BPMNShape id="ServiceTask_03v0zr6_di" bpmnElement="offnet_capability_activation">
         <dc:Bounds x="1107" y="-445" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_153gv7m_di" bpmnElement="ServiceTask_153gv7m">
+      <bpmndi:BPMNShape id="ServiceTask_153gv7m_di" bpmnElement="onnet_capability_activation">
         <dc:Bounds x="1107" y="-556" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_12chc67_di" bpmnElement="ServiceTask_12chc67">
+      <bpmndi:BPMNShape id="ServiceTask_12chc67_di" bpmnElement="push_capability_activation">
         <dc:Bounds x="1107" y="-671" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_1ncermv_di" bpmnElement="ServiceTask_1ncermv">
+      <bpmndi:BPMNShape id="ServiceTask_1ncermv_di" bpmnElement="topup_capability_activation">
         <dc:Bounds x="1107" y="-782" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0sl2d48_di" bpmnElement="SequenceFlow_0sl2d48">
