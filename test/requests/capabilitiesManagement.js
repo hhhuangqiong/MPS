@@ -1,6 +1,10 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
+
 import container from '../../src/ioc';
+import methodNotAllowed from '../lib/methodNotAllowed';
+import expectNotExist from '../lib/expectNotExist';
+import missingRequiredField from '../lib/missingRequiredField';
 
 const {
   enableImCapability,
@@ -18,23 +22,24 @@ describe('Capabilities Management', () => {
   it('should throw error when essential key is missing', () => (
     // TODO: Check against error type rather than error message
     Promise.all([
-      enableImCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enableOffnetCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enableOnnetCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enablePushCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enableTopUpCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enableApiCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enableVoiceCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enableSmsCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
-      enableImToSmsCapability({}).catch(error => expect(error.message).to.equal('"carrierId" is required')),
+      enableImCapability({}),
+      enableOffnetCapability({}),
+      enableOnnetCapability({}),
+      enablePushCapability({}),
+      enableTopUpCapability({}),
+      enableApiCapability({}),
+      enableVoiceCapability({}),
+      enableSmsCapability({}),
+      enableImToSmsCapability({}),
     ])
+      .then(expectNotExist)
+      .catch(missingRequiredField('carrierId'))
   ));
 
   it('405 Method Not Allowed', () => (
     enableApiCapability({ carrierId: 'example.com' })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
@@ -51,9 +56,8 @@ describe('Capabilities Management', () => {
         password: '123@aaI',
       },
     })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
@@ -70,9 +74,8 @@ describe('Capabilities Management', () => {
         password: '123@aaI',
       },
     })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
@@ -83,43 +86,37 @@ describe('Capabilities Management', () => {
         is_offet_charging_disabled: false,
       },
     })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
     enableImCapability({ carrierId: 'example.com' })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
     enableOffnetCapability({ carrierId: 'example.com' })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
     enableOnnetCapability({ carrierId: 'example.com' })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
     enablePushCapability({ carrierId: 'example.com' })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 
   it('405 Method Not Allowed', () => (
     enableTopUpCapability({ carrierId: 'example.com' })
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+      .then(expectNotExist)
+      .catch(methodNotAllowed)
   ));
 });

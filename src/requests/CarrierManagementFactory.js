@@ -15,7 +15,7 @@ export default class CarrierManagementFactory extends CpsRequest {
         overridden_attributes: Joi.array(),
         profile_name: Joi.string(),
         profile_id: Joi.string(),
-        identifier: Joi.string(),
+        identifier: Joi.string().required(),
         partnership_restrictiveness: Joi.string().uppercase().valid('WHITE_LIST', 'BLACK_LIST', 'NON_RESTRICTED'),
         partner_carriers_id: Joi.array(),
         user_naming_convention: Joi.string(),
@@ -39,13 +39,13 @@ export default class CarrierManagementFactory extends CpsRequest {
             capabilities: Joi.array().items(
               Joi.object().keys({
                 identifier: Joi.string().valid(
-                  "com.maaii.carrier.capability.voice",
-                  "com.maaii.carrier.capability.im",
-                  "com.maaii.carrier.capability.push",
-                  "com.maaii.carrier.capability.api",
-                  "com.maaii.carrier.capability.topup",
-                  "com.maaii.carrier.capability.offnet",
-                  "com.maaii.carrier.capability.onnet"
+                  'com.maaii.carrier.capability.voice',
+                  'com.maaii.carrier.capability.im',
+                  'com.maaii.carrier.capability.push',
+                  'com.maaii.carrier.capability.api',
+                  'com.maaii.carrier.capability.topup',
+                  'com.maaii.carrier.capability.offnet',
+                  'com.maaii.carrier.capability.onnet'
                 ),
               })
             ),
@@ -66,7 +66,7 @@ export default class CarrierManagementFactory extends CpsRequest {
       const validationError = this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(uri, {
@@ -94,7 +94,7 @@ export default class CarrierManagementFactory extends CpsRequest {
       const validationError = this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(
@@ -136,7 +136,7 @@ export default class CarrierManagementFactory extends CpsRequest {
       const validationError = this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(

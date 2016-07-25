@@ -1,7 +1,10 @@
 import { describe, it } from 'mocha';
-import { expect } from 'chai';
 import { random } from 'faker';
+
 import container from '../../../src/ioc';
+import expectPathExist from '../../lib/expectPathExist';
+import expectNotExist from '../../lib/expectNotExist';
+import missingRequiredField from '../../lib/missingRequiredField';
 
 const { carrierProfileCreationRequest } = container.carrierManagement;
 
@@ -9,9 +12,8 @@ describe('carrierProfileCreationRequest', () => {
   describe('Validation', () => {
     it('should not pass validation for missing props "carrierId"', () => (
       carrierProfileCreationRequest({})
-        .catch(error => {
-          expect(error.message).to.equal('"carrierId" is required');
-        })
+        .then(expectNotExist)
+        .catch(missingRequiredField('carrierId'))
     ));
   });
 
@@ -21,15 +23,13 @@ describe('carrierProfileCreationRequest', () => {
 
     it('should response an unique id', () => (
       carrierProfileCreationRequest({ carrierId })
-        .then(response => {
-          expect(response.body.id).to.exist;
-        })
+        .then(expectPathExist('body.id'))
+        .catch(expectNotExist)
     ));
 
     it('should response correctly for SME', () => {
       const prefix = random.number().toString();
-
-      return carrierProfileCreationRequest({
+      const params = {
         carrierId,
         attributes: {
           'com|maaii|integration|ims|domain|prefix': prefix,
@@ -37,10 +37,11 @@ describe('carrierProfileCreationRequest', () => {
           'com|maaii|im|group|participant|max': '20',
           'com|maaii|service|voip|route': 'mss',
         },
-      })
-        .then(response => {
-          expect(response.body.id).to.exist;
-        });
+      };
+
+      return carrierProfileCreationRequest(params)
+        .then(expectPathExist('body.id'))
+        .catch(expectNotExist);
     });
   });
 });

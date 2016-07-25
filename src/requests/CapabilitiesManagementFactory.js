@@ -3,6 +3,10 @@ import request from 'superagent';
 import isEmpty from 'lodash/isEmpty';
 import CpsRequest from './CpsRequest';
 
+import {
+  TypeError,
+} from 'common-errors';
+
 export default class CapabilitiesManagementFactory extends CpsRequest {
   constructor(baseUrl = '') {
     super(baseUrl);
@@ -13,7 +17,7 @@ export default class CapabilitiesManagementFactory extends CpsRequest {
       return null;
     }
 
-    return new Error('capability type is not a string');
+    return new TypeError('capability type is not a string');
   }
 
   enableCapabilityRequest(uri = '', type = '') {
@@ -27,7 +31,7 @@ export default class CapabilitiesManagementFactory extends CpsRequest {
         this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(uri.replace(':carrierId', params.carrierId), params);
@@ -46,7 +50,7 @@ export default class CapabilitiesManagementFactory extends CpsRequest {
         this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(uri.replace(':carrierId', params.carrierId), {
@@ -82,7 +86,7 @@ export default class CapabilitiesManagementFactory extends CpsRequest {
         this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(uri.replace(':carrierId', params.carrierId), {
@@ -131,7 +135,7 @@ export default class CapabilitiesManagementFactory extends CpsRequest {
         this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(uri.replace(':carrierId', params.carrierId), {
@@ -175,7 +179,7 @@ export default class CapabilitiesManagementFactory extends CpsRequest {
         this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(uri.replace(':carrierId', params.carrierId), {

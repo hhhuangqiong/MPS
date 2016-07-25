@@ -1,6 +1,9 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
+
 import container from '../../src/ioc';
+import missingRequiredField from '../lib/missingRequiredField';
+import expectNotExist from '../lib/expectNotExist';
 
 const {
   getFeatureSetTemplateRequest,
@@ -11,29 +14,36 @@ describe('Feature Set Management', () => {
   describe('Get Feature Set Template', () => {
     it('should not pass validation for missing arg "group"', () => (
       getFeatureSetTemplateRequest()
-      .catch(error => expect(error.message).to.equal('group is empty'))
+        .then(expectNotExist)
+        .catch(error => {
+          expect(error).to.exist;
+          expect(error.name).to.equal('ValidationError');
+          expect(error.field).to.equal('group');
+        })
     ));
 
-    it('405 Method Not Allowed', () => (
+    it('HTTP 404 Not Found', () => (
       getFeatureSetTemplateRequest('sparkleSME')
-      .then(response => {
-        expect(response.error).to.exist;
-      })
+        .then(expectNotExist)
+        .catch(error => {
+          expect(error).to.exist;
+          expect(error.name).to.equal('NotFoundError');
+          expect(error.code).to.equal(21000);
+        })
     ));
   });
 
   describe('Set Feature Set', () => {
     it('should not pass validation for missing identifier', () => (
       createFeatureSetRequest()
-      .catch(error => expect(error.message).to.equal('"identifier" is required'))
+        .then(expectNotExist)
+        .catch(missingRequiredField('identifier'))
     ));
 
     it('should not pass validation for missing features', () => (
-      createFeatureSetRequest({
-        identifier: 'example.com',
-      })
-      .catch(error => expect(error.message).to.equal('"features" is required'))
+      createFeatureSetRequest({ identifier: 'example.com' })
+        .then(expectNotExist)
+        .catch(missingRequiredField('features'))
     ));
   });
-
 });

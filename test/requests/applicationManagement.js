@@ -1,6 +1,10 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
+
 import container from '../../src/ioc';
+import expectNotExist from '../lib/expectNotExist';
+import missingRequiredField from '../lib/missingRequiredField';
+import httpStatusError from '../lib/httpStatusError';
 
 const {
   saveApplicationRequest,
@@ -26,22 +30,27 @@ describe('Application Management', () => {
   describe('Field validation', () => {
     it('should not pass validation for missing arg "identifier"', () => (
       saveApplicationRequest()
-      .catch(error => expect(error.message).to.equal('"identifier" is required'))
+        .then(expectNotExist)
+        .catch(missingRequiredField('identifier'))
+    ));
+
+    it('should not pass validation for missing arg "application_versions"', () => (
+      saveApplicationRequest({ identifier: DEFAULT_IDENTIFIER })
+        .then(expectNotExist)
+        .catch(missingRequiredField('application_versions'))
     ));
 
     it('should not pass validation for missing arg "application_versions"', () => (
       saveApplicationRequest({
         identifier: DEFAULT_IDENTIFIER,
-      })
-        .catch(error => expect(error.message).to.equal('"application_versions" is required'))
-    ));
-
-    it('should not pass validation for missing arg "version_numbers"', () => (
-      saveApplicationRequest({
-        identifier: DEFAULT_IDENTIFIER,
         application_versions: [],
       })
-        .catch(error => expect(error.message).to.equal('"application_versions" does not contain 1 required value(s)'))
+        .then(expectNotExist)
+        .catch(error => {
+          expect(error).to.exist;
+          expect(error.field).to.equal('application_versions');
+          expect(error.code).to.equal('array.includesRequiredUnknowns');
+        })
     ));
 
     it('should not pass validation for missing arg "version_status"', () => (
@@ -55,7 +64,8 @@ describe('Application Management', () => {
           },
         }],
       })
-        .catch(error => expect(error.message).to.equal('"version_status" is required'))
+        .then(expectNotExist)
+        .catch(missingRequiredField('application_versions.0.version_status'))
     ));
 
     it('should not pass validation for missing arg "feature_set_identifier"', () => (
@@ -70,7 +80,8 @@ describe('Application Management', () => {
           version_status: 'UN_RELEASED',
         }],
       })
-        .catch(error => expect(error.message).to.equal('"feature_set_identifier" is required'))
+        .then(expectNotExist)
+        .catch(missingRequiredField('application_versions.0.feature_set_identifier'))
     ));
 
     it('should not pass validation for missing arg "developer"', () => (
@@ -79,7 +90,8 @@ describe('Application Management', () => {
         application_versions: DEFAULT_APPLICATION_VERSIONS,
         platform: DEFAULT_PLATFORM,
       })
-        .catch(error => expect(error.message).to.equal('"developer" is required'))
+        .then(expectNotExist)
+        .catch(missingRequiredField('developer'))
     ));
 
     it('should not pass validation for missing arg "status"', () => (
@@ -89,7 +101,8 @@ describe('Application Management', () => {
         platform: DEFAULT_PLATFORM,
         developer: DEFAULT_DEVELOPER_KEY,
       })
-        .catch(error => expect(error.message).to.equal('"status" is required'))
+        .then(expectNotExist)
+        .catch(missingRequiredField('status'))
     ));
 
     it('should not pass validation for missing arg "bundle_id"', () => (
@@ -100,11 +113,12 @@ describe('Application Management', () => {
         developer: DEFAULT_DEVELOPER_KEY,
         status: 'ACTIVE',
       })
-        .catch(error => expect(error.message).to.equal('"bundle_id" is required'))
+        .then(expectNotExist)
+        .catch(missingRequiredField('bundle_id'))
     ));
   });
 
-  it('405 Not Implement', () => (
+  it('should throw Application already exists', () => (
     saveApplicationRequest({
       identifier: DEFAULT_IDENTIFIER,
       application_versions: DEFAULT_APPLICATION_VERSIONS,
@@ -113,8 +127,7 @@ describe('Application Management', () => {
       status: 'ACTIVE',
       bundle_id: 'bundleId',
     })
-      .catch(error => {
-        expect(error.message).to.equal('Application already exists.');
-      })
+      .then(expectNotExist)
+      .catch(httpStatusError(400, 'Application already exists.', 50401))
   ));
 });

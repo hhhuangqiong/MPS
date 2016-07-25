@@ -1,6 +1,10 @@
 import { isEmpty } from 'lodash';
 import mongoose from 'mongoose';
-import { ArgumentNullError } from 'common-errors';
+
+import {
+  ArgumentNullError,
+  TypeError,
+} from 'common-errors';
 
 const DEFAULT_SCHEMA = {
   created_at: { type: Date, default: Date.now },
@@ -9,6 +13,10 @@ const DEFAULT_SCHEMA = {
 export default (name, schema = {}) => {
   if (!name) {
     throw new ArgumentNullError('name');
+  }
+
+  if (typeof schema !== 'object') {
+    throw new TypeError('schema is not an object');
   }
 
   if (isEmpty(schema)) {

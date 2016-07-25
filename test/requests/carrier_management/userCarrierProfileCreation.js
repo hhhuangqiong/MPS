@@ -1,6 +1,10 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
+
 import container from '../../../src/ioc';
+import expectPathExist from '../../lib/expectPathExist';
+import expectNotExist from '../../lib/expectNotExist';
+import missingRequiredField from '../../lib/missingRequiredField';
 
 const { userCarrierProfileCreationRequest } = container.carrierManagement;
 
@@ -8,9 +12,8 @@ describe('carrierProfileCreationRequest', () => {
   describe('Validation', () => {
     it('should not pass validation for missing props "carrierId"', () => (
       userCarrierProfileCreationRequest({})
-        .catch(error => {
-          expect(error.message).to.equal('"carrierId" is required');
-        })
+        .then(expectNotExist)
+        .catch(missingRequiredField('carrierId'))
     ));
   });
 
@@ -20,13 +23,12 @@ describe('carrierProfileCreationRequest', () => {
 
     it('should response an unique id', () => (
       userCarrierProfileCreationRequest({ carrierId })
-        .then(response => {
-          expect(response.body.id).to.exist;
-        })
+        .then(expectPathExist('body.id'))
+        .catch(expectNotExist)
     ));
 
-    it('should response correctly for SME', () => (
-      userCarrierProfileCreationRequest({
+    it('should response correctly for SME', () => {
+      const params = {
         carrierId,
         attributes: {
           'com|maaii|service|voip|ice|disabled': 'true',
@@ -43,10 +45,11 @@ describe('carrierProfileCreationRequest', () => {
           'com|maaii|application|earning|smsinvite|amount': '1',
           'com|maaii|service|voip|packetlossthreshold': '7',
         },
-      })
-        .then(response => {
-          expect(response.body.id).to.exist;
-        })
-    ));
+      };
+
+      userCarrierProfileCreationRequest(params)
+        .then(expectPathExist('body.id'))
+        .catch(expectNotExist);
+    });
   });
 });

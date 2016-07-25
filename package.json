@@ -18,12 +18,17 @@
   },
   "nyc": {
     "check-coverage": true,
-    "lines": 80,
-    "statements": 80,
-    "functions": 80,
+    "lines": 90,
+    "statements": 90,
+    "functions": 100,
     "branches": 80,
     "include": [
       "src/**/*.js"
+    ],
+    "exclude": [
+      "src/processes/**/*.js",
+      "src/server/**/*.js",
+      "src/initializer/**/*.js"
     ]
   },
   "repository": {

@@ -1,6 +1,5 @@
 import Joi from 'joi';
 import uuid from 'uuid';
-import isEmpty from 'lodash/isEmpty';
 import CpsRequest from './CpsRequest';
 
 export default class ApplicationManagementFactory extends CpsRequest {
@@ -10,10 +9,6 @@ export default class ApplicationManagementFactory extends CpsRequest {
 
   saveApplicationRequest(uri = '') {
     return (params = {}) => {
-      if (isEmpty(uri)) {
-        return Promise.reject(new Error('uri is empty'));
-      }
-
       const rules = {
         identifier: Joi.string().required(),
         name: Joi.string(),
@@ -42,7 +37,7 @@ export default class ApplicationManagementFactory extends CpsRequest {
       const validationError = this.validateParams(params, rules);
 
       if (validationError) {
-        return Promise.reject(validationError);
+        return this.validationErrorHandler(validationError);
       }
 
       return this.post(uri.replace(':carrierId', params.carrierId), {
