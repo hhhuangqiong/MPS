@@ -102,7 +102,7 @@ export default class CpsRequest {
       return Promise.reject(new ValidationError(error.message, null, error.argumentName));
     }
 
-    const parsedError = new ValidationError(error.message, error.type, error.path)
+    const parsedError = new ValidationError(error.message, error.type, error.path);
     parsedError.context = error.context;
 
     return Promise.reject(parsedError);

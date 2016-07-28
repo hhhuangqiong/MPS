@@ -1,17 +1,27 @@
 import path from 'path';
 import bpmn from 'bpmn';
+import uuid from 'uuid';
+
+import Provisioning from '../models/Provisioning';
+import logger from '../initializer/logger';
+
+import {
+  ArgumentNullError,
+  TypeError,
+} from 'common-errors';
 
 export default class BpmnManager {
-  constructor(mongoDbUrl, diagramFileName) {
+  constructor(mongoDbUrl, diagramFileName, startEventName) {
     if (!mongoDbUrl) {
-      throw new Error('mongoDbUrl is not defined');
+      throw new ArgumentNullError('mongoDbUrl');
     }
 
     if (!diagramFileName) {
-      throw new Error('diagramFileName is not defined');
+      throw new ArgumentNullError('diagramFileName');
     }
 
     this.manager = this.createManager(mongoDbUrl, diagramFileName);
+    this.startEventName = startEventName;
   }
 
   createManager(mongoDbUrl, diagramFileName) {
@@ -25,27 +35,16 @@ export default class BpmnManager {
       throw new Error('manager creation is fail');
     }
 
-    manager.addBpmnFilePath(path.resolve(__dirname, `./${diagramFileName}.bpmn`));
+    const fullpath = path.resolve(__dirname, `./${diagramFileName}.bpmn`);
+    manager.addBpmnFilePath(fullpath);
 
     return manager;
-  }
-
-  startServer(port) {
-    return new Promise(resolve => {
-      const server = this.manager.createServer({
-        logLevel: 'debug',
-      });
-
-      server.listen(port, () => {
-        resolve(`Server is listening at ${server.name} at ${server.url}`);
-      });
-    });
   }
 
   createProcess(processId) {
     return new Promise((resolve, reject) => {
       if (!processId) {
-        reject('processId is not defined');
+        reject(new ArgumentNullError('processId'));
         return;
       }
 
@@ -65,33 +64,17 @@ export default class BpmnManager {
     });
   }
 
-  findAllProcesses() {
-    return new Promise((resolve, reject) => {
-      this.manager.getAllProcesses((error, processes) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        if (!processes || !processes.length) {
-          reject('processes is empty or undefined');
-          return;
-        }
-
-        resolve(processes.map(currentProcess => currentProcess._implementation));
-      });
-    });
-  }
-
   findByProperty(props = {}) {
     return new Promise((resolve, reject) => {
       if (typeof props !== 'object') {
-        reject(new Error('props is undefined'));
+        reject(new TypeError('props is undefined'));
         return;
       }
 
       this.manager.findByProperty(props, (error, processes) => {
+        /* eslint-disable no-underscore-dangle */
         resolve(processes.map(currentProcess => currentProcess._implementation));
+        /* eslint-enable */
       });
     });
   }
@@ -115,17 +98,59 @@ export default class BpmnManager {
   }
 
   triggerEvent(processId, eventName, data = {}) {
-    if (!eventName || typeof triggerEventName !== 'string') {
-      return Promise.reject(new Error('eventName is undefined'));
+    if (typeof eventName !== 'string' || !eventName.length) {
+      return Promise.reject(new TypeError('eventName is not a string or it is empty'));
     }
 
     return this
       .getProcess(processId)
       .then(currentProcess => {
-        currentProcess.setLogLevel(process.env.NODE_ENV === 'production' ? 'error' : 'debug');
+        // currentProcess.setLogLevel(process.env.NODE_ENV === 'production' ? 'error' : 'debug');
         currentProcess.triggerEvent(eventName, data);
 
         return currentProcess;
       });
+  }
+
+  async createRecord(params = {}) {
+    try {
+      const provisioningRecord = new Provisioning(params);
+      return await provisioningRecord.save();
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async getProvisioningStatus(companyId) {
+    try {
+      return await Provisioning
+        .findOne({ company_id: companyId })
+        .sort({ created_at: -1 });
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async start(data = {}, retryTimes = 0) {
+    try {
+      logger(`Current retry attempt: ${retryTimes}`);
+
+      // Creating a new process with a randomId
+      const processId = uuid.v1();
+
+      await this.createProcess(processId);
+      const eventInstance = await this.triggerEvent(processId, this.eventName, data);
+
+      const processFail = !eventInstance.views.endEvent;
+      const shouldRetry = retryTimes < (process.env.NUMEBR_OF_RETRY || 0);
+
+      if (shouldRetry && processFail) {
+        return await this.start(data, retryTimes + 1);
+      }
+
+      return eventInstance;
+    } catch (e) {
+      return e;
+    }
   }
 }

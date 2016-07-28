@@ -1,4 +1,4 @@
-import logger from '../utils/logger';
+import logger from '../initializer/logger';
 
 export function defaultErrorHandler(error, done) {
   logger('error', error.stack);

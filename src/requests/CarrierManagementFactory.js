@@ -16,7 +16,9 @@ export default class CarrierManagementFactory extends CpsRequest {
         profile_name: Joi.string(),
         profile_id: Joi.string(),
         identifier: Joi.string().required(),
-        partnership_restrictiveness: Joi.string().uppercase().valid('WHITE_LIST', 'BLACK_LIST', 'NON_RESTRICTED'),
+        partnership_restrictiveness: Joi
+          .string().uppercase()
+          .valid('WHITE_LIST', 'BLACK_LIST', 'NON_RESTRICTED'),
         partner_carriers_id: Joi.array(),
         user_naming_convention: Joi.string(),
         enable_contact_store: Joi.boolean(),

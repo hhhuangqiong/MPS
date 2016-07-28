@@ -6,10 +6,12 @@ import CapabilitiesManagementFactory from './requests/CapabilitiesManagementFact
 import FeatureSetManagementFactory from './requests/FeatureSetManagementFactory';
 import ApplicationManagementFactory from './requests/ApplicationManagementFactory';
 
-import createProcess from './processes';
+import BpmnManager from './processes';
 
 const ioc = new Bottle();
-const { CPS_API } = process.env;
+const { CPS_API, MONGODB_URI } = process.env;
+
+ioc.factory('bpmnManager', () => new BpmnManager(MONGODB_URI, 'diagram', 'PROVISIONING_START'));
 
 // External Requests
 const carrierManagementFactory = new CarrierManagementFactory(CPS_API);

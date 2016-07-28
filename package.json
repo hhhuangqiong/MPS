@@ -12,6 +12,7 @@
     "build": "npm-run-all build:js build:bpmn",
     "build:js": "babel src --out-dir build --source-maps",
     "build:bpmn": "cp src/processes/diagram.bpmn build/processes/diagram.bpmn",
+    "lint": "eslint src/**/*.js",
     "test": "mocha --compilers js:babel-core/register --recursive test",
     "coverage": "nyc npm test",
     "doc:api": "apidoc -i src/server/ -o doc/api/"

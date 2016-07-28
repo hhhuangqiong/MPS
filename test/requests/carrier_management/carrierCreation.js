@@ -2,11 +2,11 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { internet } from 'faker';
 
-import container from '../../../src/ioc';
 import expectNotExist from '../../lib/expectNotExist';
 import missingRequiredField from '../../lib/missingRequiredField';
 import httpStatusError from '../../lib/httpStatusError';
 
+import container from '../../../src/ioc';
 const { carrierCreationRequest } = container.carrierManagement;
 
 describe('carrierCreationRequest', () => {

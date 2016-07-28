@@ -54,8 +54,8 @@ export default (...messages) => {
   const level = LOG.levels.hasOwnProperty(messages[0]) ? messages.shift() : DEFAULT_LEVEL;
 
   const stringifiedMessage = messages
-    .map(message => typeof message === 'object' ? JSON.stringify(message, null, 2) : message)
-    .map(message => message instanceof Error ? message.message : message)
+    .map(message => (typeof message === 'object' ? JSON.stringify(message, null, 2) : message))
+    .map(message => (message instanceof Error ? message.message : message))
     .join(', ');
 
   if (!stringifiedMessage.length) {

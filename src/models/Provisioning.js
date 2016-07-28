@@ -5,8 +5,6 @@ export default createModel(
   'Provisioning',
   {
     company_id: { type: String, required: true },
-    carrier_id: { type: String, unique: true, required: true },
-    parant_company: { type: String, required: true },
     country: String,
     service_type: { type: String, default: 'WLP' },
     payment_mode: { type: String, default: 'POST_PAID' },

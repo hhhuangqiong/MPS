@@ -1,5 +1,4 @@
 import { describe, it } from 'mocha';
-import { expect } from 'chai';
 
 import container from '../../src/ioc';
 import methodNotAllowed from '../lib/methodNotAllowed';

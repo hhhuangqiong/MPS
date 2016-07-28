@@ -1,6 +1,4 @@
 import Joi from 'joi';
-import request from 'superagent';
-import isEmpty from 'lodash/isEmpty';
 import CpsRequest from './CpsRequest';
 
 import {
@@ -143,7 +141,7 @@ export default class CapabilitiesManagementFactory extends CpsRequest {
         type,
         im_to_sms_profile: {
           charging_profile: params.charging_profile || 'maaii_charging_profile',
-          identifier: params.identifier || `maaii_im_sms_profile`,
+          identifier: params.identifier || 'maaii_im_sms_profile',
           attributes: params.attributes || {},
           name: params.name || `SMSProfile for ${params.carrierId}`,
           description: params.description,

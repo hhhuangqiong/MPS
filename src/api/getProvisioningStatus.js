@@ -1,12 +1,34 @@
+import Joi from 'joi';
+import validateSchema from '../utils/validateSchema';
+
+import container from '../ioc';
+const { bpmnManager } = container;
+
 /**
 * @api {get} /provisioning Get Provisioning Status
 * @apiName GetProvisioning
 * @apiGroup Provisioning
 *
-* @apiParam {String} res.status(501).send('Not implemented');.
+* @apiQuery {String} company_id
 *
-* @apiSuccess {String} Not implemented.
+* @apiSuccess {Object} provisioningStatus.
 */
-export default (req, res) => {
-  res.status(501).send('Not implemented');
+export default (req, res, next) => {
+  const validationError = validateSchema(req.query, {
+    company_id: Joi.string().required(),
+  });
+
+  if (validationError) {
+    next(validationError);
+    return;
+  }
+
+  bpmnManager
+    .getProvisioningStatus(req.query.company_id)
+    .then(result => {
+      res.json(result);
+    })
+    .catch(error => {
+      next(error);
+    });
 };
