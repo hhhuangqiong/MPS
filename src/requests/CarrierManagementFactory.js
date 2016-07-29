@@ -86,7 +86,6 @@ export default class CarrierManagementFactory extends CpsRequest {
         name: Joi.string(),
         description: Joi.string(),
         attributes: Joi.object().keys({
-          'com|maaii|integration|ims|domain|prefix': Joi.string().required(),
           'com|maaii|management|validation|sms|code|length': Joi.string().required(),
           'com|maaii|im|group|participant|max': Joi.string().required(),
           'com|maaii|service|voip|route': Joi.string().required(),

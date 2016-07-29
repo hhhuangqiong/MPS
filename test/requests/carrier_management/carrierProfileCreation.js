@@ -28,11 +28,9 @@ describe('carrierProfileCreationRequest', () => {
     ));
 
     it('should response correctly for SME', () => {
-      const prefix = random.number().toString();
       const params = {
         carrierId,
         attributes: {
-          'com|maaii|integration|ims|domain|prefix': prefix,
           'com|maaii|management|validation|sms|code|length': '3',
           'com|maaii|im|group|participant|max': '20',
           'com|maaii|service|voip|route': 'mss',

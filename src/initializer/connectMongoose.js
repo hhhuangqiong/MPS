@@ -2,6 +2,9 @@ import Promise from 'bluebird';
 import mongoose from 'mongoose';
 import { ArgumentNullError, data } from 'common-errors';
 
+// Use native promises instead of mpromise
+mongoose.Promise = global.Promise;
+
 export default connectionUri => new Promise((resolve, reject) => {
   if (!connectionUri) {
     reject(new ArgumentNullError('connectionUri'));

@@ -6,12 +6,15 @@ import bpmn from 'bpmn';
 import uuid from 'uuid';
 
 import Provisioning from '../models/Provisioning';
-import logger from '../initializer/logger';
 
 import {
   ArgumentNullError,
   TypeError,
+  NotFoundError,
+  NotPermittedError,
 } from 'common-errors';
+
+const COMPLETE_STATUS = 'COMPLETE';
 
 export default class ProvisioningManager {
   constructor(mongoDbUrl, diagramFileName, startEventName) {
@@ -91,7 +94,7 @@ export default class ProvisioningManager {
         }
 
         if (!process) {
-          reject(new Error(`Fail to get process by id ${processId}`));
+          reject(new NotFoundError(`Fail to get process by id ${processId}`));
           return;
         }
 
@@ -115,41 +118,61 @@ export default class ProvisioningManager {
       });
   }
 
-  async createRecord(params = {}) {
-    try {
-      const provisioningRecord = new Provisioning(params);
-      return await provisioningRecord.save();
-    } catch (e) {
-      return e;
-    }
-  }
-
-  getProvisioningStatus(companyId) {
+  getServiceProfile(companyId) {
     return Provisioning
       .findOne({ company_id: companyId })
-      .sort({ created_at: -1 });
+      .then(doc => {
+        if (!doc) {
+          throw new NotFoundError('company_id');
+        }
+
+        if (doc.getStatus() !== COMPLETE_STATUS) {
+          throw new NotPermittedError('Provisioning is not completed');
+        }
+
+        return {
+          company_code: doc.company_code,
+          carrier_id: doc.getCarrierId(),
+          capabilities: doc.capabilities,
+          service_type: doc.service_type,
+          payment_mode: doc.payment_mode,
+        };
+      });
   }
 
-  async start(data = {}, retryTimes = 0) {
+  createRecord(params = {}) {
+    return new Provisioning(params).save();
+  }
+
+  getRecord(provisionId) {
+    return Provisioning.findOne({ _id: provisionId });
+  }
+
+  getProvisioningStatusByCompanyIds(companyIds) {
+    return Promise.all(companyIds.map(companyId => this.getProvisioningStatus(companyId)));
+  }
+
+  async getProvisioningStatus(companyId) {
     try {
-      logger(`Current retry attempt: ${retryTimes}`);
+      const doc = await Provisioning
+        .findOne({ company_id: companyId })
+        .sort({ created_at: -1 });
 
-      // Creating a new process with a randomId
-      const processId = uuid.v1();
-
-      await this.createProcess(processId);
-      const eventInstance = await this.triggerEvent(processId, this.startEventName, data);
-
-      const processFail = !eventInstance.views.endEvent;
-      const shouldRetry = retryTimes < (process.env.NUMEBR_OF_RETRY || 0);
-
-      if (shouldRetry && processFail) {
-        return await this.start(data, retryTimes + 1);
-      }
-
-      return eventInstance;
+      return doc.getStatus();
     } catch (e) {
       return e;
     }
+  }
+
+  async start(data = {}) {
+    if (!data.model) {
+      throw new ArgumentNullError('model');
+    }
+
+    // Creating a new process with a randomId
+    const processId = uuid.v1();
+
+    await this.createProcess(processId);
+    return await this.triggerEvent(processId, this.startEventName, data);
   }
 }

@@ -1,26 +1,7 @@
-import Joi from 'joi';
-import validateSchema from '../utils/validateSchema';
-
 import logger from '../initializer/logger';
 
 import container from '../ioc';
 const { provisioningManager } = container;
-
-/**
- * Trigger Provisioning procedurally
- * @param {object} req - express's request object
- * @param {object} res - express's response object
- */
-async function triggerProvisioning(req, res) {
-  try {
-    await provisioningManager.createRecord(req.body);
-    res.sendStatus(200);
-
-    return await provisioningManager.start();
-  } catch (e) {
-    return e;
-  }
-}
 
 /**
 * @api {post} /provisioning Start Provisioning Request
@@ -35,26 +16,28 @@ async function triggerProvisioning(req, res) {
 * @apiParam {String} parent_company_id.
 * @apiParam {String} payment_mode.
 *
-* @apiSuccess {String} Not implemented.
+* @apiSuccess {String} provision_id.
+* @apiSuccess {String} company_id.
+* @apiSuccess {String} company_code.
+* @apiSuccess {String} carrier_id.
 */
 export default (req, res, next) => {
-  const validationError = validateSchema(req.body, {
-    company_id: Joi.string().required(),
-    company_name: Joi.string().required(),
-    capabilities: Joi.array(),
-    service_type: Joi.string().uppercase().valid('SDK', 'WHITE_LABEL'),
-    parent_company_id: Joi.string(),
-    payment_mode: Joi.string(),
-  });
+  const params = Object.assign({}, req.body);
 
-  if (validationError) {
-    next(validationError);
-    return;
-  }
+  provisioningManager
+    .createRecord(params)
+    .then(model => {
+      res.json({
+        provision_id: model._id,
+        company_code: model.company_code,
+        company_id: model.company_id,
+        carrier_id: model.getCarrierId(),
+      });
 
-  logger('Provisioning Started', req.body);
-
-  triggerProvisioning(req, res, next)
-    .then(result => logger(result))
+      provisioningManager
+        .start({ model })
+        .then(result => logger(result))
+        .catch(error => logger('error', error));
+    })
     .catch(error => next(error));
 };

@@ -3,10 +3,9 @@ import { expect } from 'chai';
 import uuid from 'uuid';
 
 import expectNotExist from '../lib/expectNotExist';
-
 import container from '../../src/ioc';
-const { provisioningManager } = container;
 
+const { provisioningManager } = container;
 const START_EVENT_NAME = 'PROVISIONING_START';
 const END_EVENT_NAME = 'PROVISIONING_END';
 
@@ -56,7 +55,7 @@ describe('bpmn', () => {
         .then(expectNotExist)
         .catch(error => {
           expect(error).to.exist;
-          expect(error.message).to.equal(`Fail to get process by id ${randomId}`);
+          expect(error.message).to.equal(`Not Found: "Fail to get process by id ${randomId}"`);
         });
     });
 
@@ -81,47 +80,14 @@ describe('bpmn', () => {
         })
     ));
 
-
-    xit('should trigger starting event correctly', () => (
+    it('should not trigger start successfully without data model', () => (
       provisioningManager
-        .triggerEvent(mockProcessId, START_EVENT_NAME)
-        .then(result => {
-          expect(result).to.exist;
-          expect(result.views).to.exist;
-
-          expect(result.views.startEvent).to.exist;
-          expect(result.views.startEvent.name).to.equal(START_EVENT_NAME);
-
-          expect(result.views.endEvent).to.exist;
-          expect(result.views.endEvent.name).to.equal(END_EVENT_NAME);
-
-          expect(result.history).to.exist;
-          expect(result.history.historyEntries).to.exist;
-          expect(result.history.historyEntries.length).to.be.above(0);
-        })
-        .catch(expectNotExist)
-    ));
-
-    xit('should not trigger the same event again', () => (
-      provisioningManager
-        .triggerEvent(mockProcessId, START_EVENT_NAME)
+        .start()
         .then(expectNotExist)
         .catch(error => {
           expect(error).to.exist;
-          expect(error.message)
-            .to
-            .equal("The start event 'PROVISIONING_START' cannot start an already started process.");
+          expect(error.message).to.equal('Missing argument: model');
         })
-    ));
-
-    it('should trigger start event with data', () => (
-      provisioningManager
-        .start()
-        .then(result => {
-          expect(result).to.exist;
-          expect(result.views).to.exist;
-        })
-        .catch(expectNotExist)
     ));
   });
 });

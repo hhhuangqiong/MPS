@@ -5,21 +5,27 @@ import createModel from '../../src/utils/createModel';
 
 describe('utils/createModel', () => {
   describe('Validation', () => {
-    it('should fail when missing name', () => {
-      expect(() => createModel()).to.throw('ArgumentNullError: Missing argument: name');
-    });
-
     it('should fail when schema is empty', () => {
-      expect(() => createModel('Book')).to.throw('ArgumentNullError: Missing argument: schema');
+      try {
+        createModel();
+      } catch (error) {
+        expect(error).to.exist;
+        expect(error.name).to.equal('ArgumentNullError');
+        expect(error.argumentName).to.equal('schema');
+      }
     });
 
     it('should fail when schema is not an object', () => {
-      expect(() => createModel('Book', 'I am a string'))
-        .to.throw('TypeError: schema is not an object');
+      try {
+        createModel('I am a string');
+      } catch (error) {
+        expect(error).to.exist;
+        expect(error.name).to.equal('TypeError');
+      }
     });
   });
 
   it('should be an instance of model object', () => {
-    expect(createModel('Book', { schemaKey: String })).to.be.instanceof(Object);
+    expect(createModel({ schemaKey: String })).to.be.instanceof(Object);
   });
 });
