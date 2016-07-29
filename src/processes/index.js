@@ -1,3 +1,6 @@
+// In order to support async/await
+import 'babel-polyfill';
+
 import path from 'path';
 import bpmn from 'bpmn';
 import uuid from 'uuid';
@@ -10,7 +13,7 @@ import {
   TypeError,
 } from 'common-errors';
 
-export default class BpmnManager {
+export default class ProvisioningManager {
   constructor(mongoDbUrl, diagramFileName, startEventName) {
     if (!mongoDbUrl) {
       throw new ArgumentNullError('mongoDbUrl');
@@ -121,14 +124,10 @@ export default class BpmnManager {
     }
   }
 
-  async getProvisioningStatus(companyId) {
-    try {
-      return await Provisioning
-        .findOne({ company_id: companyId })
-        .sort({ created_at: -1 });
-    } catch (e) {
-      return e;
-    }
+  getProvisioningStatus(companyId) {
+    return Provisioning
+      .findOne({ company_id: companyId })
+      .sort({ created_at: -1 });
   }
 
   async start(data = {}, retryTimes = 0) {
@@ -139,7 +138,7 @@ export default class BpmnManager {
       const processId = uuid.v1();
 
       await this.createProcess(processId);
-      const eventInstance = await this.triggerEvent(processId, this.eventName, data);
+      const eventInstance = await this.triggerEvent(processId, this.startEventName, data);
 
       const processFail = !eventInstance.views.endEvent;
       const shouldRetry = retryTimes < (process.env.NUMEBR_OF_RETRY || 0);

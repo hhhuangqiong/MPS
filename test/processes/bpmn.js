@@ -5,7 +5,7 @@ import uuid from 'uuid';
 import expectNotExist from '../lib/expectNotExist';
 
 import container from '../../src/ioc';
-const { bpmnManager } = container;
+const { provisioningManager } = container;
 
 const START_EVENT_NAME = 'PROVISIONING_START';
 const END_EVENT_NAME = 'PROVISIONING_END';
@@ -13,7 +13,7 @@ const END_EVENT_NAME = 'PROVISIONING_END';
 describe('bpmn', () => {
   describe('Validation', () => {
     it('should show error when there is no process id', () => (
-      bpmnManager
+      provisioningManager
         .createProcess()
         .then(expectNotExist)
         .catch(error => {
@@ -24,11 +24,11 @@ describe('bpmn', () => {
     ));
   });
 
-  describe('BPMN Logic', () => {
+  describe('Process', () => {
     const mockProcessId = uuid.v1();
 
     it('should create process successfully', () => (
-      bpmnManager
+      provisioningManager
         .createProcess(mockProcessId)
         .then(result => {
           expect(result).to.exist;
@@ -39,7 +39,7 @@ describe('bpmn', () => {
     ));
 
     it('should find a process by processId', () => (
-      bpmnManager
+      provisioningManager
         .getProcess(mockProcessId)
         .then(result => {
           expect(result).to.exist;
@@ -51,7 +51,7 @@ describe('bpmn', () => {
     it('should not find a non exist process', () => {
       const randomId = uuid.v1();
 
-      return bpmnManager
+      return provisioningManager
         .getProcess(randomId)
         .then(expectNotExist)
         .catch(error => {
@@ -61,7 +61,7 @@ describe('bpmn', () => {
     });
 
     it('should not trigger event for missing event name', () => (
-      bpmnManager
+      provisioningManager
         .triggerEvent(mockProcessId)
         .then(expectNotExist)
         .catch(error => {
@@ -72,7 +72,7 @@ describe('bpmn', () => {
     ));
 
     it('should not trigger event for a wrong starting event name', () => (
-      bpmnManager
+      provisioningManager
         .triggerEvent(mockProcessId, 'WRONG_NAME')
         .then(expectNotExist)
         .catch(error => {
@@ -83,7 +83,7 @@ describe('bpmn', () => {
 
 
     xit('should trigger starting event correctly', () => (
-      bpmnManager
+      provisioningManager
         .triggerEvent(mockProcessId, START_EVENT_NAME)
         .then(result => {
           expect(result).to.exist;
@@ -103,7 +103,7 @@ describe('bpmn', () => {
     ));
 
     xit('should not trigger the same event again', () => (
-      bpmnManager
+      provisioningManager
         .triggerEvent(mockProcessId, START_EVENT_NAME)
         .then(expectNotExist)
         .catch(error => {
@@ -115,8 +115,8 @@ describe('bpmn', () => {
     ));
 
     it('should trigger start event with data', () => (
-      bpmnManager
-        .start(START_EVENT_NAME)
+      provisioningManager
+        .start()
         .then(result => {
           expect(result).to.exist;
           expect(result.views).to.exist;

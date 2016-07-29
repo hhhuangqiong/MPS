@@ -12,6 +12,7 @@ import apiGateway from '../api';
 import connectMongoose from '../initializer/connectMongoose';
 import logger from '../initializer/logger';
 import listener from './listener';
+import errorMiddleware from './errorMiddleware';
 
 const server = express();
 
@@ -24,6 +25,8 @@ server.use(bodyParser.json());
 server.use(methodOverride());
 
 apiGateway(server);
+
+server.use(errorMiddleware);
 
 heathCheck(server, {
   mongodb: {

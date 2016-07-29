@@ -2,7 +2,7 @@ import Joi from 'joi';
 import validateSchema from '../utils/validateSchema';
 
 import container from '../ioc';
-const { bpmnManager } = container;
+const { provisioningManager } = container;
 
 /**
 * @api {get} /provisioning Get Provisioning Status
@@ -23,12 +23,8 @@ export default (req, res, next) => {
     return;
   }
 
-  bpmnManager
+  provisioningManager
     .getProvisioningStatus(req.query.company_id)
-    .then(result => {
-      res.json(result);
-    })
-    .catch(error => {
-      next(error);
-    });
+    .then(result => res.json(result))
+    .catch(error => next(error));
 };

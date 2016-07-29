@@ -4,7 +4,23 @@ import validateSchema from '../utils/validateSchema';
 import logger from '../initializer/logger';
 
 import container from '../ioc';
-const { bpmnManager } = container;
+const { provisioningManager } = container;
+
+/**
+ * Trigger Provisioning procedurally
+ * @param {object} req - express's request object
+ * @param {object} res - express's response object
+ */
+async function triggerProvisioning(req, res) {
+  try {
+    await provisioningManager.createRecord(req.body);
+    res.sendStatus(200);
+
+    return await provisioningManager.start();
+  } catch (e) {
+    return e;
+  }
+}
 
 /**
 * @api {post} /provisioning Start Provisioning Request
@@ -38,21 +54,7 @@ export default (req, res, next) => {
 
   logger('Provisioning Started', req.body);
 
-  bpmnManager
-    .createRecord(req.body)
-    .then(() => {
-      res.sendStatus(200);
-
-      bpmnManager
-        .start()
-        .then(result => {
-          logger('Provisioning result', result.views);
-        })
-        .catch(error => {
-          logger('error', error);
-        });
-    })
-    .catch(error => {
-      next(error);
-    });
+  triggerProvisioning(req, res, next)
+    .then(result => logger(result))
+    .catch(error => next(error));
 };

@@ -7,7 +7,7 @@ import validateSchema from '../../src/utils/validateSchema';
 describe('utils/validateSchema', () => {
   describe('No Error', () => {
     it('should have no error for nothing input', () => {
-      expect(validateSchema()).to.be.undefined;
+      expect(validateSchema()).to.be.null;
     });
 
     it('should have no error for current rules', () => {
@@ -21,7 +21,7 @@ describe('utils/validateSchema', () => {
 
       const result = validateSchema(params, rules);
 
-      expect(result).to.be.undefined;
+      expect(result).to.be.null;
     });
   });
 
@@ -34,8 +34,9 @@ describe('utils/validateSchema', () => {
       const result = validateSchema(params);
 
       expect(result).to.exist;
-      expect(result.path).to.equal('name');
-      expect(result.type).to.equal('object.allowUnknown');
+      expect(result.name).to.equal('ValidationError');
+      expect(result.field).to.equal('name');
+      expect(result.code).to.equal('object.allowUnknown');
     });
 
     it('should have error for missing required field', () => {
@@ -46,8 +47,9 @@ describe('utils/validateSchema', () => {
       const result = validateSchema({}, rules);
 
       expect(result).to.exist;
-      expect(result.path).to.equal('name');
-      expect(result.type).to.equal('any.required');
+      expect(result.name).to.equal('ValidationError');
+      expect(result.field).to.equal('name');
+      expect(result.code).to.equal('any.required');
     });
   });
 });
