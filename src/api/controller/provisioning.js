@@ -39,7 +39,7 @@ export function startProvisioning(req, res, next) {
         /* eslint-enable */
         company_code: model.company_code,
         company_id: model.company_id,
-        carrier_id: model.getCarrierId(),
+        carrier_id: model.carrier_id,
       });
 
       provisioningManager
@@ -108,6 +108,7 @@ export function retryProvisioning(req, res, next) {
         next(new NotFoundError('model'));
         return;
       }
+
       const isError = model.getStatus() === ERROR_STATUS;
 
       if (!isError) {
@@ -122,7 +123,7 @@ export function retryProvisioning(req, res, next) {
           /* eslint-enable */
           company_code: model.company_code,
           company_id: model.company_id,
-          carrier_id: model.getCarrierId(),
+          carrier_id: model.carrier_id,
         });
 
         provisioningManager

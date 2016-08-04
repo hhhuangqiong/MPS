@@ -132,7 +132,7 @@ export default class ProvisioningManager {
 
         return {
           company_code: doc.company_code,
-          carrier_id: doc.getCarrierId(),
+          carrier_id: doc.carrier_id,
           capabilities: doc.capabilities,
           service_type: doc.service_type,
           payment_mode: doc.payment_mode,

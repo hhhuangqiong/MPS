@@ -6,6 +6,7 @@ export const START_PROVISIONING_SCHEMA = expressJoiValidator({
     company_id: Joi.string().required(),
     company_code: Joi.string().required(),
     company_name: Joi.string().required(),
+    country: Joi.string(),
     capabilities: Joi.array(),
     service_type: Joi.string().uppercase().valid('SDK', 'WHITE_LABEL'),
     reseller_carrier_id: Joi.string(),

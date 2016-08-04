@@ -66,16 +66,18 @@ schema.statics.getCompanyByCarrierId = function getCompanyByCarrierId(carrierId)
   return this.findOne({ company_code: companyCode });
 };
 
-schema.methods.getCarrierId = function getCarrierId() {
-  const companyId = this.company_id.toLowerCase();
+schema
+  .virtual('carrier_id')
+  .get(function get() {
+    const companyId = this.company_code.toLowerCase();
 
-  const wlpServiceDomain = process.env.WLP_SERVICE_DOMAIN || DEFAULT_WLP_SERVICE_DOMAIN;
-  const sdkServiceDomain = process.env.SDK_SERVICE_DOMAIN || DEFAULT_SDK_SERVICE_DOMAIN;
+    const wlpServiceDomain = process.env.WLP_SERVICE_DOMAIN || DEFAULT_WLP_SERVICE_DOMAIN;
+    const sdkServiceDomain = process.env.SDK_SERVICE_DOMAIN || DEFAULT_SDK_SERVICE_DOMAIN;
 
-  return this.service_type === SERVICE_TYPE_WLP ?
+    return this.service_type === SERVICE_TYPE_WLP ?
     `${companyId}.${wlpServiceDomain}` :
     `${companyId}.${sdkServiceDomain}`;
-};
+  });
 
 schema.methods.getStatus = function getStatus() {
   const isError = this.status.find(eachStatus => !isEmpty(eachStatus.error));

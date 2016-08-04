@@ -10,12 +10,15 @@ export default class CarrierManagementFactory extends CpsRequest {
   getCarrierCreationRequest(uri = '') {
     return (params = {}) => {
       const rules = {
+        // alias is an alias of company_code
+        alias: Joi.string().required(),
+
+        identifier: Joi.string().required(),
         name: Joi.string(),
         description: Joi.string(),
         overridden_attributes: Joi.array(),
         profile_name: Joi.string(),
         profile_id: Joi.string(),
-        identifier: Joi.string().required(),
         partnership_restrictiveness: Joi
           .string().uppercase()
           .valid('WHITE_LIST', 'BLACK_LIST', 'NON_RESTRICTED'),
