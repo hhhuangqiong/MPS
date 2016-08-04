@@ -6,8 +6,6 @@ import expectNotExist from '../lib/expectNotExist';
 import container from '../../src/ioc';
 
 const { provisioningManager } = container;
-const START_EVENT_NAME = 'PROVISIONING_START';
-const END_EVENT_NAME = 'PROVISIONING_END';
 
 describe('bpmn', () => {
   describe('Validation', () => {
@@ -86,7 +84,8 @@ describe('bpmn', () => {
         .then(expectNotExist)
         .catch(error => {
           expect(error).to.exist;
-          expect(error.message).to.equal('Missing argument: model');
+          expect(error.name).to.equal('ArgumentNullError');
+          expect(error.argumentName).to.equal('model');
         })
     ));
   });

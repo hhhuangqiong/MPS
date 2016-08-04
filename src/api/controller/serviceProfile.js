@@ -1,9 +1,9 @@
-import container from '../ioc';
+import container from '../../ioc';
 const { provisioningManager } = container;
 
 /**
 * @api {get} /provisioning/profile/{company_id} Get Service Profile
-* @apiName GetServiceProfile
+* @apiName getServiceProfile
 * @apiGroup Provisioning
 *
 * @apiParams {String} company_id
@@ -14,11 +14,11 @@ const { provisioningManager } = container;
 * @apiSuccess {String} service_type.
 * @apiSuccess {String} payment_mode.
 */
-export default (req, res, next) => {
+export function getServiceProfile(req, res, next) {
   const { company_id } = req.params;
 
   provisioningManager
     .getServiceProfile(company_id)
     .then(result => res.json(result))
     .catch(error => next(error));
-};
+}

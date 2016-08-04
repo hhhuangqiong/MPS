@@ -14,11 +14,23 @@ export default function errorMiddleware(err, req, res, next) {
     return;
   }
 
+  if (err && err.name === 'NotPermittedError') {
+    res.status(422).json({
+      error: {
+        message: err.args['0'],
+        code: err.name,
+        stack: process.env.NODE_ENV === 'production' ? {} : err.stack,
+      },
+    });
+
+    return;
+  }
+
   if (err instanceof Error) {
     res.status(400).json({
       error: {
         message: err.message,
-        name: err.name,
+        code: err.name,
         stack: process.env.NODE_ENV === 'production' ? {} : err.stack,
       },
     });
