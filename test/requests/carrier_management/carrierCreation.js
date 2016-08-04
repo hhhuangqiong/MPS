@@ -9,26 +9,36 @@ import httpStatusError from '../../lib/httpStatusError';
 import container from '../../../src/ioc';
 const { carrierCreationRequest } = container.carrierManagement;
 
-describe('carrierCreationRequest', () => {
-  describe('Validation', () => {
-    it('should not pass validation for missing props "identifier"', () => (
+describe('Carrier Creation Request', () => {
+  describe('validation', () => {
+    const identifier = internet.domainName();
+
+    it('should not pass validation for missing props "alias"', () => (
       carrierCreationRequest({})
+        .then(expectNotExist)
+        .catch(missingRequiredField('alias'))
+    ));
+
+    it('should not pass validation for missing props "identifier"', () => (
+      carrierCreationRequest({
+        alias: identifier,
+      })
         .then(expectNotExist)
         .catch(missingRequiredField('identifier'))
     ));
   });
 
-  describe('Response', () => {
+  describe('response', () => {
     const identifier = internet.domainName();
 
     it('should success for an unique carrier identifier"', () => (
-      carrierCreationRequest({ identifier })
+      carrierCreationRequest({ identifier, alias: identifier })
         .then(response => expect(response.body.id).to.equal(identifier))
         .catch(expectNotExist)
     ));
 
     it('should fail for provisioning same carrier identifier"', () => (
-      carrierCreationRequest({ identifier })
+      carrierCreationRequest({ identifier, alias: identifier })
         .then(expectNotExist)
         .catch(httpStatusError(400, 'Carrier already exists.', 35000))
     ));
