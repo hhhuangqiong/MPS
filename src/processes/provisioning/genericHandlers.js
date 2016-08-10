@@ -1,4 +1,4 @@
-import logger from '../initializer/logger';
+import logger from '../../initializer/logger';
 
 export function defaultErrorHandler(error, done) {
   logger('error', error.stack);
@@ -13,5 +13,6 @@ export function onBeginHandler(currentFlowObjectName, data, done) {
 
 export function onEndHandler(currentFlowObjectName, data, done) {
   logger('onEndHandler');
+
   done(data);
 }

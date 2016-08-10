@@ -7,7 +7,7 @@ import {
 } from 'common-errors';
 
 const DEFAULT_SCHEMA = {
-  created_at: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
 };
 
 export default (schema = {}) => {
