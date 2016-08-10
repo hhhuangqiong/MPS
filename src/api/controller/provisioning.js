@@ -1,136 +1,41 @@
-import logger from '../../initializer/logger';
-import container from '../../ioc';
+import _ from 'lodash';
+import ioc from '../../ioc';
 
-import {
-  InvalidOperationError,
-  NotFoundError,
-} from 'common-errors';
+const { logger, provisioningService } = ioc.container;
 
-const { provisioningManager } = container;
-const ERROR_STATUS = 'ERROR';
-
-/**
-* @api {post} /provisioning Start Provisioning Request
-* @apiName startProvisioning
-* @apiGroup Provisioning
-*
-* @apiParam {String} company_id.
-* @apiParam {String} carrier_id.
-* @apiParam {String} company_name.
-* @apiParam {Array} capabilities.
-* @apiParam {String} service_type.
-* @apiParam {String} reseller_carrier_id.
-* @apiParam {String} payment_mode.
-*
-* @apiSuccess {String} provision_id.
-* @apiSuccess {String} company_id.
-* @apiSuccess {String} company_code.
-* @apiSuccess {String} carrier_id.
-*/
-export function startProvisioning(req, res, next) {
-  const params = Object.assign({}, req.body);
-
-  provisioningManager
-    .createRecord(params)
-    .then(model => {
-      res.json({
-        /* eslint-disable no-underscore-dangle */
-        provision_id: model._id,
-        /* eslint-enable */
-        company_code: model.company_code,
-        company_id: model.company_id,
-        carrier_id: model.carrier_id,
-      });
-
-      provisioningManager
-        .start({ model })
-        .then(result => logger(result))
-        .catch(error => logger('error', error));
-    })
-    .catch(error => next(error));
+export function* createProvisioning(req, res, next) {
+  try {
+    const result = yield provisioningService.createProvisioning(req.body);
+    res.json(result);
+  } catch (e) {
+    logger('error', 'createProvisioning: Error caught ', e.stack);
+    next(e);
+  }
 }
 
-/**
-* @api {get} /provisioning/companies Get Provisioning Companies Status
-* @apiName getProvisioningStatusByCompanies
-* @apiGroup Provisioning
-*
-* @apiQuery {String} company_id
-*
-* @apiSuccess {Array} company and it's status.
-*/
-export function getProvisioningStatusByCompanies(req, res, next) {
-  const { company_id: companyIdQuery } = req.query;
+export function* getProvisioning(req, res, next) {
+  const query = req.query;
 
-  const companyIds = Array.isArray(companyIdQuery) ? companyIdQuery : companyIdQuery.split(',');
+  if (query.companyId) query.companyId = query.companyId.split(',');
+  if (query.serviceType) query.serviceType = query.serviceType.companyId.split(',');
+  if (query.companyCode) query.companyCode = query.companyCode.companyId.split(',');
 
-  provisioningManager
-    .getProvisioningStatusByCompanyIds(companyIds)
-    .then(result => res.json(result))
-    .catch(error => next(error));
+  try {
+    const provisionings = yield provisioningService.getProvisionings(query);
+    res.json(provisionings.toJson());
+  } catch (e) {
+    logger('error', 'getProvisioning: Error caught ', e.stack);
+    next(e);
+  }
 }
 
-/**
-* @api {get} /provisioning Get Provisioning Status
-* @apiName getProvisioningStatus
-* @apiGroup Provisioning
-*
-* @apiQuery {String} company_id
-*
-* @apiSuccess {Object} provisioningStatus.
-*/
-export function getProvisioningStatus(req, res, next) {
-  provisioningManager
-    .getProvisioningStatus(req.query.company_id)
-    .then(result => res.json(result))
-    .catch(error => next(error));
-}
-
-/**
-* @api {post} /provisioning/retry/{provision_id} Retry Provisioning Operation
-* @apiName retryProvisioning
-* @apiGroup Provisioning
-*
-* @apiParams {String} provision_id
-*
-* @apiSuccess {String} provision_id.
-* @apiSuccess {String} company_id.
-* @apiSuccess {String} company_code.
-* @apiSuccess {String} carrier_id.
-*/
-export function retryProvisioning(req, res, next) {
-  const { provision_id } = req.params;
-
-  provisioningManager
-    .getRecord(provision_id)
-    .then(model => {
-      if (!model) {
-        next(new NotFoundError('model'));
-        return;
-      }
-
-      const isError = model.getStatus() === ERROR_STATUS;
-
-      if (!isError) {
-        next(new InvalidOperationError('You can only retry when the process is failed'));
-        return;
-      }
-
-      model.clearStatus(() => {
-        res.json({
-          /* eslint-disable no-underscore-dangle */
-          provision_id: model._id,
-          /* eslint-enable */
-          company_code: model.company_code,
-          company_id: model.company_id,
-          carrier_id: model.carrier_id,
-        });
-
-        provisioningManager
-          .start({ model })
-          .then(result => logger(result))
-          .catch(error => logger('error', error));
-      });
-    })
-    .catch(error => next(error));
+export function* updateProvisioning(req, res, next) {
+  try {
+    const command = _.extend({}, req.params, req.body);
+    const provisioning = yield provisioningService.updateProvisioning(command);
+    res.json(provisioning.toJson());
+  } catch (e) {
+    logger('error', 'updateProvisioning: Error caught ', e.stack);
+    next(e);
+  }
 }

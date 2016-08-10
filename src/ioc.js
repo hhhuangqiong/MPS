@@ -5,13 +5,13 @@ import CarrierManagementFactory from './requests/CarrierManagementFactory';
 import CapabilitiesManagementFactory from './requests/CapabilitiesManagementFactory';
 import FeatureSetManagementFactory from './requests/FeatureSetManagementFactory';
 import ApplicationManagementFactory from './requests/ApplicationManagementFactory';
-
-import ProvisioningManager from './processes';
+import provisioningService from './service/provisioning';
 
 const ioc = new Bottle();
 const { CPS_API, MONGODB_URI } = process.env;
 
-ioc.factory('provisioningManager', () => new ProvisioningManager(MONGODB_URI, 'diagram', 'PROVISIONING_START'));
+ioc.factory('processManager', () => require('./initializer/processManager')(MONGODB_URI));
+ioc.service('provisioningService', provisioningService, 'processManager');
 
 // External Requests
 const carrierManagementFactory = new CarrierManagementFactory(CPS_API);
