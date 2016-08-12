@@ -1,23 +1,21 @@
 // In order to support async/await
 import 'babel-polyfill';
 
-import mongoose from 'mongoose';
-import heathCheck from 'm800-health-check';
-
-import connectMongoose from '../initializer/connectMongoose';
-import logger from '../initializer/logger';
-import listener from './listener';
+import healthCheck from 'm800-health-check';
 
 import server from './server';
+import ioc from '../ioc';
 
-heathCheck(server, {
+const { mongoose, logger } = ioc.container;
+
+mongoose.ready.then(() => {
+  server.listen(server.get('port'), () => {
+    logger(`Server is running in ${server.get('env')} at ${server.get('port')}`);
+  });
+});
+
+healthCheck(server, {
   mongodb: {
     mongoose,
   },
 });
-
-connectMongoose(process.env.MONGODB_URI)
-  .tap(logger)
-  .then(() => {
-    listener(server).tap(logger);
-  });
