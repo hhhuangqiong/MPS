@@ -24,18 +24,27 @@ describe('Capabilities Management', () => {
       .catch(missingRequiredField('carrierId'))
   ));
 
-  xit('should response correctly for API Capability', () => (
-    capabilitiesManagement.enableApiCapability({ carrierId: 'example.com' })
+  it('should response correctly for API Capability', () => (
+    capabilitiesManagement.enableApiCapability({
+      carrierId: 'example.com',
+      developer: {},
+    })
       .then(result => expect(result.body.id).to.exist)
       .catch(expectNotExist)
   ));
 
+  // pass from routing profile
   xit('should response correctly for Voice Capability', () => (
     capabilitiesManagement.enableVoiceCapability({
       carrierId: 'example.com',
       voice_service_profile: {
         is_onnet_charging_disabled: true,
         is_offet_charging_disabled: false,
+        /*
+         * Required: true
+         * Description: Routing profile id. It should be prepared by asking the Voice Engineer to create it using MSS CLI.
+         */
+        // routing_profile_id: value,
       },
     })
       .then(result => expect(result.body.id).to.be.true)
@@ -46,9 +55,6 @@ describe('Capabilities Management', () => {
     capabilitiesManagement.enableSmsCapability({
       carrierId: 'example.com',
       sms_profile: {
-        attributes: {
-          PREFIX: '0000008',
-        },
         default_realm: 'WhiteLabel',
         service_plan_id: 'whitelabel',
         systemType: 'testSystem',
@@ -64,9 +70,6 @@ describe('Capabilities Management', () => {
     capabilitiesManagement.enableImToSmsCapability({
       carrierId: 'example.com',
       im_to_sms_profile: {
-        attributes: {
-          PREFIX: '0000008',
-        },
         default_realm: 'WhiteLabel',
         service_plan_id: 'whitelabel',
         systemType: 'testSystem',
