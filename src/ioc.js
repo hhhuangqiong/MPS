@@ -4,7 +4,7 @@ import path from 'path';
 
 import CarrierManagement from './requests/CarrierManagement';
 import CapabilitiesManagement from './requests/CapabilitiesManagement';
-// import FeatureSetManagementFactory from './requests/FeatureSetManagementFactory';
+import FeatureSetManagement from './requests/FeatureSetManagement';
 // import ApplicationManagementFactory from './requests/ApplicationManagementFactory';
 // import provisioningService from './service/provisioning';
 
@@ -23,8 +23,6 @@ ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf
 // services
 // ioc.service('provisioningService', provisioningService, 'processManager');
 
-// const capabilitiesManagementFactory = new CapabilitiesManagementFactory(CPS_API);
-// const featureSetManagementFactory = new FeatureSetManagementFactory(CPS_API);
 // const applicationManagementFactory = new ApplicationManagementFactory(CPS_API);
 
 // Carrier Management
@@ -34,6 +32,7 @@ ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps:uri'
 ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps:uri')));
 
 // Feature Set Management
+ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps:uri')));
 // ioc.factory('featureSetManagementFactory.getFeatureSetTemplateRequest', () => featureSetManagementFactory.getFeatureSetTemplateRequest('/1.0/feature_sets/templates'));
 // ioc.factory('featureSetManagementFactory.createFeatureSetRequest', () => featureSetManagementFactory.createFeatureSetRequest('/1.0/feature_sets'));
 
