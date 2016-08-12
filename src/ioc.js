@@ -5,7 +5,7 @@ import path from 'path';
 import CarrierManagement from './requests/CarrierManagement';
 import CapabilitiesManagement from './requests/CapabilitiesManagement';
 import FeatureSetManagement from './requests/FeatureSetManagement';
-// import ApplicationManagementFactory from './requests/ApplicationManagementFactory';
+import ApplicationManagement from './requests/ApplicationManagement';
 // import provisioningService from './service/provisioning';
 
 const ioc = new Bottle();
@@ -23,20 +23,10 @@ ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf
 // services
 // ioc.service('provisioningService', provisioningService, 'processManager');
 
-// const applicationManagementFactory = new ApplicationManagementFactory(CPS_API);
-
-// Carrier Management
+// request objects
 ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps:uri')));
-
-// Capabilities Management
 ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps:uri')));
-
-// Feature Set Management
 ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps:uri')));
-// ioc.factory('featureSetManagementFactory.getFeatureSetTemplateRequest', () => featureSetManagementFactory.getFeatureSetTemplateRequest('/1.0/feature_sets/templates'));
-// ioc.factory('featureSetManagementFactory.createFeatureSetRequest', () => featureSetManagementFactory.createFeatureSetRequest('/1.0/feature_sets'));
-
-// Application Management
-// ioc.factory('applicationManagementFactory.saveApplicationRequest', () => applicationManagementFactory.saveApplicationRequest('/1.0/applications'));
+ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps:uri')));
 
 export default ioc;
