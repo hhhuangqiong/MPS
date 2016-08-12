@@ -3,7 +3,7 @@ import Bottle from 'bottlejs';
 import path from 'path';
 
 import CarrierManagement from './requests/CarrierManagement';
-// import CapabilitiesManagementFactory from './requests/CapabilitiesManagementFactory';
+import CapabilitiesManagement from './requests/CapabilitiesManagement';
 // import FeatureSetManagementFactory from './requests/FeatureSetManagementFactory';
 // import ApplicationManagementFactory from './requests/ApplicationManagementFactory';
 import provisioningService from './service/provisioning';
@@ -30,24 +30,14 @@ ioc.service('provisioningService', provisioningService, 'processManager');
 // Carrier Management
 ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps:uri')));
 
-// Capabilities Management (General)
-// ioc.factory('capabilityManagement.enableImCapability', () => capabilitiesManagementFactory.enableCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.im', 'IM'));
-// ioc.factory('capabilityManagement.enableOffnetCapability', () => capabilitiesManagementFactory.enableCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.offnet', 'OffNet'));
-// ioc.factory('capabilityManagement.enableOnnetCapability', () => capabilitiesManagementFactory.enableCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.onnet', 'OnNet'));
-// ioc.factory('capabilityManagement.enablePushCapability', () => capabilitiesManagementFactory.enableCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.push', 'Push'));
-// ioc.factory('capabilityManagement.enableTopUpCapability', () => capabilitiesManagementFactory.enableCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.topup', 'TopUp'));
-//
-// // Capabilities Management (Specific)
-// ioc.factory('capabilityManagement.enableApiCapability', () => capabilitiesManagementFactory.enableApiCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.api', 'API'));
-// ioc.factory('capabilityManagement.enableVoiceCapability', () => capabilitiesManagementFactory.enableVoiceCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.voice', 'Voice'));
-// ioc.factory('capabilityManagement.enableSmsCapability', () => capabilitiesManagementFactory.enableSmsCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.sms', 'SMS'));
-// ioc.factory('capabilityManagement.enableImToSmsCapability', () => capabilitiesManagementFactory.enableImToSmsCapabilityRequest('/1.0/carriers/:carrierId/capabilities/com.maaii.carrier.capability.imtosms', 'ImToSms'));
-//
-// // Feature Set Management
+// Capabilities Management
+ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps:uri')));
+
+// Feature Set Management
 // ioc.factory('featureSetManagementFactory.getFeatureSetTemplateRequest', () => featureSetManagementFactory.getFeatureSetTemplateRequest('/1.0/feature_sets/templates'));
 // ioc.factory('featureSetManagementFactory.createFeatureSetRequest', () => featureSetManagementFactory.createFeatureSetRequest('/1.0/feature_sets'));
 
-// // Application Management
+// Application Management
 // ioc.factory('applicationManagementFactory.saveApplicationRequest', () => applicationManagementFactory.saveApplicationRequest('/1.0/applications'));
 
 export default ioc;

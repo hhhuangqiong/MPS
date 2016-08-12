@@ -1,66 +1,49 @@
 import { describe, it } from 'mocha';
+import { expect } from 'chai';
 
-import container from '../../src/ioc';
-import methodNotAllowed from '../lib/methodNotAllowed';
-import expectNotExist from '../lib/expectNotExist';
-import missingRequiredField from '../lib/missingRequiredField';
+import {
+  expectOk,
+  expectNotExist,
+  missingRequiredField,
+} from '../expectValidator';
 
-const {
-  enableImCapability,
-  enableOffnetCapability,
-  enableOnnetCapability,
-  enablePushCapability,
-  enableTopUpCapability,
-  enableApiCapability,
-  enableVoiceCapability,
-  enableSmsCapability,
-  enableImToSmsCapability,
-} = container.capabilityManagement;
+import CapabilitiesManagement from '../../src/requests/CapabilitiesManagement';
+const capabilitiesManagement = new CapabilitiesManagement('http://192.168.118.23:9000');
 
 describe('Capabilities Management', () => {
   it('should throw error when essential key is missing', () => (
     // TODO: Check against error type rather than error message
     Promise.all([
-      enableImCapability({}),
-      enableOffnetCapability({}),
-      enableOnnetCapability({}),
-      enablePushCapability({}),
-      enableTopUpCapability({}),
-      enableApiCapability({}),
-      enableVoiceCapability({}),
-      enableSmsCapability({}),
-      enableImToSmsCapability({}),
+      capabilitiesManagement.enableCapabilityByType('im', {}),
+      capabilitiesManagement.enableApiCapability({}),
+      capabilitiesManagement.enableVoiceCapability({}),
+      capabilitiesManagement.enableSmsCapability({}),
+      capabilitiesManagement.enableImToSmsCapability({}),
     ])
       .then(expectNotExist)
       .catch(missingRequiredField('carrierId'))
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableApiCapability({ carrierId: 'example.com' })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+  xit('should response correctly for API Capability', () => (
+    capabilitiesManagement.enableApiCapability({ carrierId: 'example.com' })
+      .then(result => expect(result.body.id).to.exist)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableImToSmsCapability({
+  xit('should response correctly for Voice Capability', () => (
+    capabilitiesManagement.enableVoiceCapability({
       carrierId: 'example.com',
-      im_to_sms_profile: {
-        attributes: {
-          PREFIX: '0000008',
-        },
-        default_realm: 'WhiteLabel',
-        service_plan_id: 'whitelabel',
-        systemType: 'testSystem',
-        systemId: 'WhiteLabel',
-        password: '123@aaI',
+      voice_service_profile: {
+        is_onnet_charging_disabled: true,
+        is_offet_charging_disabled: false,
       },
     })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+      .then(result => expect(result.body.id).to.be.true)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableSmsCapability({
+  xit('should response correctly for SMS Capability', () => (
+    capabilitiesManagement.enableSmsCapability({
       carrierId: 'example.com',
       sms_profile: {
         attributes: {
@@ -73,49 +56,55 @@ describe('Capabilities Management', () => {
         password: '123@aaI',
       },
     })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+      .then(result => expect(result.body.id).to.exist)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableVoiceCapability({
+  xit('should response correctly for IM to SMS Capability', () => (
+    capabilitiesManagement.enableImToSmsCapability({
       carrierId: 'example.com',
-      voice_service_profile: {
-        is_onnet_charging_disabled: true,
-        is_offet_charging_disabled: false,
+      im_to_sms_profile: {
+        attributes: {
+          PREFIX: '0000008',
+        },
+        default_realm: 'WhiteLabel',
+        service_plan_id: 'whitelabel',
+        systemType: 'testSystem',
+        systemId: 'WhiteLabel',
+        password: '123@aaI',
       },
     })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+      .then(result => expect(result.body.id).to.be.true)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableImCapability({ carrierId: 'example.com' })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+  xit('should response 200 for IM Capability', () => (
+    capabilitiesManagement.enableCapabilityByType('im', { carrierId: 'example.com' })
+      .then(result => expect(result.body.id).to.be.true)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableOffnetCapability({ carrierId: 'example.com' })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+  xit('should response 200 form Offnet Capability', () => (
+    capabilitiesManagement.enableCapabilityByType('offnet', { carrierId: 'example.com' })
+      .then(expectOk)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableOnnetCapability({ carrierId: 'example.com' })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+  xit('should response 200 form Onnet Capability', () => (
+    capabilitiesManagement.enableCapabilityByType('onnet', { carrierId: 'example.com' })
+      .then(expectOk)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enablePushCapability({ carrierId: 'example.com' })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+  xit('should response 200 form Push Capability', () => (
+    capabilitiesManagement.enableCapabilityByType('push', { carrierId: 'example.com' })
+      .then(expectOk)
+      .catch(expectNotExist)
   ));
 
-  it('405 Method Not Allowed', () => (
-    enableTopUpCapability({ carrierId: 'example.com' })
-      .then(expectNotExist)
-      .catch(methodNotAllowed)
+  xit('should response 200 form Topup Capability', () => (
+    capabilitiesManagement.enableCapabilityByType('topup', { carrierId: 'example.com' })
+      .then(expectOk)
+      .catch(expectNotExist)
   ));
 });
