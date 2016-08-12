@@ -2,7 +2,9 @@ import request from 'superagent-bluebird-promise';
 import omitBy from 'lodash/omitBy';
 import isUndefined from 'lodash/isUndefined';
 import isEmpty from 'lodash/isEmpty';
+
 import validateSchema from '../utils/validateSchema';
+import logger from '../initializer/logger';
 
 import {
   HttpStatusError,
@@ -42,6 +44,8 @@ export default class CpsRequest {
     try {
       const url = this.getUrl(uri);
 
+      logger(`Sending GET Request to ${url}`);
+
       return request
         .get(url)
         .set('Accept', 'application/json')
@@ -56,6 +60,8 @@ export default class CpsRequest {
     try {
       const url = this.getUrl(uri);
       const normalizedParams = this.normalizeParams(params);
+
+      logger(`Sending POST Request to ${url} with params:`, normalizedParams);
 
       return request
         .post(url)

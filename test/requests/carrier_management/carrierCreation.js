@@ -6,21 +6,21 @@ import expectNotExist from '../../lib/expectNotExist';
 import missingRequiredField from '../../lib/missingRequiredField';
 import httpStatusError from '../../lib/httpStatusError';
 
-import container from '../../../src/ioc';
-const { carrierCreationRequest } = container.carrierManagement;
+import CarrierManagement from '../../../src/requests/CarrierManagement';
+const carrierManagement = new CarrierManagement('http://192.168.118.23:9000');
 
-describe('Carrier Creation Request', () => {
+describe('carrierManagement.createCarrier', () => {
   describe('validation', () => {
     const identifier = internet.domainName();
 
     it('should not pass validation for missing props "alias"', () => (
-      carrierCreationRequest({})
+      carrierManagement.createCarrier({})
         .then(expectNotExist)
         .catch(missingRequiredField('alias'))
     ));
 
     it('should not pass validation for missing props "identifier"', () => (
-      carrierCreationRequest({
+      carrierManagement.createCarrier({
         alias: identifier,
       })
         .then(expectNotExist)
@@ -32,15 +32,15 @@ describe('Carrier Creation Request', () => {
     const identifier = internet.domainName();
 
     it('should success for an unique carrier identifier"', () => (
-      carrierCreationRequest({ identifier, alias: identifier })
+      carrierManagement.createCarrier({ identifier, name: identifier, alias: identifier })
         .then(response => expect(response.body.id).to.equal(identifier))
         .catch(expectNotExist)
     ));
 
     it('should fail for provisioning same carrier identifier"', () => (
-      carrierCreationRequest({ identifier, alias: identifier })
+      carrierManagement.createCarrier({ identifier, name: identifier, alias: identifier })
         .then(expectNotExist)
-        .catch(httpStatusError(400, 'Carrier already exists.', 35000))
+        .catch(httpStatusError(400, 'Carrier already exists.', 50101))
     ));
   });
 });

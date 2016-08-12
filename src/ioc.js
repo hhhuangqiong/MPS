@@ -20,7 +20,6 @@ ioc.factory('logger', () => require('./initializer/logger').default);
 ioc.factory('mongoose', () => (require('./initializer/mongoose').default(nconf.get('mongo:uri'))));
 ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf.get('mongo:uri'))));
 
-
 // services
 ioc.service('provisioningService', provisioningService, 'processManager');
 

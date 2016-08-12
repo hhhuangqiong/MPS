@@ -1,17 +1,16 @@
 import { describe, it } from 'mocha';
-import { expect } from 'chai';
 
-import container from '../../../src/ioc';
 import expectPathExist from '../../lib/expectPathExist';
 import expectNotExist from '../../lib/expectNotExist';
 import missingRequiredField from '../../lib/missingRequiredField';
 
-const { userCarrierProfileCreationRequest } = container.carrierManagement;
+import CarrierManagement from '../../../src/requests/CarrierManagement';
+const carrierManagement = new CarrierManagement('http://192.168.118.23:9000');
 
-describe('carrierProfileCreationRequest', () => {
+describe('carrierManagement.createUserCarrierProfile', () => {
   describe('Validation', () => {
     it('should not pass validation for missing props "carrierId"', () => (
-      userCarrierProfileCreationRequest({})
+      carrierManagement.createUserCarrierProfile({})
         .then(expectNotExist)
         .catch(missingRequiredField('carrierId'))
     ));
@@ -22,7 +21,7 @@ describe('carrierProfileCreationRequest', () => {
     const carrierId = 'example.com';
 
     it('should response an unique id', () => (
-      userCarrierProfileCreationRequest({ carrierId })
+      carrierManagement.createUserCarrierProfile({ carrierId })
         .then(expectPathExist('body.id'))
         .catch(expectNotExist)
     ));
@@ -47,7 +46,7 @@ describe('carrierProfileCreationRequest', () => {
         },
       };
 
-      userCarrierProfileCreationRequest(params)
+      carrierManagement.createUserCarrierProfile(params)
         .then(expectPathExist('body.id'))
         .catch(expectNotExist);
     });
