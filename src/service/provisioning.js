@@ -48,9 +48,9 @@ export default function provisioningService(processManager, validator) {
   async function createProvision(command) {
     const profile = validator.sanitize(command, schemaCreateProvision);
 
-    const provisioning = await (new Provisioning({
+    const provisioning = await Provisioning.create({
       profile,
-    }).save());
+    });
 
     const processId = await startProcess(provisioning._id, profile);
 
@@ -92,22 +92,39 @@ export default function provisioningService(processManager, validator) {
       .select({ taskResults: 1, status: 1, profile: 1 })
       .sort({ createdAt: -1 });
 
-    const provisionings = await query.exec();
     // count() ignores skip() and limits() by default
-    const total = await query.count();
-    const pageTotal = Math.ceil(total / pageSize);
+
+    const result = await Promise.props({
+      items: query.exec(),
+      count: query.count(),
+    });
+    const pageTotal = Math.ceil(result.items / pageSize);
 
     return {
       page,
       pageSize,
       pageTotal,
-      total,
-      provisionings,
+      total: result.items,
+      provisionings: result.items,
     };
   }
 
-  async function updateProvisioning(provisioingId, profile) {
-    const provisioning = await Provisioning.findById(provisioingId).exec();
+  const schemaUpdateProvisionings = Joi.object({
+    provisioningId: Joi.string().regex(REGEX_MONGO_OBJECT_ID),
+    // only fields that are allowed to update after creation
+    profile: Joi.object({
+      country: Joi.string().optional(),
+      companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY).optional(),
+      serviceType: Joi.string().valid(SERVICE_TYPES).optional(),
+      capabilities: Joi.array().items(Joi.string().valid(CAPABILITIES)).unqiue().optional(),
+      paymentMode: Joi.string().required().valid(PAYMENT_MODES).optional(),
+    }),
+  });
+
+  async function updateProvisioning(command) {
+    const { provisioingId, profile } = validator.sanitize(command, schemaUpdateProvisionings);
+
+    const provisioning = await Provisioning.findById(provisioingId);
     const { id: provisioningId, status, taskResults } = provisioning;
 
     if (status !== statusTypes.COMPLETE ||

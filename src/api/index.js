@@ -1,5 +1,3 @@
-import wrap from 'co-express';
-
 import {
   GET_PROVISION_PRESET,
   CREATE_PROVISION_PRESET,
@@ -19,9 +17,9 @@ import {
 } from './controller/preset';
 
 export default server => {
-  server.post('/provisioning', wrap(createProvisioning));
-  server.get('/provisioning/:provisioningId', wrap(getProvisioning));
-  server.put('/provisioning/:provisioningId', wrap(updateProvisioning));
+  server.post('/provisioning', createProvisioning);
+  server.get('/provisioning/:provisioningId', getProvisioning);
+  server.put('/provisioning/:provisioningId', updateProvisioning);
 
   /**
    * Preset Provisioning Request
