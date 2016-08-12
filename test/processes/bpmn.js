@@ -2,13 +2,13 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import uuid from 'uuid';
 
-import container from '../../src/ioc';
+import ioc from '../../src/ioc';
 
 import {
   expectNotExist,
 } from '../expectValidator';
 
-const { provisioningManager } = container;
+const { provisioningManager } = ioc.container;
 
 describe('bpmn', () => {
   describe('Validation', () => {

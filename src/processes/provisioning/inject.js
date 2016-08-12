@@ -26,7 +26,7 @@ export default function injectProvisioningProcoess(processManager, onProvisionin
         done(profile);
       },
       PROVISIONING_END(data, done) {
-        logger.info('provisioing end');
+        logger('provisioing end');
 
         const taskResults = this.getProperty('taskResults');
         const errors = this.getProperty('errors');

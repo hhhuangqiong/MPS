@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import CpsRequest from './CpsRequest';
 
-
 export default class CarrierManagement extends CpsRequest {
   constructor(baseUrl = '') {
     super(baseUrl);

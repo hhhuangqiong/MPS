@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import getFromPath from 'lodash/get';
 
 export function expectOk(target) {
   expect(target.ok).to.be.true;

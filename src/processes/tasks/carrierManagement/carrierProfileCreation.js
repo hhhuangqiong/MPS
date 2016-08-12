@@ -1,5 +1,5 @@
-import container from '../../../ioc';
-const { carrierProfileCreationRequest } = container.carrierManagement;
+import ioc from '../../../ioc';
+const { carrierProfileCreationRequest } = ioc.container.carrierManagement;
 
 export default function carrierProfileCreation(data, done) {
   const { model } = data;

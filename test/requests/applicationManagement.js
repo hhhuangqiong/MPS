@@ -7,11 +7,11 @@ import {
   httpStatusError,
 } from '../expectValidator';
 
-import container from '../../src/ioc';
+import ioc from '../../src/ioc';
 
 const {
   saveApplicationRequest,
-} = container.applicationManagementFactory;
+} = ioc.container.applicationManagementFactory;
 
 const DEFAULT_IDENTIFIER = 'example.com';
 

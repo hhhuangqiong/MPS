@@ -6,7 +6,7 @@ import CarrierManagement from './requests/CarrierManagement';
 import CapabilitiesManagement from './requests/CapabilitiesManagement';
 // import FeatureSetManagementFactory from './requests/FeatureSetManagementFactory';
 // import ApplicationManagementFactory from './requests/ApplicationManagementFactory';
-import provisioningService from './service/provisioning';
+// import provisioningService from './service/provisioning';
 
 const ioc = new Bottle();
 const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '../config'));
@@ -21,7 +21,7 @@ ioc.factory('mongoose', () => (require('./initializer/mongoose').default(nconf.g
 ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf.get('mongo:uri'))));
 
 // services
-ioc.service('provisioningService', provisioningService, 'processManager');
+// ioc.service('provisioningService', provisioningService, 'processManager');
 
 // const capabilitiesManagementFactory = new CapabilitiesManagementFactory(CPS_API);
 // const featureSetManagementFactory = new FeatureSetManagementFactory(CPS_API);

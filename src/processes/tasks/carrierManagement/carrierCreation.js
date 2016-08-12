@@ -1,9 +1,8 @@
-import container from '../../../ioc';
+import ioc from '../../../ioc';
 import { ValidationError, ArgumentError, NotImplementedError } from 'common-errors';
 
-const { createCarrier } = container;
-
-const cpsConfig = container['config.cps'];
+const { createCarrier } = ioc.container;
+const cpsConfig = ioc.container['config.cps'];
 
 const WLP_SERVICE_DOMAIN = cpsConfig.wlServiceDomain;
 const SDK_SERVICE_DOMAIN = cpsConfig.sdkServiceDomain;

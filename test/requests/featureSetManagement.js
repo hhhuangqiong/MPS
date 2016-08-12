@@ -6,12 +6,12 @@ import {
   missingRequiredField,
 } from '../expectValidator';
 
-import container from '../../src/ioc';
+import ioc from '../../src/ioc';
 
 const {
   getFeatureSetTemplateRequest,
   createFeatureSetRequest,
-} = container.featureSetManagementFactory;
+} = ioc.container.featureSetManagementFactory;
 
 describe('Feature Set Management', () => {
   describe('Get Feature Set Template', () => {

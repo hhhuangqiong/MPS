@@ -1,5 +1,5 @@
-import container from '../../ioc';
-const { provisioningManager } = container;
+import ioc from '../../ioc';
+const { provisioningManager } = ioc.container;
 
 /**
 * @api {get} /provisioning/profile/{company_id} Get Service Profile
