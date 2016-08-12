@@ -1,7 +1,10 @@
 import uuid from 'uuid';
-import logger from '../../initializer/logger';
 import path from 'path';
 import _ from 'lodash';
+
+import ioc from '../../ioc';
+
+const { logger } = ioc.container;
 
 const PROCESS_PATH = path.resolve(__dirname, './provisioning.bpmn');
 

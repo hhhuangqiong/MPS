@@ -3,13 +3,14 @@ import { expect } from 'chai';
 import request from 'supertest';
 import { name } from 'faker';
 
-import logger from '../../src/initializer/logger';
-import connectMongoose from '../../src/initializer/connectMongoose';
 import server from '../../src/server/server';
+import ioc from '../../src/ioc';
+
+const { logger, mongoose } = ioc.container;
 
 describe('Preset', () => {
   before(() => (
-    connectMongoose(process.env.MONGODB_URI).tap(logger)
+    mongoose(process.env.MONGODB_URI).tap(logger)
   ));
 
   const companyId = name.firstName().toLowerCase();

@@ -1,4 +1,6 @@
-import logger from '../../initializer/logger';
+import ioc from '../../ioc';
+
+const { logger } = ioc.container;
 
 export function defaultErrorHandler(error, done) {
   logger('error', error.stack);

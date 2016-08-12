@@ -4,13 +4,14 @@ import request from 'supertest';
 import { name } from 'faker';
 import uuid from 'uuid';
 
-import logger from '../../src/initializer/logger';
-import connectMongoose from '../../src/initializer/connectMongoose';
 import server from '../../src/server/server';
+import ioc from '../../src/ioc';
+
+const { logger, mongoose } = ioc.container;
 
 describe('Provisioning APIs', () => {
   before(() => (
-    connectMongoose(process.env.MONGODB_URI).tap(logger)
+    mongoose(process.env.MONGODB_URI).tap(logger)
   ));
 
   const params = {
