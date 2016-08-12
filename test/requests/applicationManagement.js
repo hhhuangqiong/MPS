@@ -1,10 +1,13 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
+import {
+  expectNotExist,
+  missingRequiredField,
+  httpStatusError,
+} from '../expectValidator';
+
 import container from '../../src/ioc';
-import expectNotExist from '../lib/expectNotExist';
-import missingRequiredField from '../lib/missingRequiredField';
-import httpStatusError from '../lib/httpStatusError';
 
 const {
   saveApplicationRequest,

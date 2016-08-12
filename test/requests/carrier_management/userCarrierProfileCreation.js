@@ -1,8 +1,10 @@
 import { describe, it } from 'mocha';
 
-import expectPathExist from '../../lib/expectPathExist';
-import expectNotExist from '../../lib/expectNotExist';
-import missingRequiredField from '../../lib/missingRequiredField';
+import {
+  expectNotExist,
+  missingRequiredField,
+  expectPathExist,
+} from '../../expectValidator';
 
 import CarrierManagement from '../../../src/requests/CarrierManagement';
 const carrierManagement = new CarrierManagement('http://192.168.118.23:9000');

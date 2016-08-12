@@ -2,8 +2,11 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import uuid from 'uuid';
 
-import expectNotExist from '../lib/expectNotExist';
 import container from '../../src/ioc';
+
+import {
+  expectNotExist,
+} from '../expectValidator';
 
 const { provisioningManager } = container;
 

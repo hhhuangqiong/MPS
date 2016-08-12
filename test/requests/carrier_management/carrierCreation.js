@@ -2,9 +2,11 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { internet } from 'faker';
 
-import expectNotExist from '../../lib/expectNotExist';
-import missingRequiredField from '../../lib/missingRequiredField';
-import httpStatusError from '../../lib/httpStatusError';
+import {
+  expectNotExist,
+  missingRequiredField,
+  httpStatusError,
+} from '../../expectValidator';
 
 import CarrierManagement from '../../../src/requests/CarrierManagement';
 const carrierManagement = new CarrierManagement('http://192.168.118.23:9000');

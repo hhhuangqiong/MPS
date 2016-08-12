@@ -1,9 +1,12 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
+import {
+  expectNotExist,
+  missingRequiredField,
+} from '../expectValidator';
+
 import container from '../../src/ioc';
-import missingRequiredField from '../lib/missingRequiredField';
-import expectNotExist from '../lib/expectNotExist';
 
 const {
   getFeatureSetTemplateRequest,
