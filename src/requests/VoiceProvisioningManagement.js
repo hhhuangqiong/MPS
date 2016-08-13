@@ -104,9 +104,45 @@ export default class VoiceProvisioningManagement extends CpsRequest {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(uri.replace(':carrierId', params.carrierId), {
-      ...params,
-      // TODO: Add default value rules
-    });
+    return this.post(uri.replace(':carrierId', params.carrierId), params);
+  }
+
+  // 2. SIP Gateway Creation
+  sipGatewayCreation({
+    disable = false,
+    protocol = 'SIP',
+    timeout = 0,
+    ...restParams,
+  }) {
+    const uri = '/1.0/sip/routing_profiles';
+
+    const rules = {
+      identifier: Joi.string().required(),
+      description: Joi.string(),
+      manipulation_rules: Joi.array().items(getManipulationRule()),
+      name: Joi.string(),
+      protocol: Joi.string().valid('SIP', 'SS7'),
+      host: Joi.string().required(),
+      disable: Joi.boolean(),
+      attributes: Joi.array(),
+      trunk_id: Joi.string(),
+      port: Joi.number().required(),
+      timeout: Joi.number(),
+    };
+
+    const params = {
+      ...restParams,
+      disable,
+      protocol,
+      timeout,
+    };
+
+    const validationError = this.validateParams(params, rules);
+
+    if (validationError) {
+      return this.validationErrorHandler(validationError);
+    }
+
+    return this.post(uri.replace(':carrierId', params.carrierId), params);
   }
 }
