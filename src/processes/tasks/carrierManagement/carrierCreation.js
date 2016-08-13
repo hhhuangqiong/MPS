@@ -1,76 +1,71 @@
 import ioc from '../../../ioc';
-import { ValidationError, ArgumentError, NotImplementedError } from 'common-errors';
+import logger from '../../../utils/logger';
+import { createTask } from '../../util';
+import { ValidationError, ArgumentError, NotImplementedError, ReferenceError } from 'common-errors';
+import { ServiceTypes } from '../../../models/Provisioning';
 
-const { createCarrier } = ioc.container;
-const cpsConfig = ioc.container['config.cps'];
+
+const CarrierManagement = ioc.container.CarrierManagement;
+const cpsConfig = ioc.container.config.cps;
 
 const WLP_SERVICE_DOMAIN = cpsConfig.wlServiceDomain;
 const SDK_SERVICE_DOMAIN = cpsConfig.sdkServiceDomain;
 
-const TASK_NAME = 'CARRIER_CREATION';
-/**
- * Function to validate whether the profile is invalid for current process
- * @param  {Object} profile     Provisoning profile
- * @param  {Object} taskResults latest task results
- * @return {[type]}             [description]
- */
-function validateProfile(profile, taskResults) {
-  if (taskResults[TASK_NAME].alias !== profile.companyCode) {
-    throw new ValidationError('Company code cannot be updated', 'FIELD_IN_SERVICE', 'profile.companyCode')
-  }
-  return true;
-}
-
-export default function carrierCreation(data, done) {
-  const { profile } = data;
-
-  // check if this task is done as of previous process task result
-  // skip this task if success
-  const taskResult = this.getProperty('taskResults')[TASK_NAME];
-  if (taskResult.alias === profile.companyCode) {
-    done(data);
-    return;
-  }
-
+function generateCarrierId(companyCode, serviceType) {
   let topDomain;
-  switch (profile.serviceType) {
-    case 'wl':
+  switch (serviceType) {
+    case ServiceTypes.WHITE_LABEL:
       topDomain = WLP_SERVICE_DOMAIN;
       break;
-    case 'sdk':
+    case ServiceTypes.SDK:
       topDomain = SDK_SERVICE_DOMAIN;
       break;
-    case 'lc':
-      throw new NotImplementedError('Live Connect provisioning not implemented yet');
+    case ServiceTypes.LIVECONNECT:
+      throw new NotImplementedError('LiveConnect provisioning not implemented yet');
     default:
       throw new ArgumentError('profile.serviceType');
   }
 
-  const carrierId = `${profile.companyCode}.${topDomain}`;
-  const status = {
-    service: 'carrierCreation',
-    request: {
-      identifier: carrierId,
-      alias: profile.companyCode,
-    },
-  };
-
-  createCarrier(status.request)
-    .then(response => {
-      const payload = {
-        response: response && response.body,
-      };
-
-      const taskResults = data.taskResults[TASK_NAME];
-      taskResults[TASK_NAME] = payload;
-      done(data);
-    })
-    .catch(error => {
-      const taskErrors = data.taskErrors[TASK_NAME];
-      taskErrors[TASK_NAME] = error;
-      done(data);
-    });
+  return `${companyCode}.${topDomain}`;
 }
 
-carrierCreation.name = TASK_NAME;
-carrierCreation.validateProfile = validateProfile;
+function validateRerun(profile, taskResult) {
+  if (taskResult.carrierProfileId) {
+    // run successfully before, skip
+    return false;
+  }
+
+  const carrierId = generateCarrierId(profile.companyCode, profile.serviceType);
+  if (taskResult.carrierId !== carrierId) {
+    throw new ValidationError('Company code cannot be updated', 'FIELD_IN_SERVICE', 'profile.companyCode')
+  }
+
+  return true;
+}
+
+
+function run(data, cb) {
+  const { companyCode, serviceType } = data;
+
+  const carrierId = generateCarrierId(companyCode, serviceType);
+  const params = {
+    identifier: carrierId,
+    alias: companyCode,
+  };
+
+  logger('debug', 'CPS create Carrier request sent');
+  CarrierManagement.createCarrier(params)
+    .then(response => {
+      logger('debug', 'CPS create Carrier response received');
+      const { id } = response.body;
+
+      if (!id) {
+        throw new ReferenceError('id is not defined in response body for carrier creation');
+      }
+
+      cb(null, { carrierId: id });
+    })
+    .catch(cb);
+}
+
+export default createTask('CARRIER_CREATION', run, { validateRerun });

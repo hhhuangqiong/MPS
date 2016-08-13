@@ -19,6 +19,17 @@ const LOG = {
 
 const DEFAULT_LEVEL = 'info';
 
+const logger = new (winston.Logger)({
+  transports: [
+    new winston.transports.Console({
+      colorize: true,
+    }),
+  ],
+});
+
+logger.setLevels(LOG.levels);
+winston.addColors(LOG.colors);
+
 /**
  * Winston logger with custom levels and capabilities.
  * @param {string} level - The logger level or message for single argument.
@@ -61,18 +72,6 @@ export default (...messages) => {
   if (!stringifiedMessage.length) {
     return;
   }
-
-  const logger = new (winston.Logger)({
-    transports: [
-      new winston.transports.Console({
-        level,
-        colorize: true,
-      }),
-    ],
-  });
-
-  logger.setLevels(LOG.levels);
-  winston.addColors(LOG.colors);
 
   try {
     logger[level](stringifiedMessage);
