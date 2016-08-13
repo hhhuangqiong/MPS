@@ -7,7 +7,12 @@ export default class ApplicationManagement extends CpsRequest {
     super(baseUrl);
   }
 
-  saveApplication(params = {}) {
+  saveApplication({
+    name = `mapp${uuid.v1()}`,
+    application_key = `mapp${uuid.v1()}`,
+    application_secret = uuid.v1(),
+    ...restParams,
+  }) {
     const uri = '/1.0/applications';
 
     const rules = {
@@ -35,17 +40,19 @@ export default class ApplicationManagement extends CpsRequest {
       bundle_id: Joi.string().required(),
     };
 
+    const params = {
+      ...restParams,
+      name,
+      application_key,
+      application_secret,
+    };
+
     const validationError = this.validateParams(params, rules);
 
     if (validationError) {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(uri.replace(':carrierId', params.carrierId), {
-      ...params,
-      name: params.name || params.identifier,
-      application_key: params.application_key || `mapp${uuid.v1()}`,
-      application_secret: params.application_secret || uuid.v1(),
-    });
+    return this.post(uri.replace(':carrierId', params.carrierId), params);
   }
 }

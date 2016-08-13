@@ -30,7 +30,7 @@ describe('Application Management', () => {
   describe('Field validation', () => {
     it('should not pass validation for missing arg "identifier"', () => (
       applicationManagement
-        .saveApplication()
+        .saveApplication({})
         .then(expectNotExist)
         .catch(missingRequiredField('identifier'))
     ));
