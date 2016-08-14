@@ -1,5 +1,6 @@
 import logger from '../utils/logger';
-import AlreadyInUseError from 'common-errors';
+import Promise from 'bluebird';
+import { AlreadyInUseError } from 'common-errors';
 import Provisioning, {
   ProcessStatus,
   Capabilities,
@@ -90,6 +91,7 @@ export default function provisioningService(provisioningProcessor, validator) {
   }
 
   const schemaGetProvisionings = Joi.object({
+    provisioningId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
     serviceType: Joi.array().items(Joi.string().valid(Object.values(ServiceTypes))).optional(),
     companyCode: Joi.array().items(Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY)).optional(),
     companyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
@@ -107,33 +109,35 @@ export default function provisioningService(provisioningProcessor, validator) {
       serviceType,
       companyCode,
       companyId,
+      provisioningId,
     } = validator.sanitize(command, schemaGetProvisionings);
+    const offset = (page - 1) * pageSize;
 
     const filters = {};
+    if (provisioningId) filters._id = { $in: provisioningId };
     if (companyCode) filters['profile.companyCode'] = { $in: companyCode };
     if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
     if (companyId) filters['profile.companyId'] = { $in: companyId };
 
     const query = Provisioning.find(filters)
-      .skip(page)
+      .skip(offset)
       .limit(pageSize)
       .select({ taskResults: 1, status: 1, profile: 1 })
       .sort({ createdAt: -1 });
 
     // count() ignores skip() and limits() by default
-
     const result = await Promise.props({
       items: query.exec(),
       count: query.count(),
     });
-    const pageTotal = Math.ceil(result.items / pageSize);
+    const pageTotal = Math.ceil(result.count / pageSize);
 
     return {
       page,
       pageSize,
       pageTotal,
-      total: result.items,
-      provisionings: result.items,
+      total: result.count,
+      items: result.items,
     };
   }
 

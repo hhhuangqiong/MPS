@@ -1,7 +1,7 @@
 import { ArgumentNullError, ReferenceError } from 'common-errors';
 
 import ioc from '../../../ioc';
-import { createTask } from '../../util';
+import { createTask } from '../../util/task';
 
 const CarrierManagement = ioc.container.CarrierManagement;
 

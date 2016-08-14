@@ -4,7 +4,7 @@ import isUndefined from 'lodash/isUndefined';
 import isEmpty from 'lodash/isEmpty';
 
 import validateSchema from '../utils/validateSchema';
-import logger from '../initializer/logger';
+import logger from '../utils/logger';
 
 import {
   HttpStatusError,

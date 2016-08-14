@@ -61,6 +61,13 @@ const schema = createModel({
   finishAt: Date,
 });
 
+if (!schema.options.toJSON) schema.options.toJSON = {};
+schema.options.toJSON.transform = (doc, ret) => {
+  // remove the _id of every document before returning the result
+  ret.id = ret._id;
+  delete ret._id;
+};
+
 schema.plugin(unqiueValidator);
 
 export default mongoose.model('Provisioning', schema);

@@ -1,6 +1,6 @@
 import ioc from '../../../ioc';
 import logger from '../../../utils/logger';
-import { createTask } from '../../util';
+import { createTask } from '../../util/task';
 import { ValidationError, ArgumentError, NotImplementedError, ReferenceError } from 'common-errors';
 import { ServiceTypes } from '../../../models/Provisioning';
 
