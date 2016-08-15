@@ -7,7 +7,12 @@ export default class CarrierManagement extends CpsRequest {
   }
 
   // 1. Carrier Creation
-  createCarrier(params) {
+  createCarrier({
+    identifier,
+    name = identifier,
+    alias = identifier,
+    ...restParams,
+  }) {
     const uri = '/1.0/carriers';
     const rules = {
       // alias is an alias of company_code
@@ -68,21 +73,31 @@ export default class CarrierManagement extends CpsRequest {
       verification_profile_identifier: Joi.string(),
     };
 
+    const params = {
+      ...restParams,
+      identifier,
+      name,
+      alias,
+    };
+
     const validationError = this.validateParams(params, rules);
 
     if (validationError) {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(uri, {
-      ...params,
-      name: params.identifier,
-    });
+    return this.post(uri, params);
   }
 
   // 2. Carrier Profile Creation
-  createCarrierProfile(params) {
+  createCarrierProfile({
+    carrierId,
+    name = `Carrier Profile for ${carrierId}`,
+    description = carrierId,
+    ...restParams,
+  }) {
     const endpoint = '/1.0/carriers/:carrierId/profiles';
+
     const rules = {
       carrierId: Joi.string().required(),
       name: Joi.string(),
@@ -94,25 +109,32 @@ export default class CarrierManagement extends CpsRequest {
       }),
     };
 
+    const params = {
+      ...restParams,
+      carrierId,
+      name,
+      description,
+    };
+
     const validationError = this.validateParams(params, rules);
 
     if (validationError) {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(
-      endpoint.replace(':carrierId', params.carrierId),
-      {
-        ...params,
-        name: `Carrier Profile for ${params.carrierId}`,
-        description: params.description || params.carrierId,
-      }
-    );
+    return this.post(endpoint.replace(':carrierId', params.carrierId), params);
   }
 
   // 3. User Carrier Profile Creation
-  createUserCarrierProfile(params) {
+  createUserCarrierProfile({
+    carrierId,
+    name = `Carrier Profile for ${carrierId}`,
+    description = carrierId,
+    default_for_nonlisted_countries = true,
+    ...restParams,
+  }) {
     const endpoint = '/1.0/carriers/:carrierId/users/profiles';
+
     const rules = {
       carrierId: Joi.string().required(),
       name: Joi.string(),
@@ -135,20 +157,20 @@ export default class CarrierManagement extends CpsRequest {
       }),
     };
 
+    const params = {
+      ...restParams,
+      carrierId,
+      name,
+      description,
+      default_for_nonlisted_countries,
+    };
+
     const validationError = this.validateParams(params, rules);
 
     if (validationError) {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(
-      endpoint.replace(':carrierId', params.carrierId),
-      {
-        ...params,
-        name: params.name || `Carrier Profile for ${params.carrierId}`,
-        description: params.description || params.carrierId,
-        default_for_nonlisted_countries: params.default_for_nonlisted_countries || true,
-      }
-    );
+    return this.post(endpoint.replace(':carrierId', params.carrierId), params);
   }
 }

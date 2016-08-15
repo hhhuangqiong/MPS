@@ -19,8 +19,16 @@ export default class FeatureSetManagement extends CpsRequest {
     return this.get(`${uri}?group=${group}`);
   }
 
-  createFeatureSet(params = {}) {
+  createFeatureSet({
+    features = [],
+    ...restParams,
+  }) {
     const uri = '/1.0/feature_sets';
+
+    const params = {
+      ...restParams,
+      features,
+    };
 
     const validationError = this.validateParams(params, {
       identifier: Joi.string().required(),
@@ -31,9 +39,6 @@ export default class FeatureSetManagement extends CpsRequest {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(uri, {
-      ...params,
-      features: params.features || [],
-    });
+    return this.post(uri, params);
   }
 }

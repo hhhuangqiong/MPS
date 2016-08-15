@@ -20,14 +20,6 @@ describe('carrierManagement.createCarrier', () => {
         .then(expectNotExist)
         .catch(missingRequiredField('alias'))
     ));
-
-    it('should not pass validation for missing props "identifier"', () => (
-      carrierManagement.createCarrier({
-        alias: identifier,
-      })
-        .then(expectNotExist)
-        .catch(missingRequiredField('identifier'))
-    ));
   });
 
   describe('response', () => {
