@@ -1,7 +1,7 @@
 // Carrier Profile Management
 export CARRIER_CREATION from '../tasks/carrierManagement/carrierCreation';
 export USER_CARRIER_PROFILE_CREATION from '../tasks/carrierManagement/userCarrierProfileCreation';
-export CARRIER_PROFILE_CREATION from './/tasks/carrierManagement/carrierProfileCreation';
+export CARRIER_PROFILE_CREATION from '../tasks/carrierManagement/carrierProfileCreation';
 
 export RECEIVE_PREFIX from '../tasks/receivePrefix';
 export TOPUP_CAPABILITY_ACTIVATION from '../tasks/topupCapabilityActiviation';
@@ -27,12 +27,10 @@ export SET_FEATURE_SET from '../tasks/setFeatureSet';
 export SAVE_APPLICATION from '../tasks/saveApplication';
 export CERTIFICATION_CREATION from '../tasks/certificationCreation';
 
+export COMPANY_CREATION from '../tasks/companyCreation';
+
 export {
   PARALLEL_ALL_START,
   JOIN_CAPABILITY_AND_FEATURE_SET,
   PARALLEL_ALL_END,
 } from './gateways';
-
-export {
-  defaultErrorHandler,
-} from './genericHandlers';

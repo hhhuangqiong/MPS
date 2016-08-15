@@ -4,7 +4,7 @@ import isUndefined from 'lodash/isUndefined';
 import isEmpty from 'lodash/isEmpty';
 
 import validateSchema from '../utils/validateSchema';
-import logger from '../initializer/logger';
+import logger from '../utils/logger';
 
 import {
   HttpStatusError,
@@ -15,8 +15,9 @@ import {
 } from 'common-errors';
 
 export default class CpsRequest {
-  constructor(baseUrl = '') {
+  constructor(baseUrl = '', timeout = 8000) {
     this.baseUrl = baseUrl;
+    this.timeout = timeout;
   }
 
   getUrl(uri = '') {
@@ -48,6 +49,7 @@ export default class CpsRequest {
 
       return request
         .get(url)
+        .timeout(this.timeout)
         .set('Accept', 'application/json')
         .promise()
         .catch(this.errorHandler);
@@ -65,6 +67,7 @@ export default class CpsRequest {
 
       return request
         .post(url)
+        .timeout(this.timeout)
         .send(normalizedParams)
         .set('Accept', 'application/json')
         .promise()

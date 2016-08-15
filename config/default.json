@@ -4,6 +4,9 @@
     "wlServiceDomain": "maaii.com",
     "sdkServiceDomain": "m800-api.com"
   },
+  "iam": {
+    "uri": "http://deploy.dev.maaii.com:4004"
+  },
   "mongo": {
     "uri": "mongodb://localhost:27017/maaii-provisioning-service"
   }

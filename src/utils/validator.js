@@ -6,7 +6,7 @@ import { ValidationError } from 'common-errors';
 
 import { checkArgument as check } from './checkArgument';
 
-export function validator() {
+export default function validator() {
   function joiErrorToValidationError(joiError) {
     return new ValidationError(joiError.message, joiError.type, joiError.path);
   }

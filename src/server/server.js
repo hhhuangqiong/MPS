@@ -1,6 +1,3 @@
-// In order to support async/await
-import 'babel-polyfill';
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
