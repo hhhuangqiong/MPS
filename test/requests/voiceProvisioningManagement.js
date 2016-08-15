@@ -33,7 +33,47 @@ describe('Voice Provisioning Management', () => {
       .catch(missingRequiredField('trunks'))
   ));
 
-  it('should receive an id after SIP Routing creation', () => (
+  xit('should receive an id after SIP Gateway creation', () => {
+    const number = 1;
+
+    voiceProvisioningManagement
+      .sipGatewayCreation({
+        identifier: `${identifier}.gateway.tsbc${number}`,
+        description: `Transcoding SBC #${number}`,
+        host: '192.168.35.50',
+        port: 5080,
+        manipulation_rules: [
+          {
+            description: 'NGN Header To Prefix Manipulation',
+            matcher: {
+              type: 'RegExField',
+              description: 'For all numbers',
+              field_name: 'To',
+              regular_expression: '^((:?tel:)?\\+?)([1-9]\\d+)$',
+            },
+            manipulator: {
+              type: 'OffNetCall',
+              description: 'Replace From Header With Anonymous',
+              from_address: 'anonymous',
+
+              // temporary set a fake prefix for overriding server validation
+              gateway_prefix: '+00240063',
+
+              enabled: false,
+              is_passerted_id_enabled: false,
+              is_one_card_multiple_no: false,
+            },
+          },
+        ],
+      })
+      .then(response => {
+        expect(response.body).to.exist;
+        expect(response.body.id).to.be.instanceof(String);
+      })
+      .catch(expectNotExist);
+  });
+
+  xit('should receive an id after SIP Routing creation', () => (
     voiceProvisioningManagement
       .sipRoutingProfileCreation({
         identifier: `${identifier}.profile`,
@@ -75,39 +115,4 @@ describe('Voice Provisioning Management', () => {
       })
       .catch(expectNotExist)
   ));
-
-  it('should receive an id after SIP Gateway creation', () => (
-    voiceProvisioningManagement
-      .sipGatewayCreation({
-        identifier: 'sparkleapp.maaii.com.gateway.tsbc01',
-        description: 'Transcoding SBC #1',
-        host: '192.168.35.50',
-        port: 5080,
-        manipulation_rules: [
-          {
-            description: 'NGN Header To Prefix Manipulation',
-            matcher: {
-              type: 'RegExField',
-              description: 'For all numbers',
-              field_name: 'To',
-              regular_expression: '^((:?tel:)?\\+?)([1-9]\\d+)$'
-            },
-            manipulator: {
-              type: 'OffNetCall',
-              description: 'Replace From Header With Anonymous',
-              from_address: 'anonymous',
-              gateway_prefix: '+00240063',
-              enabled: false,
-              is_passerted_id_enabled: false,
-              "is_one_card_multiple_no": false
-            }
-          }
-        ]
-      })
-      .then(response => {
-        expect(response.body).to.exist;
-        expect(response.body.id).to.be.instanceof(String);
-      })
-      .catch(expectNotExist)
-  });
 });
