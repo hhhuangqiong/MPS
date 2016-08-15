@@ -12,7 +12,7 @@ import errorMiddleware from './errorMiddleware';
 const server = express();
 
 server.set('env', process.env.NODE_ENV || 'development');
-server.set('port', process.env.PORT || 3333);
+server.set('port', process.env.PORT || 3000);
 
 server.use(morgan('common'));
 server.use(bodyParser.urlencoded({ extended: true }));
