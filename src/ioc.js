@@ -6,6 +6,8 @@ import CarrierManagement from './requests/CarrierManagement';
 import CapabilitiesManagement from './requests/CapabilitiesManagement';
 import FeatureSetManagement from './requests/FeatureSetManagement';
 import ApplicationManagement from './requests/ApplicationManagement';
+import VoiceProvisioningManagement from './requests/VoiceProvisioningManagement';
+import VerificationManagement from './requests/VerificationManagement';
 // import provisioningService from './service/provisioning';
 
 const ioc = new Bottle();
@@ -28,5 +30,7 @@ ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps:uri'
 ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps:uri')));
 ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps:uri')));
 ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps:uri')));
+ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps:uri')));
+ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps:uri')));
 
 export default ioc;
