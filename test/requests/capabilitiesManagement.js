@@ -34,18 +34,16 @@ describe('Capabilities Management', () => {
   ));
 
   // pass from routing profile
-  xit('should response correctly for Voice Capability', () => (
+  it('should response correctly for Voice Capability', () => (
     capabilitiesManagement.enableVoiceCapability({
       carrierId: 'example.com',
-      voice_service_profile: {
-        is_onnet_charging_disabled: true,
-        is_offet_charging_disabled: false,
-        /*
-         * Required: true
-         * Description: Routing profile id. It should be prepared by asking the Voice Engineer to create it using MSS CLI.
-         */
-        // routing_profile_id: value,
-      },
+      is_onnet_charging_disabled: true,
+      is_offet_charging_disabled: false,
+      /*
+       * Required: true
+       * Description: Routing profile id. It should be prepared by asking the Voice Engineer to create it using MSS CLI.
+       */
+      // routing_profile_id: value,
     })
       .then(result => expect(result.body.id).to.be.true)
       .catch(expectNotExist)
@@ -54,28 +52,24 @@ describe('Capabilities Management', () => {
   xit('should response correctly for SMS Capability', () => (
     capabilitiesManagement.enableSmsCapability({
       carrierId: 'example.com',
-      sms_profile: {
-        default_realm: 'WhiteLabel',
-        service_plan_id: 'whitelabel',
-        systemType: 'testSystem',
-        systemId: 'WhiteLabel',
-        password: '123@aaI',
-      },
+      default_realm: 'WhiteLabel',
+      service_plan_id: 'whitelabel',
+      systemType: 'testSystem',
+      systemId: 'WhiteLabel',
+      password: '123@aaI',
     })
       .then(result => expect(result.body.id).to.exist)
       .catch(expectNotExist)
   ));
 
-  xit('should response correctly for IM to SMS Capability', () => (
+  it('should response correctly for IM to SMS Capability', () => (
     capabilitiesManagement.enableImToSmsCapability({
       carrierId: 'example.com',
-      im_to_sms_profile: {
-        default_realm: 'WhiteLabel',
-        service_plan_id: 'whitelabel',
-        systemType: 'testSystem',
-        systemId: 'WhiteLabel',
-        password: '123@aaI',
-      },
+      default_realm: 'WhiteLabel',
+      service_plan_id: 'whitelabel',
+      systemType: 'testSystem',
+      systemId: 'WhiteLabel',
+      password: '123@aaI',
     })
       .then(result => expect(result.body.id).to.be.true)
       .catch(expectNotExist)
