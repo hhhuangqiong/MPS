@@ -18,9 +18,11 @@ ioc.constant('config.cps', nconf.get('cps'));
 ioc.constant('config.mongo', nconf.get('mongo'));
 
 // resources/dependencies
+/* eslint-disable global-require */
 ioc.factory('logger', () => require('./initializer/logger').default);
 ioc.factory('mongoose', () => (require('./initializer/mongoose').default(nconf.get('mongo:uri'))));
 ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf.get('mongo:uri'))));
+/* eslint-enable */
 
 // services
 // ioc.service('provisioningService', provisioningService, 'processManager');

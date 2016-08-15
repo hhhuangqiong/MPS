@@ -83,7 +83,9 @@ export default class VoiceProvisioningManagement extends CpsRequest {
             getSourceNetworkMatcherRule()
           ).required(),
           manipulation_rules: Joi.array().items(
-            getManipulationRule()
+            getManipulationRule(),
+            getRegExFieldManipulatorRule(),
+            getOffNetCallManipulatorRule()
           ),
           gateway_selection_rules: Joi.array().items(
             Joi.object().keys({

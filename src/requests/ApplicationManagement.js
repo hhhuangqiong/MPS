@@ -9,8 +9,10 @@ export default class ApplicationManagement extends CpsRequest {
 
   saveApplication({
     name = `mapp${uuid.v1()}`,
+    /* eslint-disable camelcase */
     application_key = `mapp${uuid.v1()}`,
     application_secret = uuid.v1(),
+    /* eslint-enable */
     ...restParams,
   }) {
     const uri = '/1.0/applications';

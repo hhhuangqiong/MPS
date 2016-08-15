@@ -72,10 +72,12 @@ export default class CapabilitiesManagement extends CpsRequest {
 
   enableSmsCapability({
     carrierId,
+    /* eslint-disable camelcase */
     charging_profile = 'm800_charging_profile',
+    validate_source_address = true,
+    /* eslint-enable */
     identifier = `SMS-Profile-${carrierId}`,
     name = `SMSProfile for ${carrierId}`,
-    validate_source_address = true,
     ...restParams,
   }) {
     const uri = this.uri;
@@ -125,9 +127,11 @@ export default class CapabilitiesManagement extends CpsRequest {
 
   enableImToSmsCapability({
     carrierId,
-    charging_profile = 'maaii_charging_profile',
     identifier = 'maaii_im_sms_profile',
     name = `SMSProfile for ${carrierId}`,
+    /* eslint-disable camelcase */
+    charging_profile = 'maaii_charging_profile',
+    /* eslint-enable */
     ...restParams,
   }) {
     const uri = this.uri;
@@ -177,8 +181,10 @@ export default class CapabilitiesManagement extends CpsRequest {
   enableVoiceCapability({
     carrierId,
     identifier = `SIP-Profile-${carrierId}`,
-    charging_profile = 'm800_charging_profile',
     attributes = {},
+    /* eslint-disable camelcase */
+    charging_profile = 'm800_charging_profile',
+    /* eslint-enable */
     ...restParams,
   }) {
     const uri = this.uri;

@@ -130,7 +130,9 @@ export default class CarrierManagement extends CpsRequest {
     carrierId,
     name = `Carrier Profile for ${carrierId}`,
     description = carrierId,
+    /* eslint-disable camelcase */
     default_for_nonlisted_countries = true,
+    /* eslint-enable */
     ...restParams,
   }) {
     const endpoint = '/1.0/carriers/:carrierId/users/profiles';
