@@ -15,7 +15,10 @@
     "lint": "eslint src/**/*.js",
     "test": "mocha --compilers js:babel-core/register --recursive test",
     "coverage": "nyc npm test",
-    "doc:api": "apidoc -i src/server/ -o doc/api/"
+    "doc:api": "apidoc -i src/server/ -o doc/api/",
+    "jenkins": "npm prune && npm --verbose i",
+    "jenkins:commit": "npm run jenkins && npm run build",
+    "jenkins:merge": "npm run jenkins && npm run build"
   },
   "nyc": {
     "check-coverage": true,
@@ -63,7 +66,6 @@
     "bpmn": "^0.2.2",
     "common-errors": "^0.5.7",
     "express": "^4.14.0",
-    "express-joi-validator": "^2.0.0",
     "faker": "^3.1.0",
     "joi": "^8.4.2",
     "lodash": "^4.13.1",
