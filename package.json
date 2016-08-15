@@ -17,8 +17,10 @@
     "coverage": "nyc npm test",
     "doc:api": "apidoc -i src/server/ -o doc/api/",
     "jenkins": "npm prune && npm --verbose i",
-    "jenkins:commit": "npm run jenkins && npm run build",
-    "jenkins:merge": "npm run jenkins && npm run build"
+    "prejenkins:commit" : "npm run jenkins",
+    "jenkins:commit": "npm run lint && npm run build",
+    "prejenkins:merge": "npm run jenkins",
+    "jenkins:merge": "npm run build"
   },
   "nyc": {
     "check-coverage": true,

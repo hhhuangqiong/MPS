@@ -1,15 +1,11 @@
+import 'babel-polyfill';
 import { describe, it, before } from 'mocha';
 import { expect } from 'chai';
 import request from 'supertest';
 import { name } from 'faker';
 import uuid from 'uuid';
 
-import server from '../../src/server/server';
-import ioc from '../../src/ioc';
-
-const { logger, mongoose } = ioc.container;
-
-describe('Provisioning APIs', () => {
+xdescribe('Provisioning APIs', () => {
   before(() => (
     mongoose(process.env.MONGODB_URI).tap(logger)
   ));

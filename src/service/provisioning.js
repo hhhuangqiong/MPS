@@ -61,7 +61,10 @@ export default function provisioningService(provisioningProcessor, validator) {
     companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY).required(),
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     resellerCarrierId: Joi.string().required(),
-    capabilities: Joi.array().items(Joi.string().valid(Capabilities)).unique().required(),
+    capabilities: Joi.array()
+      .items(Joi.string().valid(Capabilities))
+      .unique()
+      .required(),
     paymentMode: Joi.string().required().valid(PaymentModes),
   });
 
@@ -114,7 +117,9 @@ export default function provisioningService(provisioningProcessor, validator) {
     const offset = (page - 1) * pageSize;
 
     const filters = {};
+    /* eslint-disable no-underscore-dangle */
     if (provisioningId) filters._id = { $in: provisioningId };
+    /* eslint-disable no-underscore-dangle */
     if (companyCode) filters['profile.companyCode'] = { $in: companyCode };
     if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
     if (companyId) filters['profile.companyId'] = { $in: companyId };
@@ -148,8 +153,11 @@ export default function provisioningService(provisioningProcessor, validator) {
       country: Joi.string().optional(),
       companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY).optional(),
       serviceType: Joi.string().valid(Object.values(ServiceTypes)).optional(),
-      capabilities: Joi.array().items(Joi.string().valid(Capabilities)).unique().optional(),
-      paymentMode: Joi.string().required().valid(PaymentModes).optional(),
+      capabilities: Joi.array()
+        .items(Joi.string().valid(Capabilities))
+        .unique()
+        .optional(),
+      paymentMode: Joi.string().required().valid(PaymentModes),
     }),
   });
 

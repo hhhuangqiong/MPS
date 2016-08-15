@@ -64,8 +64,10 @@ const schema = createModel({
 if (!schema.options.toJSON) schema.options.toJSON = {};
 schema.options.toJSON.transform = (doc, ret) => {
   // remove the _id of every document before returning the result
+  /* eslint-disable no-underscore-dangle */
   ret.id = ret._id;
   delete ret._id;
+  /* eslint-disable no-underscore-dangle */
 };
 
 schema.plugin(unqiueValidator);

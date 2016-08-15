@@ -3,12 +3,7 @@ import { expect } from 'chai';
 import request from 'supertest';
 import { name } from 'faker';
 
-import server from '../../src/server/server';
-import ioc from '../../src/ioc';
-
-const { logger, mongoose } = ioc.container;
-
-describe('Preset', () => {
+xdescribe('Preset', () => {
   before(() => (
     mongoose(process.env.MONGODB_URI).tap(logger)
   ));
