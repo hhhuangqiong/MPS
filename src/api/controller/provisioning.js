@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import ioc from '../../ioc';
+import logger from '../../utils/logger';
 
-const { logger, provisioningService } = ioc.container;
+const { provisioningService } = ioc.container;
 
 export async function createProvisioning(req, res, next) {
   try {

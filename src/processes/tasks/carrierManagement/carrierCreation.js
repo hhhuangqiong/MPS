@@ -30,9 +30,9 @@ function generateCarrierId(companyCode, serviceType) {
 }
 
 function validateRerun(profile, taskResult) {
-  if (taskResult.carrierProfileId) {
-    // run successfully before, skip
-    return false;
+  if (!taskResult.carrierId) {
+    // never run successfully before
+    return true;
   }
 
   const carrierId = generateCarrierId(profile.companyCode, profile.serviceType);
@@ -40,7 +40,7 @@ function validateRerun(profile, taskResult) {
     throw new ValidationError('Company code cannot be updated', 'FIELD_IN_SERVICE', 'profile.companyCode')
   }
 
-  return true;
+  return false;
 }
 
 

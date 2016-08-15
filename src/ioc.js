@@ -3,6 +3,7 @@ import Bottle from 'bottlejs';
 import path from 'path';
 
 
+import CompanyManagement from './requests/CompanyManagement';
 import CarrierManagement from './requests/CarrierManagement';
 import CapabilitiesManagement from './requests/CapabilitiesManagement';
 import FeatureSetManagement from './requests/FeatureSetManagement';
@@ -36,5 +37,9 @@ ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cp
 ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps:uri')));
 ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps:uri')));
 ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps:uri')));
+ioc.factory('CompanyManagement', (container) => {
+  const { uri } = nconf.get('iam');
+  return new CompanyManagement({ baseUri: uri, validator: container.validator})
+});
 
 export default ioc;

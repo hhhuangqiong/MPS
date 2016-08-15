@@ -27,6 +27,8 @@ export SET_FEATURE_SET from '../tasks/setFeatureSet';
 export SAVE_APPLICATION from '../tasks/saveApplication';
 export CERTIFICATION_CREATION from '../tasks/certificationCreation';
 
+export COMPANY_CREATION from '../tasks/companyCreation';
+
 export {
   PARALLEL_ALL_START,
   JOIN_CAPABILITY_AND_FEATURE_SET,

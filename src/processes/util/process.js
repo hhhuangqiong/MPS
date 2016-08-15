@@ -1,6 +1,7 @@
 import uuid from 'uuid';
 import _ from 'lodash';
 import logger from '../../utils/logger';
+import { Error } from 'common-errors';
 
 /**
  * Helper module to integrate with processManager
@@ -44,8 +45,10 @@ export function addProcess({ processManager, processPath, processHandlers, start
           done();
         },
         defaultErrorHandler(error, done) {
-          logger('error', error.stack);
-          done();
+          logger('error caught within task ', error.stack);
+          const taskErrors = { UNKNOWN_TASK: error };
+          // set as taskErrors for tasks beyond this point
+          done({ taskErrors });
         },
         onBeginHandler(currentFlowObjectName, data, done) {
           logger(`Task ${currentFlowObjectName} begins with data`, data);
@@ -107,10 +110,10 @@ export function addProcess({ processManager, processPath, processHandlers, start
    * @throws {ValidationError}   Validation error on specific field of profile
    */
   function validateRerun(data, taskResults) {
-    _.forEach(taskResults, (value, key) => {
+    _.forEach(taskResults, (taskResult, key) => {
       const processHandler = processHandlers[key];
       if (processHandler && processHandler.validateRerun) {
-        processHandler.validateRerun(data, taskResults);
+        processHandler.validateRerun(data, taskResult);
       }
     });
   }
@@ -133,6 +136,7 @@ export function addProcess({ processManager, processPath, processHandlers, start
     process.setProperty('ownerId', ownerId);
     process.setProperty('taskResults', taskResults);
     process.triggerEvent(startEventName, data);
+
     return processId;
   }
 

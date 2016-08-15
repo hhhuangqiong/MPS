@@ -13,7 +13,17 @@ import _ from 'lodash';
  */
 export function createTask(name, task, { validateRerun, skipOnPrevErrors = true }) {
   function wrappedTask(data, done) {
-    if (validateRerun && !validateRerun()) {
+    const prevProcessResults = this.getProperty('taskResults');
+    const prevProcessResult = (prevProcessResults && prevProcessResults[name]) || {};
+
+    try {
+      if (validateRerun && !validateRerun(data, prevProcessResult)) {
+        done(data);
+        return;
+      }
+    } catch (e) {
+      data.taskErrors = data.taskErrors || {};
+      data.taskErrors[name] = e;
       done(data);
       return;
     }
