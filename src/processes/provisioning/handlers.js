@@ -18,6 +18,7 @@ export SAVE_NOTIFICATION from '../tasks/saveNotification';
 
 export SIP_GATEWAY_CREATION from '../tasks/sipGatewayCreation';
 export SIP_ROUTING_CREATION from '../tasks/sipRoutingCreation';
+export VOICE_SERVICE_PROFILE_CREATION from '../tasks/voiceServiceProfileCreation';
 
 export BOSS_PROVISION from '../tasks/bossProvision';
 
