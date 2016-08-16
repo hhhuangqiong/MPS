@@ -1,4 +1,4 @@
-import { NotFoundError } from 'common-errors';
+import { NotFoundError, NotPermittedError } from 'common-errors';
 // Disable for the unused next params,
 // which is neccessary to exist for error handling identification
 /* eslint-disable no-unused-vars */
@@ -15,8 +15,8 @@ export default function errorMiddleware(err, req, res, next) {
     return;
   }
 
-  if (err && err.name === 'NotPermittedError') {
-    res.status(422).json({
+  if (err instanceof NotPermittedError) {
+    res.status(403).json({
       error: {
         message: err.args['0'],
         code: err.name,
