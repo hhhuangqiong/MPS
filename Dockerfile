@@ -15,6 +15,9 @@ COPY . /app/
 
 WORKDIR /app
 
+# create logs folder
+RUN mkdir logs
+
 ENV NODE_ENV=production
 
 # 1. application listen port
