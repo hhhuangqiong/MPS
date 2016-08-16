@@ -5,6 +5,18 @@ import {
   TypeError,
 } from 'common-errors';
 
+export const CapabilityTypeToIds = {
+  API: 'com.maaii.carrier.capability.api',
+  IM: 'com.maaii.carrier.capability.im',
+  OffNet: 'com.maaii.carrier.capability.offnet',
+  OnNet: 'com.maaii.carrier.capability.onnet',
+  Push: 'com.maaii.carrier.capability.push',
+  ImToSms: 'com.maaii.carrier.capability.sms',
+  SMS: 'com.maaii.carrier.capability.sms',
+  TopUp: 'com.maaii.carrier.capability.topup',
+  Voice: 'com.maaii.carrier.capability.voice',
+};
+
 export default class CapabilitiesManagement extends CpsRequest {
   constructor(baseUrl = '') {
     super(baseUrl);
