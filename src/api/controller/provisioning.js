@@ -37,7 +37,7 @@ export async function updateProvisioning(req, res, next) {
   try {
     const command = _.extend({}, req.params, req.body);
     const provisioning = await provisioningService.updateProvisioning(command);
-    res.json(provisioning.toJson());
+    res.json(provisioning);
   } catch (e) {
     logger('error', 'updateProvisioning: Error caught ', e.stack);
     next(e);

@@ -1,6 +1,6 @@
 import logger from '../utils/logger';
 import Promise from 'bluebird';
-import { AlreadyInUseError } from 'common-errors';
+import { InvalidOperationError, NotFoundError } from 'common-errors';
 import Provisioning, {
   ProcessStatus,
   Capabilities,
@@ -13,6 +13,8 @@ import _ from 'lodash';
 // @todo to be verified on requirement
 const REGEX_NUMBER_LETTERS_ONLY = /[a-zA-Z0-9]+/;
 const REGEX_MONGO_OBJECT_ID = /^[0-9a-fA-F]{24}$/;
+
+const PUBLIC_PROPS = ['id', 'profile', 'status', 'taskErrors', 'createAt'];
 
 export default function provisioningService(provisioningProcessor, validator) {
   // init provisioning process
@@ -81,7 +83,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     provisioning.status = ProcessStatus.IN_PROGRESS;
     await provisioning.save();
 
-    return { provisioningId: provisioning.id, createdAt: provisioning.createdAt };
+    return _.pick(provisioning, PUBLIC_PROPS);
   }
 
   const schemaGetProvisioning = Joi.object({
@@ -137,48 +139,59 @@ export default function provisioningService(provisioningProcessor, validator) {
     });
     const pageTotal = Math.ceil(result.count / pageSize);
 
+    const items = _.map(result.items, item => _.pick(item, PUBLIC_PROPS));
     return {
       page,
       pageSize,
       pageTotal,
       total: result.count,
-      items: result.items,
+      items,
     };
   }
 
   const schemaUpdateProvisionings = Joi.object({
-    provisioningId: Joi.string().regex(REGEX_MONGO_OBJECT_ID),
+    provisioningId: Joi.string().regex(REGEX_MONGO_OBJECT_ID).required(),
     // only fields that are allowed to update after creation
     profile: Joi.object({
-      country: Joi.string().optional(),
-      companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY).optional(),
-      serviceType: Joi.string().valid(Object.values(ServiceTypes)).optional(),
+      country: Joi.string(),
+      companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY),
+      serviceType: Joi.string().valid(...Object.values(ServiceTypes)),
       capabilities: Joi.array()
         .items(Joi.string().valid(Capabilities))
-        .unique()
-        .optional(),
-      paymentMode: Joi.string().required().valid(PaymentModes),
-    }),
+        .unique(),
+      paymentMode: Joi.string().valid(PaymentModes),
+    }).required(),
   });
 
   async function updateProvisioning(command) {
-    const { provisioingId, profile } = validator.sanitize(command, schemaUpdateProvisionings);
+    const { provisioningId, profile } = validator.sanitize(command, schemaUpdateProvisionings);
 
-    const provisioning = await Provisioning.findById(provisioingId);
-    const { id: provisioningId, status, taskResults } = provisioning;
+    let provisioning = await Provisioning.findById(provisioningId).exec();
 
-    if (status !== ProcessStatus.COMPLETE ||
-      status !== ProcessStatus.ERROR) {
-      throw new AlreadyInUseError(`Cannot update provisioning when status is ${status}`, 'RetryOnErrorOrCompleteOnly');
+    if (!provisioning) {
+      // not found
+      throw new NotFoundError(`provisioning=${provisioningId}`);
     }
 
-    const processId = await run(provisioingId, profile, taskResults);
+    const { profile: existingProfile, status, taskResults } = provisioning;
 
-    return await Provisioning.findByIdAndUpdate(provisioningId, {
+    if (status !== ProcessStatus.COMPLETE && status !== ProcessStatus.ERROR) {
+      throw new InvalidOperationError(`Cannot update provisioning when status is ${status}`);
+    }
+
+    // check if difference in profile update
+    const newProfile = _.extend(existingProfile, profile);
+    const processId = await run(provisioningId, newProfile, taskResults);
+
+    // update storage if process execution success
+    logger(`Run process with processId ${processId}`);
+    provisioning = await Provisioning.findByIdAndUpdate(provisioningId, {
       status: ProcessStatus.UPDATING,
-      process: processId,
-      profile,
+      processId,
+      profile: newProfile,
     }).exec();
+
+    return _.pick(provisioning, PUBLIC_PROPS);
   }
 
   return {

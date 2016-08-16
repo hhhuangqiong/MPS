@@ -1,3 +1,4 @@
+import { NotFoundError } from 'common-errors';
 // Disable for the unused next params,
 // which is neccessary to exist for error handling identification
 /* eslint-disable no-unused-vars */
@@ -26,8 +27,20 @@ export default function errorMiddleware(err, req, res, next) {
     return;
   }
 
+  if (err instanceof NotFoundError) {
+    res.status(404).json({
+      error: {
+        message: err.message,
+        code: err.name,
+        stack: process.env.NODE_ENV === 'production' ? {} : err.stack,
+      },
+    });
+    return;
+  }
+
+
   if (err instanceof Error) {
-    res.status(400).json({
+    res.status(500).json({
       error: {
         message: err.message,
         code: err.name,

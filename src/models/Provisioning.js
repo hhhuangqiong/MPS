@@ -59,7 +59,7 @@ const schema = createModel({
 
   // A timestamp will be added when the bpmn has successfully completed its lifecycle
   finishAt: Date,
-});
+}, { versionKey: false });
 
 if (!schema.options.toJSON) schema.options.toJSON = {};
 schema.options.toJSON.transform = (doc, ret) => {
