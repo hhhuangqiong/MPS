@@ -16,7 +16,8 @@ COPY . /app/
 WORKDIR /app
 
 # create logs folder
-RUN mkdir logs
+RUN mkdir logs && \
+    chmod a+w logs
 
 ENV NODE_ENV=production
 
