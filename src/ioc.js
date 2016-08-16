@@ -12,6 +12,7 @@ import VoiceProvisioningManagement from './requests/VoiceProvisioningManagement'
 import VerificationManagement from './requests/VerificationManagement';
 import provisioningProcessor from './processes/provisioning';
 import provisioningService from './service/provisioning';
+import presetService from './service/preset';
 
 const ioc = new Bottle();
 const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '../config'));
@@ -29,8 +30,9 @@ ioc.factory('validator', () => (require('./utils/validator').default()));
 // services
 ioc.service('provisioningProcessor', provisioningProcessor, 'processManager');
 ioc.service('provisioningService', provisioningService, 'provisioningProcessor', 'validator');
+ioc.service('presetService', presetService, 'validator');
 
-// Carrier Management
+// request objects
 ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps:uri')));
 ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps:uri')));
 ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps:uri')));
@@ -39,7 +41,7 @@ ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement
 ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps:uri')));
 ioc.factory('CompanyManagement', (container) => {
   const { uri } = nconf.get('iam');
-  return new CompanyManagement({ baseUri: uri, validator: container.validator})
+  return new CompanyManagement({ baseUri: uri, validator: container.validator });
 });
 
 export default ioc;
