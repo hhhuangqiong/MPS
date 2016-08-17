@@ -10,7 +10,7 @@ const DEFAULT_SCHEMA = {
   createdAt: { type: Date, default: Date.now },
 };
 
-export default (schema = {}) => {
+export default (schema = {}, options) => {
   if (typeof schema !== 'object') {
     throw new TypeError('schema is not an object');
   }
@@ -19,5 +19,5 @@ export default (schema = {}) => {
     throw new ArgumentNullError('schema');
   }
 
-  return new mongoose.Schema(Object.assign({}, DEFAULT_SCHEMA, schema));
+  return new mongoose.Schema(Object.assign({}, DEFAULT_SCHEMA, schema), options);
 };
