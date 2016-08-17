@@ -5,6 +5,18 @@ import {
   TypeError,
 } from 'common-errors';
 
+export const CapabilityTypes = {
+  API: 'API',
+  IM: 'IM',
+  OFFNET: 'OffNet',
+  ONNET: 'OnNet',
+  PUSH: 'Push',
+  IM_TO_SMS: 'ImToSms',
+  SMS: 'SMS',
+  TOP_UP: 'TopUp',
+  VOICE: 'Voice',
+};
+
 export const CapabilityTypeToIds = {
   API: 'com.maaii.carrier.capability.api',
   IM: 'com.maaii.carrier.capability.im',
@@ -15,6 +27,12 @@ export const CapabilityTypeToIds = {
   SMS: 'com.maaii.carrier.capability.sms',
   TopUp: 'com.maaii.carrier.capability.topup',
   Voice: 'com.maaii.carrier.capability.voice',
+};
+
+export const ChargingProfiles = {
+  DEFAULT: 'm800_charge_profile',
+  M800: 'm800_charge_profile',
+  MAAII: 'maaii_charge_profile',
 };
 
 export default class CapabilitiesManagement extends CpsRequest {
@@ -85,7 +103,7 @@ export default class CapabilitiesManagement extends CpsRequest {
   enableSmsCapability({
     carrierId,
     /* eslint-disable camelcase */
-    charging_profile = 'm800_charging_profile',
+    chargingProfile = ChargingProfiles.DEFAULT,
     validate_source_address = true,
     /* eslint-enable */
     identifier = `SMS-Profile-${carrierId}`,
@@ -121,7 +139,7 @@ export default class CapabilitiesManagement extends CpsRequest {
         ...restParams,
         identifier,
         name,
-        charging_profile,
+        charging_profile: chargingProfile,
         validate_source_address,
       },
     };
@@ -142,7 +160,7 @@ export default class CapabilitiesManagement extends CpsRequest {
     identifier = 'maaii_im_sms_profile',
     name = `SMSProfile for ${carrierId}`,
     /* eslint-disable camelcase */
-    charging_profile = 'maaii_charging_profile',
+    chargingProfile = ChargingProfiles.DEFAULT,
     /* eslint-enable */
     ...restParams,
   }) {
@@ -173,7 +191,7 @@ export default class CapabilitiesManagement extends CpsRequest {
       type,
       sms_profile: {
         ...restParams,
-        charging_profile,
+        charging_profile: chargingProfile,
         identifier,
         name,
       },
@@ -195,8 +213,11 @@ export default class CapabilitiesManagement extends CpsRequest {
     identifier = `SIP-Profile-${carrierId}`,
     attributes = {},
     /* eslint-disable camelcase */
-    charging_profile = 'm800_charging_profile',
+    chargingProfile = ChargingProfiles.DEFAULT,
     /* eslint-enable */
+    sipRoutingProfileId,
+    enableOnnetCharging = false,
+    enableOffnetCharging = false,
     ...restParams,
   }) {
     const uri = this.uri;
@@ -211,7 +232,7 @@ export default class CapabilitiesManagement extends CpsRequest {
         charging_profile: Joi.string(),
         is_onnet_charging_disabled: Joi.boolean().required(),
         is_offet_charging_disabled: Joi.boolean(),
-        routing_profile_id: Joi.string(),
+        routing_profile_id: Joi.string().required(),
         attributes: Joi.object(),
       }),
     };
@@ -222,7 +243,10 @@ export default class CapabilitiesManagement extends CpsRequest {
       voice_service_profile: {
         ...restParams,
         identifier,
-        charging_profile,
+        charging_profile: chargingProfile,
+        routing_profile_id: sipRoutingProfileId,
+        is_onnet_charging_disabled: enableOnnetCharging,
+        is_offet_charging_disabled: enableOffnetCharging,
         attributes,
       },
     };

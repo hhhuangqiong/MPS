@@ -3,26 +3,25 @@ export CARRIER_CREATION from '../tasks/carrierManagement/carrierCreation';
 export USER_CARRIER_PROFILE_CREATION from '../tasks/carrierManagement/userCarrierProfileCreation';
 export CARRIER_PROFILE_CREATION from '../tasks/carrierManagement/carrierProfileCreation';
 
-export RECEIVE_PREFIX from '../tasks/receivePrefix';
-export TOPUP_CAPABILITY_ACTIVATION from '../tasks/topupCapabilityActiviation';
-
-export PUSH_CAPABILITY_ACTIVATION from '../tasks/pushCapabilityActivation';
-export ONNET_CAPABILITY_ACTIVATION from '../tasks/onnetCapabilityActivation';
-export OFFNET_CAPABILITY_ACTIVATION from '../tasks/offnetCapabilityActivation';
-export IM_CAPABILITY_ACTIVATION from '../tasks/imCapabilityActivation';
-export VOICE_CAPABILITY_ACTIVATION from '../tasks/voiceCapabilityActivation';
-export SMS_CAPABILITIY_ACTIVATION from '../tasks/smsCapabilitiyActivation';
-
-export GET_NOTIFICATION_TEMPLATE from '../tasks/getNotificationTemplate';
-export SAVE_NOTIFICATION from '../tasks/saveNotification';
-
 export SIP_GATEWAY_CREATION from '../tasks/sipGatewayCreation';
 export SIP_ROUTING_CREATION from '../tasks/sipRoutingCreation';
 export VOICE_SERVICE_PROFILE_CREATION from '../tasks/voiceServiceProfileCreation';
 
+export TOPUP_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/topupCapabilityActiviation';
+export PUSH_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/pushCapabilityActivation';
+export ONNET_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/onnetCapabilityActivation';
+export OFFNET_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/offnetCapabilityActivation';
+export IM_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/imCapabilityActivation';
+export VOICE_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/voiceCapabilityActivation';
+export SMS_CAPABILITIY_ACTIVATION from '../tasks/capabilitiesManagement/smsCapabilitiyActivation';
+export API_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/apiCapabilityActivation';
+
+export GET_NOTIFICATION_TEMPLATE from '../tasks/getNotificationTemplate';
+export SAVE_NOTIFICATION from '../tasks/saveNotification';
+
+export RECEIVE_PREFIX from '../tasks/receivePrefix';
 export BOSS_PROVISION from '../tasks/bossProvision';
 
-export API_CAPABILITY_ACTIVATION from '../tasks/apiCapabilityActivation';
 export GET_FEATURE_SET_TEMPLATE from '../tasks/getFeatureSetTemplate';
 export SET_FEATURE_SET from '../tasks/setFeatureSet';
 export SAVE_APPLICATION from '../tasks/saveApplication';

@@ -36,6 +36,7 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true 
 
     function cb(taskError, taskResult) {
       if (taskError) {
+        logger(`Task ${name} error:`, taskError);
         data.taskErrors = data.taskErrors || {};
         data.taskErrors[name] = taskError;
         done(data);

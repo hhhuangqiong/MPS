@@ -20,7 +20,7 @@ function generateCarrierId(companyCode, serviceType) {
     case ServiceTypes.SDK:
       topDomain = SDK_SERVICE_DOMAIN;
       break;
-    case ServiceTypes.LIVECONNECT:
+    case ServiceTypes.LIVE_CONNECT:
       throw new NotImplementedError('LiveConnect provisioning not implemented yet');
     default:
       throw new ArgumentError('profile.serviceType');

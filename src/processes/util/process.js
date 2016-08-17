@@ -51,7 +51,7 @@ export function addProcess({ processManager, processPath, processHandlers, start
           done({ taskErrors });
         },
         onBeginHandler(currentFlowObjectName, data, done) {
-          logger(`Task ${currentFlowObjectName} begins with data`, data);
+          logger(`Task ${currentFlowObjectName} begins`);
           done(data);
         },
         /**

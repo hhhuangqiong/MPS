@@ -13,10 +13,20 @@ export const ProcessStatus = {
 export const ServiceTypes = {
   SDK: 'SDK',
   WHITE_LABEL: 'WHITE_LABEL',
-  LIVECONNECT: 'LIVECONNECT',
+  LIVE_CONNECT: 'LIVE_CONNECT',
 };
 
-export const Capabilities = ['im', 'im.im-to-sms', 'call', 'call.onnet', 'call.offnet', 'call.maaii-in', 'wallet', 'verification'];
+export const Capabilities = {
+  IM: 'im',
+  IM_TO_SMS: 'im.im-to-sms',
+  CALL_ONNET: 'call.onnet',
+  CALL_OFFNET: 'call.offnet',
+  CALL_MAAII_IN: 'call.maaii-in',
+  WALLET: 'wallet',
+  VERIFICATION: 'verification',
+  PUSH: 'push',
+};
+
 export const PaymentModes = ['PRE_PAID', 'POST_PAID'];
 
 const ProvisioningProfileModel = {
@@ -27,7 +37,7 @@ const ProvisioningProfileModel = {
     contact: { type: String },
   },
   companyCode: { type: String, required: true, unique: true },
-  capabilities: { type: Array, required: true },
+  capabilities: { type: Array, required: true, enum: Object.values(Capabilities) },
   country: { type: String, required: true },
   resellerCarrierId: { type: String, required: true },
   serviceType: { type: String, required: true, enum: Object.values(ServiceTypes) },

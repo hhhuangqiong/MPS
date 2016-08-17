@@ -64,7 +64,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     resellerCarrierId: Joi.string().required(),
     capabilities: Joi.array()
-      .items(Joi.string().valid(Capabilities))
+      .items(Joi.string().valid(Object.values(Capabilities)))
       .unique()
       .required(),
     paymentMode: Joi.string().required().valid(PaymentModes),
@@ -160,7 +160,7 @@ export default function provisioningService(provisioningProcessor, validator) {
       companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY),
       serviceType: Joi.string().valid(...Object.values(ServiceTypes)),
       capabilities: Joi.array()
-        .items(Joi.string().valid(Capabilities))
+        .items(Joi.string().valid(Object.values(Capabilities)))
         .unique(),
       paymentMode: Joi.string().valid(PaymentModes),
     }).required(),
