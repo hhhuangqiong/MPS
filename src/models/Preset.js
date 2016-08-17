@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import unqiueValidator from 'mongoose-unique-validator';
+import timestamps from 'mongoose-timestamp';
 
-import createModel from '../utils/createModel';
 import { ServiceTypes, PaymentModes } from './Provisioning';
 
 
-const schema = createModel({
+const schema = new Schema({
   presetId: { type: String, unique: true, required: true, index: true },
   serviceType: { type: String, enum: Object.values(ServiceTypes) },
   paymentMode: { type: String, enum: Object.values(PaymentModes) },
@@ -20,6 +20,8 @@ schema.options.toJSON.transform = (doc, ret) => {
   /* eslint-disable no-underscore-dangle */
 };
 
+schema.plugin(timestamps);
 schema.plugin(unqiueValidator);
+
 
 export default mongoose.model('Preset', schema);

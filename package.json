@@ -17,7 +17,7 @@
     "coverage": "nyc npm test",
     "doc:api": "apidoc -i src/server/ -o doc/api/",
     "jenkins": "npm prune && npm --verbose i",
-    "prejenkins:commit" : "npm run jenkins",
+    "prejenkins:commit": "npm run jenkins",
     "jenkins:commit": "npm run lint && npm run build",
     "prejenkins:merge": "npm run jenkins",
     "jenkins:merge": "npm run build"
@@ -76,6 +76,7 @@
     "m800-winston": "^0.1.1",
     "method-override": "^2.3.6",
     "mongoose": "^4.5.3",
+    "mongoose-timestamp": "^0.6.0",
     "mongoose-unique-validator": "^1.0.2",
     "morgan": "^1.7.0",
     "nodemon": "^1.9.2",

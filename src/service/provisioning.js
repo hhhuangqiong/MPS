@@ -14,7 +14,7 @@ import _ from 'lodash';
 const REGEX_NUMBER_LETTERS_ONLY = /[a-zA-Z0-9]+/;
 const REGEX_MONGO_OBJECT_ID = /^[0-9a-fA-F]{24}$/;
 
-const PUBLIC_PROPS = ['id', 'profile', 'status', 'taskErrors', 'createAt'];
+const PUBLIC_PROPS = ['id', 'profile', 'status', 'taskErrors', 'createdAt', 'updatedAt'];
 
 export default function provisioningService(provisioningProcessor, validator) {
   // init provisioning process
@@ -126,10 +126,13 @@ export default function provisioningService(provisioningProcessor, validator) {
     if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
     if (companyId) filters['profile.companyId'] = { $in: companyId };
 
+    const selection = _.transform(PUBLIC_PROPS, (result, prop) => {
+      result[prop] = 1;
+    }, {});
     const query = Provisioning.find(filters)
       .skip(offset)
       .limit(pageSize)
-      .select({ taskResults: 1, status: 1, profile: 1 })
+      .select(selection)
       .sort({ createdAt: -1 });
 
     // count() ignores skip() and limits() by default
@@ -139,7 +142,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     });
     const pageTotal = Math.ceil(result.count / pageSize);
 
-    const items = _.map(result.items, item => _.pick(item, PUBLIC_PROPS));
+    const items = result.items;
     return {
       page,
       pageSize,

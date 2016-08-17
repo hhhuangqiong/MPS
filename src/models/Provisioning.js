@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import unqiueValidator from 'mongoose-unique-validator';
-
-import createModel from '../utils/createModel';
+import timestamps from 'mongoose-timestamp';
 
 export const ProcessStatus = {
   CREATED: 'CREATED',
@@ -39,7 +38,7 @@ const ProvisioningProfileModel = {
   carrierId: { type: String },
 };
 
-const schema = createModel({
+const schema = new Schema({
 
   profile: ProvisioningProfileModel,
 
@@ -70,6 +69,7 @@ schema.options.toJSON.transform = (doc, ret) => {
   /* eslint-disable no-underscore-dangle */
 };
 
+schema.plugin(timestamps);
 schema.plugin(unqiueValidator);
 
 export default mongoose.model('Provisioning', schema);
