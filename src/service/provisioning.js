@@ -115,6 +115,7 @@ export default function provisioningService(provisioningProcessor, validator) {
       companyCode,
       companyId,
       provisioningId,
+      carrierId,
     } = validator.sanitize(command, schemaGetProvisionings);
     const offset = (page - 1) * pageSize;
 
@@ -125,6 +126,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     if (companyCode) filters['profile.companyCode'] = { $in: companyCode };
     if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
     if (companyId) filters['profile.companyId'] = { $in: companyId };
+    if (carrierId) filters['profile.carrierId'] = { $in: carrierId };
 
     const selection = _.transform(PUBLIC_PROPS, (result, prop) => {
       result[prop] = 1;
