@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import CpsRequest from './CpsRequest';
 
+
 import {
   TypeError,
 } from 'common-errors';
@@ -27,12 +28,6 @@ export const CapabilityTypeToIds = {
   SMS: 'com.maaii.carrier.capability.sms',
   TopUp: 'com.maaii.carrier.capability.topup',
   Voice: 'com.maaii.carrier.capability.voice',
-};
-
-export const ChargingProfiles = {
-  DEFAULT: 'm800_charge_profile',
-  M800: 'm800_charge_profile',
-  MAAII: 'maaii_charge_profile',
 };
 
 export default class CapabilitiesManagement extends CpsRequest {
@@ -103,7 +98,7 @@ export default class CapabilitiesManagement extends CpsRequest {
   enableSmsCapability({
     carrierId,
     /* eslint-disable camelcase */
-    chargingProfile = ChargingProfiles.DEFAULT,
+    chargingProfile,
     validate_source_address = true,
     /* eslint-enable */
     identifier = `SMS-Profile-${carrierId}`,
@@ -160,7 +155,7 @@ export default class CapabilitiesManagement extends CpsRequest {
     identifier = 'maaii_im_sms_profile',
     name = `SMSProfile for ${carrierId}`,
     /* eslint-disable camelcase */
-    chargingProfile = ChargingProfiles.DEFAULT,
+    chargingProfile,
     /* eslint-enable */
     ...restParams,
   }) {
@@ -213,7 +208,7 @@ export default class CapabilitiesManagement extends CpsRequest {
     identifier = `SIP-Profile-${carrierId}`,
     attributes = {},
     /* eslint-disable camelcase */
-    chargingProfile = ChargingProfiles.DEFAULT,
+    chargingProfile,
     /* eslint-enable */
     sipRoutingProfileId,
     enableOnnetCharging = false,

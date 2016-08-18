@@ -5,8 +5,7 @@ import { Capabilities } from '../../../models/Provisioning';
 import ioc from '../../../ioc';
 import { createTask } from '../../util/task';
 
-
-const CapabilitiesManagement = ioc.container.CapabilitiesManagement;
+const { cpsConfig, CapabilitiesManagement } = ioc.container;
 
 function rerunValidation(profile, taskResult) {
   if (taskResult.smsProfileId) {
@@ -35,7 +34,9 @@ function run(profile, cb) {
     return;
   }
 
-  CapabilitiesManagement.enableSmsCapability({ carrierId }).then(res => {
+  // should be specified in form for Phase 2. defaults to company level now.
+  const chargingProfile = cpsConfig.chargeProfile.company;
+  CapabilitiesManagement.enableSmsCapability({ carrierId, chargingProfile }).then(res => {
     const { id: smsProfileId } = res.body;
 
     if (!smsProfileId) {

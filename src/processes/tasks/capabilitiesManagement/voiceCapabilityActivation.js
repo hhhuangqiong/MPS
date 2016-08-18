@@ -5,7 +5,7 @@ import { Capabilities } from '../../../models/Provisioning';
 import ioc from '../../../ioc';
 import { createTask } from '../../util/task';
 
-const CapabilitiesManagement = ioc.container.CapabilitiesManagement;
+const { cpsConfig, CapabilitiesManagement } = ioc.container;
 
 function rerunValidation(data, taskResult) {
   if (taskResult.smsProfileUd) {
@@ -43,11 +43,14 @@ function run(data, cb) {
   const enableOnnetCharging = _.includes(capabilities, Capabilities.CALL_ONNET);
   const enableOffnetCharging = _.includes(capabilities, Capabilities.CALL_OFFNET);
 
+  // should be specified in form for Phase 2. defaults to company level now.
+  const chargingProfile = cpsConfig.chargeProfile.company;
   CapabilitiesManagement.enableVoiceCapability({
     carrierId,
     sipRoutingProfileId,
     enableOnnetCharging,
     enableOffnetCharging,
+    chargingProfile,
   }).then(res => {
     const { id: voiceProfileId } = res.body;
 
