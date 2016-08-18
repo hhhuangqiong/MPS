@@ -6,7 +6,7 @@ import { ServiceTypes } from '../../../models/Provisioning';
 
 
 const CarrierManagement = ioc.container.CarrierManagement;
-const cpsConfig = ioc.container.config.cps;
+const cpsConfig = ioc.container.cpsConfig;
 
 const WLP_SERVICE_DOMAIN = cpsConfig.wlServiceDomain;
 const SDK_SERVICE_DOMAIN = cpsConfig.sdkServiceDomain;

@@ -14,11 +14,13 @@ import provisioningProcessor from './processes/provisioning';
 import provisioningService from './service/provisioning';
 import presetService from './service/preset';
 
+import { parseObjectArrays } from './utils/nconf';
+
 const ioc = new Bottle();
 const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '../config'));
 
 // configuations
-ioc.constant('config', nconf.get());
+ioc.constant('cpsConfig', parseObjectArrays(nconf.get('cps')));
 
 // resources/dependencies
 /* eslint-disable global-require */

@@ -116,7 +116,7 @@ export default class VoiceProvisioningManagement extends CpsRequest {
     timeout = 0,
     ...restParams,
   }) {
-    const uri = '/1.0/sip/routing_profiles';
+    const uri = '/1.0/sip/gateways';
 
     const rules = {
       identifier: Joi.string().required(),

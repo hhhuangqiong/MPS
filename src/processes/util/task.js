@@ -1,4 +1,4 @@
-import logger from '../../utils/logger'
+import logger from '../../utils/logger';
 import _ from 'lodash';
 
 /**
@@ -35,21 +35,25 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true 
     }
 
     function cb(taskError, taskResult) {
-      if (taskError) {
+      if (!_.isEmpty(taskError)) {
         logger(`Task ${name} error:`, taskError);
         data.taskErrors = data.taskErrors || {};
         data.taskErrors[name] = taskError;
-        done(data);
-        return;
       }
 
-      // assign output to data
-      data.taskResults = data.taskResults || {};
-      data.taskResults[name] = taskResult;
+      if (!_.isEmpty(taskResult)) {
+        // assign output to data
+        data.taskResults = data.taskResults || {};
+        data.taskResults[name] = taskResult;
+      }
       done(data);
     }
 
-    task(data, cb);
+    if (task.length === 3) {
+      task(data, prevProcessResult, cb);
+    } else {
+      task(data, cb);
+    }
   }
   /**
    * Function to validate whether the profile is valid for task rerun.
