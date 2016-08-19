@@ -22,9 +22,22 @@ export const Capabilities = {
   CALL_ONNET: 'call.onnet',
   CALL_OFFNET: 'call.offnet',
   CALL_MAAII_IN: 'call.maaii-in',
-  WALLET: 'wallet',
-  VERIFICATION: 'verification',
   PUSH: 'push',
+  VERIFICATION_MO: 'verification.mo',
+  VERIFICATION_MT: 'verification.mt',
+  VERIFICATION_SMS: 'verification.sms',
+  VERIFICATION_IVR: 'verification.ivr',
+  VSF: 'vsf',
+  PLATFORM_ANDROID: 'platform.android',
+  PLATFORM_IOS: 'platform.ios',
+  PLATFORM_WEB: 'platform.web',
+};
+
+export const ChargeWallets = {
+  WALLET_NONE: 'WALLET_NONE',
+  WALLET_END_USER: 'WALLET_END_USER',
+  WALLET_COMPANY: 'WALLET_COMPANY',
+  WALLET_OCS_INTEGRATION: 'WALLET_OCS_INTEGRATION',
 };
 
 export const PaymentModes = ['PRE_PAID', 'POST_PAID'];
