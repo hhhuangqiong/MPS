@@ -19,6 +19,10 @@ export default function activationByType({ name: taskName, profileCapability, re
   }
 
   function needActivation(capabilities) {
+    if (!_.isArray(profileCapability)) {
+      profileCapability = [profileCapability];
+    }
+
     return _.intersection(capabilities, profileCapability).length > 0;
   }
 

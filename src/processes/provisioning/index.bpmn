@@ -29,10 +29,9 @@
     <bpmn:sequenceFlow id="SequenceFlow_1m50e06" sourceRef="api_capability_activation" targetRef="join_capability_and_feature_set" />
     <bpmn:parallelGateway id="join_capability_and_feature_set" name="JOIN_CAPABILITY_AND_FEATURE_SET">
       <bpmn:incoming>SequenceFlow_1m50e06</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_0jn4dsx</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0cwzmcm</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1721ibi</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0jn4dsx" sourceRef="set_feature_set" targetRef="join_capability_and_feature_set" />
     <bpmn:sequenceFlow id="SequenceFlow_1721ibi" sourceRef="join_capability_and_feature_set" targetRef="save_application" />
     <bpmn:sequenceFlow id="SequenceFlow_0tjxu6r" sourceRef="save_application" targetRef="certification_on_creation" />
     <bpmn:sequenceFlow id="SequenceFlow_00aimey" sourceRef="certification_on_creation" targetRef="parallel_all_end" />
@@ -92,13 +91,9 @@
       <bpmn:incoming>SequenceFlow_1x6rg4e</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1m50e06</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="get_feature_set_template" name="GET_FEATURE_SET_TEMPLATE">
+    <bpmn:serviceTask id="get_feature_set_template" name="FEATURE_SET_CREATION">
       <bpmn:incoming>SequenceFlow_1ljxits</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0cwzmcm</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:serviceTask id="set_feature_set" name="SET_FEATURE_SET">
-      <bpmn:incoming>SequenceFlow_0cwzmcm</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0jn4dsx</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="get_notification_template" name="GET_NOTIFICATION_TEMPLATE">
       <bpmn:incoming>SequenceFlow_0mbuh53</bpmn:incoming>
@@ -124,7 +119,6 @@
       <bpmn:incoming>SequenceFlow_0tjxu6r</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_00aimey</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_0cwzmcm" sourceRef="get_feature_set_template" targetRef="set_feature_set" />
     <bpmn:sequenceFlow id="SequenceFlow_1ljxits" sourceRef="parallel_all_start" targetRef="get_feature_set_template" />
     <bpmn:sequenceFlow id="SequenceFlow_0o58wji" sourceRef="get_notification_template" targetRef="save_notification" />
     <bpmn:sequenceFlow id="SequenceFlow_1pabbir" sourceRef="sip_gateway_creation" targetRef="sip_routing_creation" />
@@ -174,6 +168,7 @@
     </bpmn:task>
     <bpmn:sequenceFlow id="SequenceFlow_1j222g1" sourceRef="parallel_all_start" targetRef="Task_0rj6o3w" />
     <bpmn:sequenceFlow id="SequenceFlow_1cvymi9" sourceRef="Task_0rj6o3w" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_0cwzmcm" sourceRef="get_feature_set_template" targetRef="join_capability_and_feature_set" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="mps">
@@ -251,13 +246,6 @@
           <dc:Bounds x="1490.0462863293865" y="184.39935414424116" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0jn4dsx_di" bpmnElement="SequenceFlow_0jn4dsx">
-        <di:waypoint xsi:type="dc:Point" x="1405" y="160" />
-        <di:waypoint xsi:type="dc:Point" x="1511" y="160" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1441" y="99" width="90" height="20" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1721ibi_di" bpmnElement="SequenceFlow_1721ibi">
         <di:waypoint xsi:type="dc:Point" x="1561" y="160" />
         <di:waypoint xsi:type="dc:Point" x="1675" y="160" />
@@ -366,9 +354,6 @@
       <bpmndi:BPMNShape id="ServiceTask_0c6p5rm_di" bpmnElement="get_feature_set_template">
         <dc:Bounds x="1107" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_02v10en_di" bpmnElement="set_feature_set">
-        <dc:Bounds x="1305" y="120" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_130a2zp_di" bpmnElement="get_notification_template">
         <dc:Bounds x="1107" y="234" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -387,13 +372,6 @@
       <bpmndi:BPMNShape id="ServiceTask_0z84fm6_di" bpmnElement="certification_on_creation">
         <dc:Bounds x="1862" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0cwzmcm_di" bpmnElement="SequenceFlow_0cwzmcm">
-        <di:waypoint xsi:type="dc:Point" x="1207" y="160" />
-        <di:waypoint xsi:type="dc:Point" x="1305" y="160" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1211" y="135" width="90" height="20" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1ljxits_di" bpmnElement="SequenceFlow_1ljxits">
         <di:waypoint xsi:type="dc:Point" x="862" y="160" />
         <di:waypoint xsi:type="dc:Point" x="1107" y="160" />
@@ -577,6 +555,13 @@
         <di:waypoint xsi:type="dc:Point" x="2089" y="137" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1602.994623655914" y="-878" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0cwzmcm_di" bpmnElement="SequenceFlow_0cwzmcm">
+        <di:waypoint xsi:type="dc:Point" x="1207" y="160" />
+        <di:waypoint xsi:type="dc:Point" x="1511" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1314" y="135" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
