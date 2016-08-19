@@ -96,6 +96,7 @@ export default function provisioningService(provisioningProcessor, validator) {
   }
 
   const schemaGetProvisionings = Joi.object({
+    carrierId: Joi.array().items(Joi.string()).optional(),
     provisioningId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
     serviceType: Joi.array().items(Joi.string().valid(Object.values(ServiceTypes))).optional(),
     companyCode: Joi.array().items(Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY)).optional(),
