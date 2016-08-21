@@ -16,7 +16,8 @@ export SMS_CAPABILITIY_ACTIVATION from '../tasks/capabilitiesManagement/smsCapab
 export API_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/apiCapabilityActivation';
 export IM_TO_SMS_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/imToSmsCapabilityActivation';
 
-export SAVE_NOTIFICATION from '../tasks/saveNotification';
+
+export NOTIFICATION_CREATION from '../tasks/notificationCreation';
 
 export RECEIVE_PREFIX from '../tasks/receivePrefix';
 export BOSS_PROVISION from '../tasks/bossProvision';

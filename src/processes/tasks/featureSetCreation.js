@@ -41,6 +41,8 @@ function run(data, taskResult, cb) {
     return;
   }
 
+  let featureSet;
+
   // get feature set template by resller carrier id, i.e. use resellerCarrierId
   // as group
   FeatureSetManagement.getFeatureSetTemplate(resellerCarrierId)
@@ -51,7 +53,7 @@ function run(data, taskResult, cb) {
       }
 
       // get identifiers from the feature set templates;
-      const featureSet = generateFeatureSetFromTemplate(carrierId, template);
+      featureSet = generateFeatureSetFromTemplate(carrierId, template);
 
       // create feature set with template
       return FeatureSetManagement.createFeatureSet(featureSet);
@@ -63,9 +65,10 @@ function run(data, taskResult, cb) {
         throw new ReferenceError('Unexpected resposne from CPS: key attr \'id\' is missing');
       }
 
-      cb(null, { featureSetId });
+      const featureSetIdentifier = featureSet.identifier;
+      cb(null, { featureSetId, featureSetIdentifier });
     })
     .catch(cb);
 }
 
-export default createTask('CREATE_FEATURE_SET', run, { validateRerun });
+export default createTask('FEATURE_SET_CREATION', run, { validateRerun });

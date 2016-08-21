@@ -3,65 +3,142 @@
 // - get the created application id
 //
 
-
+import uuid from 'uuid';
 import _ from 'lodash';
-import { ReferenceError, ArgumentNullError } from 'common-errors';
+import { NotImplementedError, ArgumentNullError } from 'common-errors';
 
-import { Capabilities } from '../../../models/Provisioning';
-import ioc from '../../../ioc';
-import { createTask } from '../../util/task';
+import ioc from '../../ioc';
+import { createTask } from '../util/task';
 
-const { cpsConfig, CapabilitiesManagement } = ioc.container;
+import { ServiceTypes, Capabilities } from '../../models/Provisioning';
+
+const { cpsConfig, ApplicationManagement } = ioc.container;
 
 function rerunValidation(data, taskResult) {
-  if (taskResult.smsProfileUd) {
-    // already enabled, skip
+  if (taskResult.applicationId) {
+    // already complete, skip
     return false;
   }
 
   return true;
 }
 
-// from definition, voice should be enabled on either ONNET/OFFNET/MAAIN_IN is
-// enabled in provisioning profile
-function needActivation(capabilities) {
-  const any = [
-    Capabilities.CALL_ONNET,
-    Capabilities.CALL_OFFNET,
-    Capabilities.CALL_MAAII_IN,
-  ];
-  return _.intersection(capabilities, any).length > 0;
+function generateApplicationId(serviceType, companyCode) {
+  switch (serviceType) {
+    case ServiceTypes.SDK:
+      return `com.${cpsConfig.sdkServiceDomain}.${companyCode}`;
+    case ServiceTypes.WHITE_LABEL:
+      return `com.${cpsConfig.wlServiceDomain}.${companyCode}`;
+    default:
+      throw new NotImplementedError(`Service type ${serviceType} provisioning is not supported yet`);
+  }
 }
 
-function run(data, cb) {
-  const { carrierId, capabilities, sipRoutingProfileId } = data;
+function generateApplicationKey() {
+  return `mapp${uuid.v1()}`;
+}
 
-  if (!sipRoutingProfileId) {
-    cb(new ArgumentNullError('sipRoutingProfileId'));
-    return;
+function generateApplicationSecret() {
+  return uuid.v1();
+}
+
+const CapabilityPlatforms = [
+  Capabilities.PLATFORM_ANDROID,
+  Capabilities.PLATFORM_IOS,
+  Capabilities.PLATFORM_WEB,
+];
+
+function generatePlatformIdentifier(platform) {
+  return `com.maaii.${platform}`;
+}
+
+function createApplication(platform, { applicationIdentifier, serviceType, featureSetIdentifier, developerId }) {
+  const platformIdentifier = generatePlatformIdentifier(platform);
+
+  if (!featureSetIdentifier) {
+    return Promise.reject(new ArgumentNullError('featureSetIdentifier'));
   }
 
-  const enableOnnetCharging = _.includes(capabilities, Capabilities.CALL_ONNET);
-  const enableOffnetCharging = _.includes(capabilities, Capabilities.CALL_OFFNET);
+  const firstApplicationVersion = {
+    version_numbers: {
+      version_major: 1,
+      version_minor: 0,
+      version_patch: 0,
+    },
+    version_status: 'UN_RELEASED',
+  };
 
-  // should be specified in form for Phase 2. defaults to company level now.
-  const chargingProfile = cpsConfig.chargeProfile.company;
-  CapabilitiesManagement.enableVoiceCapability({
-    carrierId,
-    sipRoutingProfileId,
-    enableOnnetCharging,
-    enableOffnetCharging,
-    chargingProfile,
-  }).then(res => {
-    const { id: voiceProfileId } = res.body;
+  if (serviceType === ServiceTypes.WHITE_LABEL) {
+    firstApplicationVersion.feature_set_identifier = featureSetIdentifier;
+  }
 
-    if (!voiceProfileId) {
-      throw new ReferenceError('Unexpected response from CPS sms activation: id missing');
+  const applicationKey = generateApplicationKey();
+  const applicationSecret = generateApplicationSecret();
+
+  const params = {
+    identifier: applicationIdentifier,
+    name: applicationIdentifier,
+    application_versions: [firstApplicationVersion],
+    platform: platformIdentifier,
+    developer: developerId,
+    status: 'ACTIVE',
+    application_key: applicationKey,
+    application_secret: applicationSecret,
+    // @todo: should be optional and not required. workaround for backend
+    // validation check atm
+    bundle_id: 'bundle_id',
+  };
+
+  // make request to CPS to create
+  return ApplicationManagement.saveApplication(params)
+    .then((res) => {
+      const applicationId = res.body.id;
+
+      if (!applicationId) {
+        throw new ReferenceError(`Unexpected response format from CPS: ${res.body}`);
+      }
+
+      return {
+        applicationId,
+        applicationKey,
+        applicationSecret,
+      };
+    });
+}
+
+
+function run(data, taskResult, cb) {
+  const { capabilities, serviceType, companyCode } = data;
+
+  const applications = {};
+  const platforms = _.intersection(CapabilityPlatforms, capabilities);
+  let pending = Promise.resolve();
+
+  const applicationIdentifier = generateApplicationId(serviceType, companyCode);
+  data.applicationIdentifier = applicationIdentifier;
+
+  // create application for each platform, sequentially
+  _.forEach(platforms, platform => {
+    // skip completed platforms (during rerun)
+    if (_.includes(_.keys(taskResult.applications), platform)) {
+      return;
     }
 
-    cb(null, { voiceProfileId });
+    pending = pending.then(() => createApplication(platform, data))
+      .then((result) => {
+        // mark successful results
+        applications[platform] = result;
+      });
+  });
+
+  pending.then(() => {
+    // all platforms successfully created
+    cb(null, { applications, applicationIdentifier });
   })
-  .catch(cb);
+  .catch(err => {
+    // return error with succeed created applications
+    cb(err, { applications });
+  });
 }
 
 export default createTask('SAVE_APPLICATION', run, { rerunValidation });

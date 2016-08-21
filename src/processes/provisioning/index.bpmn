@@ -33,14 +33,13 @@
       <bpmn:outgoing>SequenceFlow_1721ibi</bpmn:outgoing>
     </bpmn:parallelGateway>
     <bpmn:sequenceFlow id="SequenceFlow_1721ibi" sourceRef="join_capability_and_feature_set" targetRef="save_application" />
-    <bpmn:sequenceFlow id="SequenceFlow_0tjxu6r" sourceRef="save_application" targetRef="certification_on_creation" />
-    <bpmn:sequenceFlow id="SequenceFlow_00aimey" sourceRef="certification_on_creation" targetRef="parallel_all_end" />
+    <bpmn:sequenceFlow id="SequenceFlow_0tjxu6r" sourceRef="save_application" targetRef="certification_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_00aimey" sourceRef="certification_creation" targetRef="parallel_all_end" />
     <bpmn:parallelGateway id="parallel_all_end" name="PARALLEL_ALL_END">
       <bpmn:incoming>SequenceFlow_00aimey</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1vbt40r</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0qzgyeb</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_15v9qi7</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_1r0cua1</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1tjsc86</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1je10c2</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1dnj8si</bpmn:incoming>
@@ -48,6 +47,7 @@
       <bpmn:incoming>SequenceFlow_0hw1dbd</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0z19slt</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1cvymi9</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0o58wji</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0wf0dct</bpmn:outgoing>
     </bpmn:parallelGateway>
     <bpmn:endEvent id="provisioning_end" name="PROVISIONING_END">
@@ -56,7 +56,6 @@
     <bpmn:sequenceFlow id="SequenceFlow_1vbt40r" sourceRef="im_capability_activation" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_0qzgyeb" sourceRef="voice_capability_activation" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_15v9qi7" sourceRef="carrier_profile_creation" targetRef="parallel_all_end" />
-    <bpmn:sequenceFlow id="SequenceFlow_1r0cua1" sourceRef="save_notification" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_1tjsc86" sourceRef="user_carrier_profile_creation" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_1je10c2" sourceRef="ServiceTask_0x58ekf" targetRef="parallel_all_end" />
     <bpmn:serviceTask id="carrier_creation" name="CARRIER_CREATION">
@@ -95,7 +94,7 @@
       <bpmn:incoming>SequenceFlow_1ljxits</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0cwzmcm</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="get_notification_template" name="GET_NOTIFICATION_TEMPLATE">
+    <bpmn:serviceTask id="get_notification_template" name="NOTIFICATION_CREATION">
       <bpmn:incoming>SequenceFlow_0mbuh53</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0o58wji</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -107,20 +106,16 @@
       <bpmn:incoming>SequenceFlow_11jpmtt</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15v9qi7</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="save_notification" name="SAVE_NOTIFICATION">
-      <bpmn:incoming>SequenceFlow_0o58wji</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1r0cua1</bpmn:outgoing>
-    </bpmn:serviceTask>
     <bpmn:serviceTask id="save_application" name="SAVE_APPLICATION">
       <bpmn:incoming>SequenceFlow_1721ibi</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0tjxu6r</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="certification_on_creation" name="CERTIFICATION_CREATION">
+    <bpmn:serviceTask id="certification_creation" name="CERTIFICATION_CREATION">
       <bpmn:incoming>SequenceFlow_0tjxu6r</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_00aimey</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_1ljxits" sourceRef="parallel_all_start" targetRef="get_feature_set_template" />
-    <bpmn:sequenceFlow id="SequenceFlow_0o58wji" sourceRef="get_notification_template" targetRef="save_notification" />
+    <bpmn:sequenceFlow id="SequenceFlow_0o58wji" sourceRef="get_notification_template" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_1pabbir" sourceRef="sip_gateway_creation" targetRef="sip_routing_creation" />
     <bpmn:serviceTask id="boss_provision" name="BOSS_PROVISION">
       <bpmn:incoming>SequenceFlow_07a2gl5</bpmn:incoming>
@@ -303,14 +298,6 @@
           <dc:Bounds x="1604" y="448" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1r0cua1_di" bpmnElement="SequenceFlow_1r0cua1">
-        <di:waypoint xsi:type="dc:Point" x="1405" y="274" />
-        <di:waypoint xsi:type="dc:Point" x="2091" y="274" />
-        <di:waypoint xsi:type="dc:Point" x="2091" y="185" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1699" y="219" width="90" height="20" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1tjsc86_di" bpmnElement="SequenceFlow_1tjsc86">
         <di:waypoint xsi:type="dc:Point" x="1207" y="505" />
         <di:waypoint xsi:type="dc:Point" x="2091" y="505" />
@@ -363,13 +350,10 @@
       <bpmndi:BPMNShape id="ServiceTask_0o7p6jf_di" bpmnElement="carrier_profile_creation">
         <dc:Bounds x="1107" y="579" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_046sqda_di" bpmnElement="save_notification">
-        <dc:Bounds x="1305" y="234" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_09ws78d_di" bpmnElement="save_application">
         <dc:Bounds x="1675" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0z84fm6_di" bpmnElement="certification_on_creation">
+      <bpmndi:BPMNShape id="ServiceTask_0z84fm6_di" bpmnElement="certification_creation">
         <dc:Bounds x="1862" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1ljxits_di" bpmnElement="SequenceFlow_1ljxits">
@@ -381,9 +365,10 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0o58wji_di" bpmnElement="SequenceFlow_0o58wji">
         <di:waypoint xsi:type="dc:Point" x="1207" y="274" />
-        <di:waypoint xsi:type="dc:Point" x="1305" y="274" />
+        <di:waypoint xsi:type="dc:Point" x="2091" y="274" />
+        <di:waypoint xsi:type="dc:Point" x="2091" y="185" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1211" y="249" width="90" height="20" />
+          <dc:Bounds x="1609.7613021927052" y="308.5110768712645" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1pabbir_di" bpmnElement="SequenceFlow_1pabbir">

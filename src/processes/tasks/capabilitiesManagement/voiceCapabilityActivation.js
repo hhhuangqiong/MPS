@@ -36,7 +36,7 @@ function run(data, cb) {
   }
 
   if (!needActivation(capabilities)) {
-    cb(null, {});
+    cb(null, { done: false });
     return;
   }
 

@@ -1,5 +1,6 @@
 import logger from '../../utils/logger';
 import _ from 'lodash';
+import { Error } from 'common-errors';
 
 /**
  * Util method to create a task with process rerun validation, and automatic skip
@@ -11,7 +12,7 @@ import _ from 'lodash';
  * @param {validateRerun} opts.validateRerun
  * @param {Booleans} opts.skipOnPrevErrors
  */
-export function createTask(name, task, { validateRerun, skipOnPrevErrors = true }) {
+export function createTask(name, task, { validateRerun, skipOnPrevErrors = true, timeout = 5000 }) {
   function wrappedTask(data, done) {
     const prevProcessResults = this.getProperty('taskResults');
     const prevProcessResult = (prevProcessResults && prevProcessResults[name]) || {};
@@ -34,9 +35,10 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true 
       return;
     }
 
+    let timeoutHandle;
     function cb(taskError, taskResult) {
-      if (!_.isEmpty(taskError)) {
-        logger(`Task ${name} error:`, taskError);
+      if (taskError) {
+        logger(`Task ${name} error:`, taskError.stack);
         data.taskErrors = data.taskErrors || {};
         data.taskErrors[name] = taskError;
       }
@@ -46,7 +48,15 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true 
         data.taskResults = data.taskResults || {};
         data.taskResults[name] = taskResult;
       }
+
+      if (timeoutHandle) clearTimeout(timeoutHandle);
       done(data);
+    }
+
+    if (timeout > 0) {
+      timeoutHandle = setTimeout(() => {
+        cb(new Error(`Task ${name} timed out after ${timeout}ms.`));
+      }, timeout);
     }
 
     if (task.length === 3) {

@@ -87,23 +87,26 @@ export default class CpsRequest {
       throw parsedError;
     }
 
-    const responseError = JSON.parse(error.res.text).error;
+    try {
+      const responseError = JSON.parse(error.res.text).error;
+      let parsedError;
 
-    let parsedError;
+      switch (responseError.code) {
+        case 21000:
+          parsedError = new NotFoundError(responseError.message);
+          break;
 
-    switch (responseError.code) {
-      case 21000:
-        parsedError = new NotFoundError(responseError.message);
-        break;
+        default:
+          parsedError = new NotImplementedError(responseError.message);
+      }
 
-      default:
-        parsedError = new NotImplementedError(responseError.message);
+      parsedError.code = responseError.code;
+      parsedError.status = responseError.status;
+
+      throw parsedError;
+    } catch (e) {
+      throw new ReferenceError(`Unexpected response from CPS: ${error.status} ${error.res.text}`, e);
     }
-
-    parsedError.code = responseError.code;
-    parsedError.status = responseError.status;
-
-    throw parsedError;
   }
 
   validationErrorHandler(error) {
