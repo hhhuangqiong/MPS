@@ -62,6 +62,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     country: Joi.string().required(),
     companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY).required(),
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
+    resellerCompanyId: Joi.string().required().regex(REGEX_MONGO_OBJECT_ID),
     resellerCarrierId: Joi.string().required(),
     capabilities: Joi.array()
       .items(Joi.string().valid(Object.values(Capabilities)))
@@ -78,7 +79,6 @@ export default function provisioningService(provisioningProcessor, validator) {
     });
 
     const processId = await run(provisioning.id, profile);
-
     provisioning.processId = processId;
     provisioning.status = ProcessStatus.IN_PROGRESS;
     await provisioning.save();
@@ -173,7 +173,6 @@ export default function provisioningService(provisioningProcessor, validator) {
     const { provisioningId, profile } = validator.sanitize(command, schemaUpdateProvisionings);
 
     let provisioning = await Provisioning.findById(provisioningId).exec();
-
     if (!provisioning) {
       // not found
       throw new NotFoundError(`provisioning=${provisioningId}`);

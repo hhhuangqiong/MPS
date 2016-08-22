@@ -13,6 +13,7 @@ const contactSchema = Joi.object({
 });
 
 const schema = Joi.object({
+  parent: Joi.string().required(),
   country: Joi.string().optional(),
   reseller: Joi.boolean().default(false),
   name: Joi.string().required(),

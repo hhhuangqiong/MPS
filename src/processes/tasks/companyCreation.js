@@ -2,7 +2,7 @@ import ioc from '../../ioc';
 import logger from '../../utils/logger';
 import { createTask } from '../util/task';
 import _ from 'lodash';
-import { ReferenceError } from 'common-errors';
+import { ReferenceError, NotImplementedError } from 'common-errors';
 
 const CompanyManagement = ioc.container.CompanyManagement;
 
@@ -17,9 +17,14 @@ function validateRerun(profile, taskResult) {
 
 
 function run(data, cb) {
-  const { companyInfo, country, isReseller } = data;
+  const { companyInfo, country, isReseller, resellerCompanyId } = data;
 
-  const params = _.extend({ country, reseller: isReseller }, companyInfo);
+  if (isReseller) {
+    cb(new NotImplementedError('Provisioning reseller company is not supported yet'));
+    return;
+  }
+
+  const params = _.extend({ country, reseller: isReseller, parent: resellerCompanyId }, companyInfo);
 
   logger('debug', 'IAM create Company request sent');
   CompanyManagement.createCompany(params)

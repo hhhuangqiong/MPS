@@ -52,6 +52,7 @@ const ProvisioningProfileModel = {
   companyCode: { type: String, required: true, unique: true },
   capabilities: { type: Array, required: true, enum: Object.values(Capabilities) },
   country: { type: String, required: true },
+  resellerCompanyId: { type: String, required: true },
   resellerCarrierId: { type: String, required: true },
   serviceType: { type: String, required: true, enum: Object.values(ServiceTypes) },
   paymentMode: { type: String, required: true, enum: PaymentModes },
