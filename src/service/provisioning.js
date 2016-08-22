@@ -101,6 +101,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     serviceType: Joi.array().items(Joi.string().valid(Object.values(ServiceTypes))).optional(),
     companyCode: Joi.array().items(Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY)).optional(),
     companyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
+    search: Joi.string(),
     page: Joi.number().min(1).default(1),
     pageSize: Joi
       .number()
@@ -112,6 +113,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     const {
       page,
       pageSize,
+      search,
       serviceType,
       companyCode,
       companyId,
@@ -124,10 +126,17 @@ export default function provisioningService(provisioningProcessor, validator) {
     /* eslint-disable no-underscore-dangle */
     if (provisioningId) filters._id = { $in: provisioningId };
     /* eslint-disable no-underscore-dangle */
-    if (companyCode) filters['profile.companyCode'] = { $in: companyCode };
+
+    if (search) {
+      filters['profile.companyCode'] = { $regex: new RegExp(`.*${search}.*`) };
+    } else if (companyCode) {
+      filters['profile.companyCode'] = { $in: companyCode };
+    }
+
     if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
     if (companyId) filters['profile.companyId'] = { $in: companyId };
     if (carrierId) filters['profile.carrierId'] = { $in: carrierId };
+
 
     const selection = _.transform(PUBLIC_PROPS, (result, prop) => {
       result[prop] = 1;

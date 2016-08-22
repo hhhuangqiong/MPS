@@ -96,4 +96,8 @@ schema.options.toJSON.transform = (doc, ret) => {
 schema.plugin(timestamps);
 schema.plugin(unqiueValidator);
 
+if (process.env.NODE_ENV === 'production') {
+  schema.set('autoIndex', false);
+}
+
 export default mongoose.model('Provisioning', schema);
