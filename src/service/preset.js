@@ -9,7 +9,7 @@ export default function presetService(validator) {
     presetId: Joi.string().required().max(128),
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     paymentMode: Joi.string().valid(Object.values(PaymentModes)),
-    capabilities: Joi.array().items(Joi.string().valid(Capabilities)),
+    capabilities: Joi.array().items(Joi.string().valid(Object.values(Capabilities))),
   });
 
   async function setPreset(command) {
