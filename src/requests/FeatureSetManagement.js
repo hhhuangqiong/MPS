@@ -19,17 +19,8 @@ export default class FeatureSetManagement extends CpsRequest {
     return this.get(`${uri}?group=${group}`);
   }
 
-  createFeatureSet({
-    features = [],
-    ...restParams,
-  }) {
+  createFeatureSet(params) {
     const uri = '/1.0/feature_sets';
-
-    const params = {
-      ...restParams,
-      features,
-    };
-
     const validationError = this.validateParams(params, {
       identifier: Joi.string().required(),
       features: Joi.array().required(),

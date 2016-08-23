@@ -24,12 +24,10 @@ function validateRerun(data, taskResult) {
     return false;
   }
 
-  logger(`Rerun on sip gateways generated: required=${timesToGenerate}, generated=${start}`);
   return true;
 }
 
 function run(data, taskResult, cb) {
-  logger(data, taskResult, cb);
   const { carrierId } = data;
 
   if (!data) {

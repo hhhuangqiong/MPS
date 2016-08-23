@@ -9,12 +9,12 @@ import {
 export const CapabilityTypes = {
   API: 'API',
   IM: 'IM',
-  OFFNET: 'OffNet',
-  ONNET: 'OnNet',
+  OFFNET: 'Offnet',
+  ONNET: 'Onnet',
   PUSH: 'Push',
   IM_TO_SMS: 'ImToSms',
   SMS: 'SMS',
-  TOP_UP: 'TopUp',
+  TOP_UP: 'Topup',
   VOICE: 'Voice',
 };
 

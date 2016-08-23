@@ -22,7 +22,6 @@ function validateRerun(data, taskResult) {
 }
 
 function run(data, taskResult, cb) {
-  logger(data, taskResult, cb);
   const { carrierId } = data;
 
   if (!carrierId) {

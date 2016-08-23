@@ -10,6 +10,8 @@ import FeatureSetManagement from './requests/FeatureSetManagement';
 import ApplicationManagement from './requests/ApplicationManagement';
 import VoiceProvisioningManagement from './requests/VoiceProvisioningManagement';
 import VerificationManagement from './requests/VerificationManagement';
+import CertificateManagement from './requests/CertificateManagement';
+
 import provisioningProcessor from './processes/provisioning';
 import provisioningService from './service/provisioning';
 import presetService from './service/preset';
@@ -41,9 +43,12 @@ ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cp
 ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps:uri')));
 ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps:uri')));
 ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps:uri')));
+ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('cps:uri')));
+
 ioc.factory('CompanyManagement', (container) => {
   const { uri } = nconf.get('iam');
   return new CompanyManagement({ baseUri: uri, validator: container.validator });
 });
+
 
 export default ioc;

@@ -87,7 +87,12 @@ export default class CpsRequest {
       throw parsedError;
     }
 
-    const responseError = JSON.parse(error.res.text).error;
+    let responseError;
+    try {
+      responseError = JSON.parse(error.res.text).error;
+    } catch (e) {
+      throw new ReferenceError(`Unexpected response from CPS: ${error.stack}`, e);
+    }
 
     let parsedError;
 

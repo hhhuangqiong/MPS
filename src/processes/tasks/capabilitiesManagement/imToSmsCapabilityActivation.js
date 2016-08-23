@@ -24,11 +24,11 @@ function needActivation(capabilities) {
 }
 
 
-function run(profile, cb) {
+function run(profile, taskResult, cb) {
   const { carrierId, capabilities } = profile;
 
   if (!needActivation(capabilities)) {
-    cb(null, {});
+    cb(null, { done: false });
     return;
   }
 

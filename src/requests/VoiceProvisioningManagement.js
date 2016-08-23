@@ -106,7 +106,7 @@ export default class VoiceProvisioningManagement extends CpsRequest {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(uri.replace(':carrierId', params.carrierId), params);
+    return this.post(uri, params);
   }
 
   // 2. SIP Gateway Creation
@@ -145,6 +145,6 @@ export default class VoiceProvisioningManagement extends CpsRequest {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(uri.replace(':carrierId', params.carrierId), params);
+    return this.post(uri, params);
   }
 }

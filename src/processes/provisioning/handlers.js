@@ -5,7 +5,6 @@ export CARRIER_PROFILE_CREATION from '../tasks/carrierManagement/carrierProfileC
 
 export SIP_GATEWAY_CREATION from '../tasks/sipGatewayCreation';
 export SIP_ROUTING_CREATION from '../tasks/sipRoutingCreation';
-export VOICE_SERVICE_PROFILE_CREATION from '../tasks/voiceServiceProfileCreation';
 
 export TOPUP_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/topupCapabilityActiviation';
 export PUSH_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/pushCapabilityActivation';
@@ -17,14 +16,13 @@ export SMS_CAPABILITIY_ACTIVATION from '../tasks/capabilitiesManagement/smsCapab
 export API_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/apiCapabilityActivation';
 export IM_TO_SMS_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/imToSmsCapabilityActivation';
 
-export GET_NOTIFICATION_TEMPLATE from '../tasks/getNotificationTemplate';
-export SAVE_NOTIFICATION from '../tasks/saveNotification';
+
+export NOTIFICATION_CREATION from '../tasks/notificationCreation';
 
 export RECEIVE_PREFIX from '../tasks/receivePrefix';
 export BOSS_PROVISION from '../tasks/bossProvision';
 
-export GET_FEATURE_SET_TEMPLATE from '../tasks/getFeatureSetTemplate';
-export SET_FEATURE_SET from '../tasks/setFeatureSet';
+export FEATURE_SET_CREATION from '../tasks/featureSetCreation';
 export SAVE_APPLICATION from '../tasks/saveApplication';
 export CERTIFICATION_CREATION from '../tasks/certificationCreation';
 
