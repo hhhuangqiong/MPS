@@ -8,7 +8,7 @@ import { createTask } from '../../util/task';
 const { cpsConfig, CapabilitiesManagement } = ioc.container;
 
 function rerunValidation(profile, taskResult) {
-  if (taskResult.smsProfileId) {
+  if (taskResult.imToSmsProfileId) {
     // already enabled, skip
     return false;
   }
@@ -16,12 +16,9 @@ function rerunValidation(profile, taskResult) {
   return true;
 }
 
-// from definition, voice should be enabled on either ONNET/OFFNET/MAAIN_IN is
-// enabled in provisioning profile
 function needActivation(capabilities) {
   const any = [
     Capabilities.IM_TO_SMS,
-    Capabilities.VERIFICATION,
   ];
   return _.intersection(capabilities, any).length > 0;
 }
@@ -37,16 +34,16 @@ function run(profile, cb) {
 
   // should be specified in form for Phase 2. defaults to company level now.
   const chargingProfile = cpsConfig.chargeProfile.company;
-  CapabilitiesManagement.enableSmsCapability({ carrierId, chargingProfile }).then(res => {
-    const { id: smsProfileId } = res.body;
+  CapabilitiesManagement.enableImToSmsCapability({ carrierId, chargingProfile }).then(res => {
+    const { id: imToSmsProfileId } = res.body;
 
-    if (!smsProfileId) {
-      throw new ReferenceError('Unexpected response from CPS sms activation: id missing');
+    if (!imToSmsProfileId) {
+      throw new ReferenceError('Unexpected response from CPS im-to-sms activation: id missing');
     }
 
-    cb(null, { smsProfileId });
+    cb(null, { imToSmsProfileId });
   })
   .catch(cb);
 }
 
-export default createTask('SMS_CAPABILITY_ACTIVATION', run, { rerunValidation });
+export default createTask('IM_TO_SMS_CAPABILITY_ACTIVATION', run, { rerunValidation });

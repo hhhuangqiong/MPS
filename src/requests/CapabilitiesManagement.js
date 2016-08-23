@@ -152,7 +152,6 @@ export default class CapabilitiesManagement extends CpsRequest {
 
   enableImToSmsCapability({
     carrierId,
-    identifier = 'maaii_im_sms_profile',
     name = `SMSProfile for ${carrierId}`,
     /* eslint-disable camelcase */
     chargingProfile,
@@ -187,7 +186,6 @@ export default class CapabilitiesManagement extends CpsRequest {
       sms_profile: {
         ...restParams,
         charging_profile: chargingProfile,
-        identifier,
         name,
       },
     };

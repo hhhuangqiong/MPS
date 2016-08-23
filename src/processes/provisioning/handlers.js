@@ -15,6 +15,7 @@ export IM_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/imCapabili
 export VOICE_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/voiceCapabilityActivation';
 export SMS_CAPABILITIY_ACTIVATION from '../tasks/capabilitiesManagement/smsCapabilitiyActivation';
 export API_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/apiCapabilityActivation';
+export IM_TO_SMS_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/imToSmsCapabilityActivation';
 
 export GET_NOTIFICATION_TEMPLATE from '../tasks/getNotificationTemplate';
 export SAVE_NOTIFICATION from '../tasks/saveNotification';
