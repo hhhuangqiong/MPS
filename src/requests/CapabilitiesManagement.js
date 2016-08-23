@@ -180,4 +180,10 @@ export default class CapabilitiesManagement extends CpsRequest {
 
     return this.post(uri.replace(':carrierId', params.carrierId), params);
   }
+
+  getProfile(carrierId, capabilityId) {
+    const uri = `/1.0/carriers/${carrierId}/capabilities/${capabilityId}/profiles`;
+
+    return this.get(uri);
+  }
 }

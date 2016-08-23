@@ -104,6 +104,29 @@
           }
         }
       }
+    },
+    "verification": {
+      "template": {
+        "identifier": "{{ carrierId }}.verification-profile",
+        "name": "{{ carrierId }}.verification-profile",
+        "description": "Verification profile for carrier {{ carrierId }}",
+        "attempt_callback_url": "http://192.168.56.54:8087/v1.0/verification-core/internal/callback/attempt",
+        "completion_callback_url": "http://192.168.56.54:8087/v1.0/verification-core/internal/callback/completion",
+        "sms_verification_profile" : {
+          "origin" : "{{ companyCode }}",
+          "carrier_sms_profile_name" : "{{ companyCode }}.sms-profile",
+          "carrier_sms_identifier" : "{{ smsProfileIdentifier }}",
+          "message_content" : {
+            "en_us" : "Your message is {code}",
+            "cn" : "你的代碼是 {code}"
+          }
+        },
+        "call_verification_profile" : {
+          "mo_allow_mobile_numbers_only" : true,
+          "mt_allow_mobile_numbers_only" : true
+        },
+        "two_factor_authentication_code_length": 6
+      }
     }
   },
   "iam": {

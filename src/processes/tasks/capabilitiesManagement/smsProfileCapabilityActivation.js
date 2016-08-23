@@ -48,16 +48,17 @@ export default function ({ taskName, profileCapability, requestCapabilityType, t
       smsProfile.source_address_list = [{ as_number: smsc.sourceAddress }];
     }
 
-    CapabilitiesManagement.enableSmsProfileCapability(requestCapabilityType, carrierId, smsProfile).then(res => {
-      const { id: smsProfileId } = res.body;
+    CapabilitiesManagement.enableSmsProfileCapability(requestCapabilityType, carrierId, smsProfile)
+      .then(res => {
+        const { id: smsProfileId } = res.body;
 
-      if (!smsProfileId) {
-        throw new ReferenceError('Unexpected response from CPS sms activation: id missing');
-      }
+        if (!smsProfileId) {
+          throw new ReferenceError('Unexpected response from CPS sms activation: id missing');
+        }
 
-      cb(null, { done: smsProfileId });
-    })
-    .catch(cb);
+        cb(null, { done: smsProfileId });
+      })
+      .catch(cb);
   }
 
   return createTask(taskName, run, { rerunValidation });

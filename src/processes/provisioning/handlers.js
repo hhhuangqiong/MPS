@@ -12,10 +12,11 @@ export ONNET_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/onnetCa
 export OFFNET_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/offnetCapabilityActivation';
 export IM_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/imCapabilityActivation';
 export VOICE_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/voiceCapabilityActivation';
-export SMS_CAPABILITIY_ACTIVATION from '../tasks/capabilitiesManagement/smsCapabilitiyActivation';
+export SMS_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/smsCapabilitiyActivation';
 export API_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/apiCapabilityActivation';
 export IM_TO_SMS_CAPABILITY_ACTIVATION from '../tasks/capabilitiesManagement/imToSmsCapabilityActivation';
 
+export VERIFICATION_PROFILE_CREATION from '../tasks/verificationProfileCreation';
 
 export NOTIFICATION_CREATION from '../tasks/notificationCreation';
 

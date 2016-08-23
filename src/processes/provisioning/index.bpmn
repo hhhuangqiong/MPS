@@ -23,7 +23,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1x6rg4e" sourceRef="parallel_all_start" targetRef="api_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_0mbuh53" sourceRef="parallel_all_start" targetRef="get_notification_template" />
     <bpmn:sequenceFlow id="SequenceFlow_1c63ucl" sourceRef="parallel_all_start" targetRef="user_carrier_profile_creation" />
-    <bpmn:sequenceFlow id="SequenceFlow_1aiahz2" sourceRef="parallel_all_start" targetRef="ServiceTask_0x58ekf" />
+    <bpmn:sequenceFlow id="SequenceFlow_1aiahz2" sourceRef="parallel_all_start" targetRef="sms_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_11jpmtt" sourceRef="parallel_all_start" targetRef="carrier_profile_creation" />
     <bpmn:sequenceFlow id="SequenceFlow_0vfierx" sourceRef="parallel_all_start" targetRef="im_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_1m50e06" sourceRef="api_capability_activation" targetRef="join_capability_and_feature_set" />
@@ -33,7 +33,6 @@
       <bpmn:outgoing>SequenceFlow_1721ibi</bpmn:outgoing>
     </bpmn:parallelGateway>
     <bpmn:sequenceFlow id="SequenceFlow_1721ibi" sourceRef="join_capability_and_feature_set" targetRef="save_application" />
-    <bpmn:sequenceFlow id="SequenceFlow_0tjxu6r" sourceRef="save_application" targetRef="certification_creation" />
     <bpmn:sequenceFlow id="SequenceFlow_00aimey" sourceRef="certification_creation" targetRef="parallel_all_end" />
     <bpmn:parallelGateway id="parallel_all_end" name="PARALLEL_ALL_END">
       <bpmn:incoming>SequenceFlow_00aimey</bpmn:incoming>
@@ -41,13 +40,13 @@
       <bpmn:incoming>SequenceFlow_0qzgyeb</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_15v9qi7</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1tjsc86</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_1je10c2</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1dnj8si</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_08z5tar</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0hw1dbd</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0z19slt</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0o58wji</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1ygyr3c</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0zgm5kk</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0wf0dct</bpmn:outgoing>
     </bpmn:parallelGateway>
     <bpmn:endEvent id="provisioning_end" name="PROVISIONING_END">
@@ -57,7 +56,6 @@
     <bpmn:sequenceFlow id="SequenceFlow_0qzgyeb" sourceRef="voice_capability_activation" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_15v9qi7" sourceRef="carrier_profile_creation" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_1tjsc86" sourceRef="user_carrier_profile_creation" targetRef="parallel_all_end" />
-    <bpmn:sequenceFlow id="SequenceFlow_1je10c2" sourceRef="ServiceTask_0x58ekf" targetRef="parallel_all_end" />
     <bpmn:serviceTask id="carrier_creation" name="CARRIER_CREATION">
       <bpmn:incoming>SequenceFlow_00yogtg</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1rvjrkj</bpmn:outgoing>
@@ -82,9 +80,9 @@
       <bpmn:incoming>SequenceFlow_0au1xi6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0qzgyeb</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0x58ekf" name="SMS_CAPABILITIY_ACTIVATION">
+    <bpmn:serviceTask id="sms_capability_activation" name="SMS_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_1aiahz2</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1je10c2</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0h6vjcq</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="api_capability_activation" name="API_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_1x6rg4e</bpmn:incoming>
@@ -106,12 +104,8 @@
       <bpmn:incoming>SequenceFlow_11jpmtt</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15v9qi7</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="save_application" name="SAVE_APPLICATION">
-      <bpmn:incoming>SequenceFlow_1721ibi</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0tjxu6r</bpmn:outgoing>
-    </bpmn:serviceTask>
     <bpmn:serviceTask id="certification_creation" name="CERTIFICATION_CREATION">
-      <bpmn:incoming>SequenceFlow_0tjxu6r</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_13c4lne</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_00aimey</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_1ljxits" sourceRef="parallel_all_start" targetRef="get_feature_set_template" />
@@ -142,9 +136,9 @@
     <bpmn:sequenceFlow id="SequenceFlow_0sl2d48" sourceRef="parallel_all_start" targetRef="topup_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_08z5tar" sourceRef="push_capability_activation" targetRef="parallel_all_end" />
     <bpmn:sequenceFlow id="SequenceFlow_0hw1dbd" sourceRef="topup_capability_activation" targetRef="parallel_all_end" />
-    <bpmn:sequenceFlow id="SequenceFlow_1as3rar" sourceRef="provisioning_start" targetRef="Task_0jd5sv1" />
-    <bpmn:sequenceFlow id="SequenceFlow_00yogtg" sourceRef="Task_0jd5sv1" targetRef="carrier_creation" />
-    <bpmn:serviceTask id="Task_0jd5sv1" name="COMPANY_CREATION">
+    <bpmn:sequenceFlow id="SequenceFlow_1as3rar" sourceRef="provisioning_start" targetRef="company_creation" />
+    <bpmn:sequenceFlow id="SequenceFlow_00yogtg" sourceRef="company_creation" targetRef="carrier_creation" />
+    <bpmn:serviceTask id="company_creation" name="COMPANY_CREATION">
       <bpmn:incoming>SequenceFlow_1as3rar</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_00yogtg</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -157,13 +151,24 @@
     <bpmn:sequenceFlow id="SequenceFlow_1ocayp7" sourceRef="parallel_all_start" targetRef="offnet_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_1xlg66f" sourceRef="parallel_all_start" targetRef="onnet_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_160c2vk" sourceRef="parallel_all_start" targetRef="sip_gateway_creation" />
-    <bpmn:sequenceFlow id="SequenceFlow_1j222g1" sourceRef="parallel_all_start" targetRef="Task_0rj6o3w" />
+    <bpmn:sequenceFlow id="SequenceFlow_1j222g1" sourceRef="parallel_all_start" targetRef="im_to_sms_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_0cwzmcm" sourceRef="get_feature_set_template" targetRef="join_capability_and_feature_set" />
-    <bpmn:sequenceFlow id="SequenceFlow_1ygyr3c" sourceRef="Task_0rj6o3w" targetRef="parallel_all_end" />
-    <bpmn:serviceTask id="Task_0rj6o3w" name="IM_TO_SMS_CAPABILITY_ACTIVATION">
+    <bpmn:sequenceFlow id="SequenceFlow_1ygyr3c" sourceRef="im_to_sms_capability_activation" targetRef="parallel_all_end" />
+    <bpmn:serviceTask id="im_to_sms_capability_activation" name="IM_TO_SMS_CAPABILITY_ACTIVATION">
       <bpmn:incoming>SequenceFlow_1j222g1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ygyr3c</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_13c4lne" sourceRef="save_application" targetRef="certification_creation" />
+    <bpmn:serviceTask id="save_application" name="SAVE_APPLICATION">
+      <bpmn:incoming>SequenceFlow_1721ibi</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_13c4lne</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0h6vjcq" sourceRef="sms_capability_activation" targetRef="verification_profile_creation" />
+    <bpmn:serviceTask id="verification_profile_creation" name="VERIFICATION_PROFILE_CREATION">
+      <bpmn:incoming>SequenceFlow_0h6vjcq</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0zgm5kk</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0zgm5kk" sourceRef="verification_profile_creation" targetRef="parallel_all_end" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="mps">
@@ -204,11 +209,11 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1aiahz2_di" bpmnElement="SequenceFlow_1aiahz2">
-        <di:waypoint xsi:type="dc:Point" x="837" y="160" />
+        <di:waypoint xsi:type="dc:Point" x="837" y="135" />
         <di:waypoint xsi:type="dc:Point" x="837" y="-68" />
         <di:waypoint xsi:type="dc:Point" x="1107" y="-68" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="807" y="1.7438423645320142" width="90" height="20" />
+          <dc:Bounds x="807" y="-6.771929824561397" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_11jpmtt_di" bpmnElement="SequenceFlow_11jpmtt">
@@ -243,16 +248,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1721ibi_di" bpmnElement="SequenceFlow_1721ibi">
         <di:waypoint xsi:type="dc:Point" x="1561" y="160" />
-        <di:waypoint xsi:type="dc:Point" x="1675" y="160" />
+        <di:waypoint xsi:type="dc:Point" x="1659" y="160" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1605.5" y="22" width="90" height="20" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0tjxu6r_di" bpmnElement="SequenceFlow_0tjxu6r">
-        <di:waypoint xsi:type="dc:Point" x="1775" y="160" />
-        <di:waypoint xsi:type="dc:Point" x="1862" y="160" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1786.5" y="22" width="90" height="20" />
+          <dc:Bounds x="1593.3684742962055" y="22" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_00aimey_di" bpmnElement="SequenceFlow_00aimey">
@@ -306,14 +304,6 @@
           <dc:Bounds x="1604" y="335" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1je10c2_di" bpmnElement="SequenceFlow_1je10c2">
-        <di:waypoint xsi:type="dc:Point" x="1207" y="-68" />
-        <di:waypoint xsi:type="dc:Point" x="2091" y="-68" />
-        <di:waypoint xsi:type="dc:Point" x="2091" y="135" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1604" y="-155" width="90" height="20" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_1eyxgbs_di" bpmnElement="carrier_creation">
         <dc:Bounds x="568" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -332,7 +322,7 @@
       <bpmndi:BPMNShape id="ServiceTask_1bssn0v_di" bpmnElement="voice_capability_activation">
         <dc:Bounds x="1675" y="-232" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0x58ekf_di" bpmnElement="ServiceTask_0x58ekf">
+      <bpmndi:BPMNShape id="ServiceTask_0x58ekf_di" bpmnElement="sms_capability_activation">
         <dc:Bounds x="1107" y="-107" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_0rooh68_di" bpmnElement="api_capability_activation">
@@ -349,9 +339,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_0o7p6jf_di" bpmnElement="carrier_profile_creation">
         <dc:Bounds x="1107" y="579" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_09ws78d_di" bpmnElement="save_application">
-        <dc:Bounds x="1675" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_0z84fm6_di" bpmnElement="certification_creation">
         <dc:Bounds x="1862" y="120" width="100" height="80" />
@@ -375,7 +362,7 @@
         <di:waypoint xsi:type="dc:Point" x="1207" y="-192" />
         <di:waypoint xsi:type="dc:Point" x="1428" y="-192" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1274.584927978752" y="-217" width="90" height="20" />
+          <dc:Bounds x="1275" y="-217" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ServiceTask_03r656h_di" bpmnElement="boss_provision">
@@ -386,7 +373,7 @@
         <di:waypoint xsi:type="dc:Point" x="837" y="-632" />
         <di:waypoint xsi:type="dc:Point" x="1107" y="-632" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="807" y="-253" width="90" height="20" />
+          <dc:Bounds x="807" y="-258.5" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1dnj8si_di" bpmnElement="SequenceFlow_1dnj8si">
@@ -447,14 +434,14 @@
           <dc:Bounds x="487.837313473987" y="135" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_05w5i49_di" bpmnElement="Task_0jd5sv1">
+      <bpmndi:BPMNShape id="ServiceTask_05w5i49_di" bpmnElement="company_creation">
         <dc:Bounds x="396" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0au1xi6_di" bpmnElement="SequenceFlow_0au1xi6">
         <di:waypoint xsi:type="dc:Point" x="1528" y="-192" />
         <di:waypoint xsi:type="dc:Point" x="1675" y="-190" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1556.7040627466977" y="-215.99861188228465" width="90" height="20" />
+          <dc:Bounds x="1557" y="-216" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1us0o4x_di" bpmnElement="SequenceFlow_1us0o4x">
@@ -546,9 +533,37 @@
           <dc:Bounds x="1602.2151051081778" y="-878" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_1r6545r_di" bpmnElement="Task_0rj6o3w">
+      <bpmndi:BPMNShape id="ServiceTask_1r6545r_di" bpmnElement="im_to_sms_capability_activation">
         <dc:Bounds x="1107" y="-893" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_13c4lne_di" bpmnElement="SequenceFlow_13c4lne">
+        <di:waypoint xsi:type="dc:Point" x="1759" y="160" />
+        <di:waypoint xsi:type="dc:Point" x="1862" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1765.5" y="135" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_05o0okm_di" bpmnElement="save_application">
+        <dc:Bounds x="1659" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0h6vjcq_di" bpmnElement="SequenceFlow_0h6vjcq">
+        <di:waypoint xsi:type="dc:Point" x="1207" y="-67" />
+        <di:waypoint xsi:type="dc:Point" x="1428" y="-67" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1272.5" y="-92" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_01hgrxs_di" bpmnElement="verification_profile_creation">
+        <dc:Bounds x="1428" y="-107" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zgm5kk_di" bpmnElement="SequenceFlow_0zgm5kk">
+        <di:waypoint xsi:type="dc:Point" x="1528" y="-67" />
+        <di:waypoint xsi:type="dc:Point" x="2088" y="-67" />
+        <di:waypoint xsi:type="dc:Point" x="2088" y="138" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1763" y="-92" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

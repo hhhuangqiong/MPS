@@ -19,10 +19,12 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true,
 
     try {
       if (validateRerun && !validateRerun(data, prevProcessResult)) {
+        logger(`Task ${name} skipped on rerun.`);
         done(data);
         return;
       }
     } catch (e) {
+      logger(`Task ${name} validateRerun error:`, e.stack);
       data.taskErrors = data.taskErrors || {};
       data.taskErrors[name] = e;
       done(data);
