@@ -66,13 +66,15 @@ export function addProcess({ processManager, processPath, processHandlers, start
         onEndHandler(currentFlowObjectName, data, done) {
           const { taskResults, taskErrors } = data;
           const taskResult = taskResults && taskResults[currentFlowObjectName];
-          if (!taskResult) {
+          const taskError = taskErrors && taskErrors[currentFlowObjectName];
+
+          if (!taskResult && !taskError) {
+            logger(`Task ${currentFlowObjectName} ended.`);
             // most likely not a (wrapped) task, ignores
             done(data);
             return;
           }
 
-          const taskError = taskErrors && taskErrors[currentFlowObjectName];
           if (taskError) {
             logger(`Task ${currentFlowObjectName} ends with error`, taskError);
 
