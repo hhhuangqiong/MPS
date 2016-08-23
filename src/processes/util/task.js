@@ -12,7 +12,7 @@ import { Error } from 'common-errors';
  * @param {validateRerun} opts.validateRerun
  * @param {Booleans} opts.skipOnPrevErrors
  */
-export function createTask(name, task, { validateRerun, skipOnPrevErrors = true, timeout = 5000 }) {
+export function createTask(name, task, { validateRerun, skipOnPrevErrors = true, timeout = 30000 }) {
   function wrappedTask(data, done) {
     const prevProcessResults = this.getProperty('taskResults');
     const prevProcessResult = (prevProcessResults && prevProcessResults[name]) || {};
@@ -43,7 +43,7 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true,
         data.taskErrors[name] = taskError;
       }
 
-      if (!_.isEmpty(taskResult)) {
+      if (taskResult) {
         // assign output to data
         data.taskResults = data.taskResults || {};
         data.taskResults[name] = taskResult;

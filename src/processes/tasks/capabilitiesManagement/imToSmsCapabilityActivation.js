@@ -28,7 +28,7 @@ function run(profile, cb) {
   const { carrierId, capabilities } = profile;
 
   if (!needActivation(capabilities)) {
-    cb(null, {});
+    cb(null, { done: false });
     return;
   }
 
