@@ -12,6 +12,7 @@ import ApplicationManagement from './requests/ApplicationManagement';
 import VoiceProvisioningManagement from './requests/VoiceProvisioningManagement';
 import VerificationManagement from './requests/VerificationManagement';
 import CertificateManagement from './requests/CertificateManagement';
+import NotificationManagement from './requests/NotificationManagement';
 
 import provisioningProcessor from './processes/provisioning';
 import provisioningService from './service/provisioning';
@@ -45,6 +46,8 @@ ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('
 ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps')));
 ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps')));
 ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('cps')));
+
+ioc.factory('NotificationManagement', () => new NotificationManagement(nconf.get('cps')));
 
 ioc.factory('CompanyManagement', (container) => {
   const imaConfig = nconf.get('iam');

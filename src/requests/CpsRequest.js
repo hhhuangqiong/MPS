@@ -1,3 +1,4 @@
+import Promise from 'bluebird';
 import request from 'superagent-bluebird-promise';
 import omitBy from 'lodash/omitBy';
 import isUndefined from 'lodash/isUndefined';
