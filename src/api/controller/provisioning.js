@@ -36,7 +36,7 @@ export async function getProvisioning(req, res, next) {
 
 export async function updateProvisioning(req, res, next) {
   try {
-    const command = _.extend({}, req.params, req.body);
+    const command = _.extend({}, req.params, { profile: req.body });
     const provisioning = await provisioningService.updateProvisioning(command);
     res.json(provisioning);
   } catch (e) {

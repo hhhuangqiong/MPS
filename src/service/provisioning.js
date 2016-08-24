@@ -168,9 +168,20 @@ export default function provisioningService(provisioningProcessor, validator) {
     provisioningId: Joi.string().regex(REGEX_MONGO_OBJECT_ID).required(),
     // only fields that are allowed to update after creation
     profile: Joi.object({
+      companyInfo: Joi.object({
+        name: Joi.string(),
+        description: Joi.string(),
+        // @todo validate on timezone
+        timezone: Joi.string(),
+        address: Joi.string(),
+        // @todo unclear on contact
+        contact: Joi.string(),
+      }),
       country: Joi.string(),
       companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY),
-      serviceType: Joi.string().valid(...Object.values(ServiceTypes)),
+      serviceType: Joi.string().valid(Object.values(ServiceTypes)),
+      resellerCompanyId: Joi.string().regex(REGEX_MONGO_OBJECT_ID),
+      resellerCarrierId: Joi.string(),
       capabilities: Joi.array()
         .items(Joi.string().valid(Object.values(Capabilities)))
         .unique(),
