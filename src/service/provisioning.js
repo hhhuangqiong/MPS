@@ -150,7 +150,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     // count() ignores skip() and limits() by default
     const result = await Promise.props({
       items: query.exec(),
-      count: query.count(),
+      count: Provisioning.find(filters).count(),
     });
     const pageTotal = Math.ceil(result.count / pageSize);
 
