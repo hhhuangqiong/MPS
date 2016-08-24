@@ -10,7 +10,13 @@ const schema = new Schema({
   serviceType: { type: String, enum: Object.values(ServiceTypes) },
   paymentMode: { type: String, enum: Object.values(PaymentModes) },
   capabilities: { type: Array },
+  billing: {
+    smsPackageId: { type: Number },
+    offnetPackageId: { type: Number },
+    currency: { type: Number },
+  },
   smsc: {
+    needBilling: { type: Boolean },
     defaultRealm: { type: String },
     servicePlanId: { type: String },
     sourceAddress: { type: String },

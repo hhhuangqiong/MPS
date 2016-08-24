@@ -20,7 +20,6 @@ export VERIFICATION_PROFILE_CREATION from '../tasks/verificationProfileCreation'
 
 export NOTIFICATION_CREATION from '../tasks/notificationCreation';
 
-export RECEIVE_PREFIX from '../tasks/receivePrefix';
 export BOSS_PROVISION from '../tasks/bossProvision';
 
 export FEATURE_SET_CREATION from '../tasks/featureSetCreation';

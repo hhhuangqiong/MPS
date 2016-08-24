@@ -45,7 +45,7 @@ export function addProcess({ processManager, processPath, processHandlers, start
           done();
         },
         defaultErrorHandler(error, done) {
-          logger('Error caught within task ', error.stack);
+          logger('error caught within task ', error.stack);
           const taskErrors = { UNKNOWN_TASK: error };
           // set as taskErrors for tasks beyond this point
           done({ taskErrors });

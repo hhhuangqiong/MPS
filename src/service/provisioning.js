@@ -69,11 +69,17 @@ export default function provisioningService(provisioningProcessor, validator) {
       .unique()
       .required(),
     paymentMode: Joi.string().required().valid(PaymentModes),
+    billing: Joi.object({
+      smsPackageId: Joi.number().min(0),
+      offnetPackageId: Joi.number().min(0),
+      currency: Joi.number().min(0).required(),
+    }).required(),
     smsc: Joi.object({
-      defaultRealm: Joi.string(),
-      servicePlanId: Joi.string(),
-      sourceAddress: Joi.string(),
-    }),
+      needBilling: Joi.boolean().required(),
+      defaultRealm: Joi.string().required(),
+      servicePlanId: Joi.string().required(),
+      sourceAddress: Joi.string().required(),
+    }).required(),
   });
 
   async function createProvisioning(command) {
@@ -204,7 +210,13 @@ export default function provisioningService(provisioningProcessor, validator) {
         .items(Joi.string().valid(Object.values(Capabilities)))
         .unique(),
       paymentMode: Joi.string().valid(PaymentModes),
+      billing: Joi.object({
+        smsPackageId: Joi.number().min(0),
+        offnetPackageId: Joi.number().min(0),
+        currency: Joi.number().min(0),
+      }),
       smsc: Joi.object({
+        needBilling: Joi.boolean(),
         defaultRealm: Joi.string(),
         servicePlanId: Joi.string(),
         sourceAddress: Joi.string(),

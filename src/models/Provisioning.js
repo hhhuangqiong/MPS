@@ -56,10 +56,17 @@ const ProvisioningProfileModel = {
   resellerCarrierId: { type: String, required: true },
   serviceType: { type: String, required: true, enum: Object.values(ServiceTypes) },
   paymentMode: { type: String, required: true, enum: PaymentModes },
+  billing: {
+    smsPackageId: { type: Number },
+    offnetPackageId: { type: Number },
+    currency: { type: Number, required: true },
+  },
   smsc: {
-    defaultRealm: { type: String },
-    servicePlanId: { type: String },
-    sourceAddress: { type: String },
+    // whether to need to charge sms through OCS. i.e. Boss Provision
+    needBilling: { type: Boolean, required: true },
+    defaultRealm: { type: String, required: true },
+    servicePlanId: { type: String, required: true },
+    sourceAddress: { type: String, required: true },
   },
   // fields to be generated in process, not required
   companyId: { type: String },

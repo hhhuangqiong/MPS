@@ -1,81 +1,22 @@
-import Promise from 'bluebird';
-import request from 'superagent-bluebird-promise';
-import omitBy from 'lodash/omitBy';
-import isUndefined from 'lodash/isUndefined';
+import _ from 'lodash';
 import isEmpty from 'lodash/isEmpty';
-
-import validateSchema from '../utils/validateSchema';
-import logger from '../utils/logger';
+import BaseRequest from './BaseRequest';
 
 import {
   HttpStatusError,
-  URIError,
-  ValidationError,
   NotImplementedError,
   NotFoundError,
 } from 'common-errors';
 
-export default class CpsRequest {
-  constructor({ baseUrl, timeout }) {
-    this.baseUrl = baseUrl;
-    this.timeout = timeout;
-  }
-
-  getUrl(uri = '') {
-    if (typeof uri !== 'string') {
-      throw new URIError('uri is not a string');
-    }
-
-    if (!uri.length) {
-      throw new URIError('uri is empty');
-    }
-
-    return `${this.baseUrl}${uri}`;
-  }
-
-  normalizeParams(params) {
-    return omitBy(params, isUndefined);
-  }
-
-  validateParams(params = {}, rules = {}) {
-    // Extend using validateSchema util function in case having custom logic here
-    return validateSchema(params, rules);
-  }
-
+export default class CpsRequest extends BaseRequest {
   get(uri) {
-    try {
-      const url = this.getUrl(uri);
-
-      logger(`Sending GET Request to ${url}`);
-
-      return request
-        .get(url)
-        .timeout(this.timeout)
-        .set('Accept', 'application/json')
-        .promise()
-        .catch(this.errorHandler);
-    } catch (e) {
-      return Promise.reject(e);
-    }
+    return super.get(uri)
+      .catch(this.errorHandler);
   }
 
   post(uri, params) {
-    try {
-      const url = this.getUrl(uri);
-      const normalizedParams = this.normalizeParams(params);
-
-      logger(`Sending POST Request to ${url} with params:`, normalizedParams);
-
-      return request
-        .post(url)
-        .timeout(this.timeout)
-        .send(normalizedParams)
-        .set('Accept', 'application/json')
-        .promise()
-        .catch(this.errorHandler);
-    } catch (e) {
-      return Promise.reject(e);
-    }
+    return super.post(uri, params)
+      .catch(this.errorHandler);
   }
 
   errorHandler(error) {
@@ -92,7 +33,7 @@ export default class CpsRequest {
     try {
       responseError = JSON.parse(error.res.text).error;
     } catch (e) {
-      throw new ReferenceError(`Unexpected response from CPS: ${error.stack}`, e);
+      throw new ReferenceError('Unexpected response from CPS: ', _.get(error, 'res', null), e);
     }
 
     let parsedError;
@@ -110,17 +51,5 @@ export default class CpsRequest {
     parsedError.status = responseError.status;
 
     throw parsedError;
-  }
-
-  validationErrorHandler(error) {
-    if (error.name === 'ArgumentNullError') {
-      return Promise.reject(new ValidationError(error.message, null, error.argumentName));
-    }
-
-    if (error.name === 'ValidationError') {
-      return Promise.reject(error);
-    }
-
-    return Promise.reject(new ValidationError(error.message));
   }
 }

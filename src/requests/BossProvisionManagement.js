@@ -1,0 +1,114 @@
+import Joi from 'joi';
+import _ from 'lodash';
+import { HttpStatusError, InvalidOperationError, Error } from 'common-errors';
+
+import BaseRequest from './BaseRequest';
+
+const BossServiceTypes = {
+  WHITE_LABEL: 'wl',
+  SDK: 'sdk',
+  LIVE_CONNECT: 'lc',
+};
+
+const BossPaymentModes = {
+  PRE_PAID: 'prepaid',
+  POST_PAID: 'postpaid',
+};
+
+const BossProvisionCreateSchema = Joi.object({
+  id: Joi.string().required(),
+  accountCode: Joi.string().alphanum().required(),
+  accountName: Joi.string().required(),
+  country: Joi.string().max(2),
+  carrierIdOfReseller: Joi.string().required(),
+  carriers: Joi.array().items(Joi.object({
+    carrierId: Joi.string().required(),
+    serviceType: Joi.string().valid(Object.values(BossServiceTypes)),
+    offNetPrefix: Joi.array().optional(),
+    offNetPrefixTest: Joi.array().optional(),
+    smsPrefix: Joi.array().optional(),
+    remarks: Joi.string(),
+    currency: Joi.number(),
+    m800Ocs: Joi.object({
+      sms: Joi.object({
+        packageId: Joi.number().required(),
+        type: Joi.string().valid(Object.values(BossPaymentModes)).required(),
+        initialBalance: Joi.number().min(0).required(),
+      }).optional(),
+      offnet: Joi.object({
+        packageId: Joi.number().required(),
+        type: Joi.string().valid(Object.values(BossPaymentModes)).required(),
+        initialBalance: Joi.number().min(0).required(),
+      }).optional(),
+    }),
+    capacity: Joi.object({
+      transactionCapacity: Joi.number().min(0),
+      maxWalletBalance: Joi.number().min(0),
+      maxTransactionPerDay: Joi.number().min(0),
+    }).optional(),
+    promotion: Joi.object({
+      startDate: Joi.date().timestamp(),
+      endDate: Joi.date().timestamp(),
+      amount: Joi.number(),
+    }).optional(),
+  })),
+});
+
+export default class BossProvisionManagement extends BaseRequest {
+
+  static BossPaymentModes = BossPaymentModes;
+  static BossServiceTypes = BossServiceTypes;
+
+  create(params) {
+    const uri = '/api/provision';
+    const validationError = this.validateParams(params, BossProvisionCreateSchema);
+
+    if (validationError) {
+      return this.validationErrorHandler(validationError);
+    }
+
+    return this.post(uri, params)
+      .catch(this.errorHandler)
+      .then(this.checkIsSuccess);
+  }
+
+  checkIsSuccess(res) {
+    const { success, error } = res.body;
+    if (!success) {
+      const { description, code } = error;
+      const err = new InvalidOperationError(description);
+      err.code = code;
+      throw err;
+    }
+
+    return res;
+  }
+
+  errorHandler(error) {
+    const isHttpStatusError = !_.isEmpty(error.body);
+
+    if (isHttpStatusError) {
+      const parsedError = new HttpStatusError(error.status, `${error.body.id} - ${error.body.error}`);
+      throw parsedError;
+    }
+
+    let responseError;
+    try {
+      responseError = JSON.parse(error.res.text).error;
+    } catch (e) {
+      throw new ReferenceError('Unexpected response from BOSS: ', _.get(error, 'res', undefined), e);
+    }
+
+    let parsedError;
+    switch (responseError.code) {
+      case 10001:
+        parsedError = new InvalidOperationError(parsedError.description);
+        break;
+      default:
+        parsedError = new Error(parsedError.description);
+    }
+    parsedError.code = responseError.code;
+
+    throw parsedError;
+  }
+}

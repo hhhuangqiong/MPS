@@ -1,8 +1,4 @@
-// for each supported platforms
-// - create an application with feature set id and developer id
-// - get the created application id
-//
-
+import Promise from 'bluebird';
 import uuid from 'uuid';
 import _ from 'lodash';
 import { NotImplementedError, ArgumentNullError } from 'common-errors';

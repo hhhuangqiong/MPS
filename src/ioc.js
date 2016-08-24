@@ -4,6 +4,7 @@ import Bottle from 'bottlejs';
 import path from 'path';
 
 
+import BossProvisionManagement from './requests/BossProvisionManagement';
 import CompanyManagement from './requests/CompanyManagement';
 import CarrierManagement from './requests/CarrierManagement';
 import CapabilitiesManagement from './requests/CapabilitiesManagement';
@@ -25,6 +26,7 @@ const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '..
 
 // configuations
 ioc.constant('cpsConfig', parseObjectArrays(nconf.get('cps')));
+ioc.constant('bossConfig', parseObjectArrays(nconf.get('boss')));
 
 // resources/dependencies
 /* eslint-disable global-require */
@@ -53,6 +55,9 @@ ioc.factory('CompanyManagement', (container) => {
   const imaConfig = nconf.get('iam');
   return new CompanyManagement(_.extend(imaConfig, { validator: container.validator }));
 });
+
+
+ioc.factory('BossProvisionManagement', () => new BossProvisionManagement(nconf.get('boss')));
 
 
 export default ioc;

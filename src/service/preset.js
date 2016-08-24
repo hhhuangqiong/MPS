@@ -10,11 +10,17 @@ export default function presetService(validator) {
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     paymentMode: Joi.string().valid(Object.values(PaymentModes)),
     capabilities: Joi.array().items(Joi.string().valid(Object.values(Capabilities))),
+    billing: Joi.object({
+      smsPackageId: Joi.number().min(0),
+      offnetPackageId: Joi.number().min(0),
+      currency: Joi.number().min(0),
+    }).required(),
     smsc: Joi.object({
+      needBilling: Joi.boolean(),
       defaultRealm: Joi.string(),
       servicePlanId: Joi.string(),
       sourceAddress: Joi.string(),
-    }),
+    }).required(),
   });
 
   async function setPreset(command) {

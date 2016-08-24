@@ -1,7 +1,7 @@
 {
   "cps": {
     "baseUrl": "http://192.168.118.34:80",
-    "timeout": 15000,
+    "timeout": 5000,
     "wlServiceDomain": "maaii.com",
     "sdkServiceDomain": "m800-api.com",
     "chargeProfile": {
@@ -134,5 +134,10 @@
   },
   "mongo": {
     "uri": "mongodb://localhost:27017/maaii-provisioning-service"
+  },
+  "boss": {
+    "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
+    "prePaidInitialBalance": 0,
+    "postPaidInitialBalance": 999999999
   }
 }
