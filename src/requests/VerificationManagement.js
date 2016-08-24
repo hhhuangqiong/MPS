@@ -2,9 +2,6 @@ import Joi from 'joi';
 import CpsRequest from './CpsRequest';
 
 export default class VerificationManagement extends CpsRequest {
-  constructor(baseUrl = '') {
-    super(baseUrl);
-  }
 
   saveVerificationProfile({
     carrierId,

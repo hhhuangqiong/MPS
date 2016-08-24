@@ -62,9 +62,6 @@ function getRegExFieldManipulatorRule() {
 }
 
 export default class VoiceProvisioningManagement extends CpsRequest {
-  constructor(baseUrl = '') {
-    super(baseUrl);
-  }
 
   // 1. SIP Routing Profile Creation
   sipRoutingProfileCreation(params = {}) {

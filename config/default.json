@@ -1,6 +1,7 @@
 {
   "cps": {
-    "uri": "http://192.168.118.23:9000",
+    "baseUrl": "http://192.168.118.23:9000",
+    "timeout": 15000,
     "wlServiceDomain": "maaii.com",
     "sdkServiceDomain": "m800-api.com",
     "chargeProfile": {
@@ -80,7 +81,7 @@
     }
   },
   "iam": {
-    "uri": "http://deploy.dev.maaii.com:4004"
+    "baseUrl": "http://deploy.dev.maaii.com:4004"
   },
   "mongo": {
     "uri": "mongodb://localhost:27017/maaii-provisioning-service"

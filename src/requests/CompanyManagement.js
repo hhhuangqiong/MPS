@@ -4,8 +4,6 @@ import _ from 'lodash';
 import { HttpStatusError, ConnectionError } from 'common-errors';
 import logger from '../utils/logger';
 
-const DEFAULT_TIMEOUT_MS = 8000;
-
 const contactSchema = Joi.object({
   name: Joi.string().optional(),
   phone: Joi.string().optional(),
@@ -32,15 +30,15 @@ const schema = Joi.object({
 
 
 export default class CompanyManagement {
-  constructor({ baseUri, timeout = DEFAULT_TIMEOUT_MS, validator }) {
-    this.baseUri = baseUri;
+  constructor({ baseUrl, timeout, validator }) {
+    this.baseUrl = baseUrl;
     this.timeout = timeout;
     this.validator = validator;
   }
 
   createCompany(params) {
     const query = this.validator.sanitize(params, schema);
-    const uri = `${this.baseUri}/identity/companies`;
+    const uri = `${this.baseUrl}/identity/companies`;
     logger(`Making IAM create company request to ${uri}. With query`, query);
 
     return request.post(uri)
@@ -66,8 +64,8 @@ export default class CompanyManagement {
     }
 
     if (error.timeout) {
-      logger('warn', `Request timed out at ${error.timeout} on request to IAM ${this.baseUri}`);
-      throw new ConnectionError(`Connect to IAM(${this.baseUri}) failue`, error);
+      logger('warn', `Request timed out at ${error.timeout} on request to IAM ${this.baseUrl}`);
+      throw new ConnectionError(`Connect to IAM(${this.baseUrl}) failue`, error);
     }
 
     // Unknown Error

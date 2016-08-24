@@ -7,7 +7,7 @@
   "scripts": {
     "prestart": "npm run build",
     "start": "npm run server",
-    "dev": "nodemon --exec 'babel-node src/server' --watch src --ext js,jsx,json",
+    "dev": "nodemon --exec 'babel-node src/server' --watch src,config --ext js,jsx,json",
     "predebug": "npm run build",
     "debug": "node debug --inspect=5858 build/server",
     "server": "node build/server",

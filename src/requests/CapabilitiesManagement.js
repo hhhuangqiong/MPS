@@ -31,8 +31,8 @@ export const CapabilityTypeToIds = {
 };
 
 export default class CapabilitiesManagement extends CpsRequest {
-  constructor(baseUrl = '') {
-    super(baseUrl);
+  constructor(config) {
+    super(config);
     this.uri = '/1.0/carriers/:carrierId/capabilities';
   }
 

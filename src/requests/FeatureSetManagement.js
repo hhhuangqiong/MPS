@@ -5,9 +5,6 @@ import { ArgumentNullError } from 'common-errors';
 import CpsRequest from './CpsRequest';
 
 export default class FeatureSetManagement extends CpsRequest {
-  constructor(baseUrl = '') {
-    super(baseUrl);
-  }
 
   getFeatureSetTemplate(group = '') {
     const uri = '/1.0/feature_sets/templates';

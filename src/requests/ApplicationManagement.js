@@ -27,9 +27,6 @@ const SaveApplicationSchema = {
 };
 
 export default class ApplicationManagement extends CpsRequest {
-  constructor(baseUrl = '') {
-    super(baseUrl);
-  }
 
   saveApplication(params) {
     const uri = '/1.0/applications';

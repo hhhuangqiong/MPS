@@ -15,7 +15,7 @@ import {
 } from 'common-errors';
 
 export default class CpsRequest {
-  constructor(baseUrl = '', timeout = 8000) {
+  constructor({ baseUrl, timeout }) {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
   }

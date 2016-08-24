@@ -4,10 +4,6 @@ import { ArgumentNullError } from 'common-errors';
 import CpsRequest from './CpsRequest';
 
 export default class CertificateManagement extends CpsRequest {
-  constructor(baseUrl = '') {
-    super(baseUrl);
-  }
-
   getTemplates(group = '') {
     const uri = '/1.0/certificates/templates';
 

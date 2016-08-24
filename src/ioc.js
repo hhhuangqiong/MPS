@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import _ from 'lodash';
 import Bottle from 'bottlejs';
 import path from 'path';
 
@@ -37,17 +38,17 @@ ioc.service('provisioningService', provisioningService, 'provisioningProcessor',
 ioc.service('presetService', presetService, 'validator');
 
 // request objects
-ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps:uri')));
-ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps:uri')));
-ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps:uri')));
-ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps:uri')));
-ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps:uri')));
-ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps:uri')));
-ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('cps:uri')));
+ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps')));
+ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps')));
+ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps')));
+ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps')));
+ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps')));
+ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps')));
+ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('cps')));
 
 ioc.factory('CompanyManagement', (container) => {
-  const { uri } = nconf.get('iam');
-  return new CompanyManagement({ baseUri: uri, validator: container.validator });
+  const imaConfig = nconf.get('iam');
+  return new CompanyManagement(_.extend(imaConfig, { validator: container.validator }));
 });
 
 
