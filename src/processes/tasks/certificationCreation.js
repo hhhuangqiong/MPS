@@ -56,7 +56,7 @@ function run(data, taskResult, cb) {
     })
     .then((templates) => {
       // create certificate for each template
-      let pending = Promise.solve();
+      let pending = Promise.resolve();
 
       // create certificate for each template, one by one, to allow retry
       _.forEach(templates.certificates, (template) => {
