@@ -50,7 +50,7 @@ const ProvisioningProfileModel = {
     contact: { type: String },
   },
   companyCode: { type: String, required: true, unique: true },
-  capabilities: { type: Array, required: true, enum: Object.values(Capabilities) },
+  capabilities: { type: Array, enum: Object.values(Capabilities) },
   country: { type: String, required: true },
   resellerCompanyId: { type: String, required: true },
   resellerCarrierId: { type: String, required: true },
