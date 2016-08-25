@@ -69,6 +69,11 @@ export default function provisioningService(provisioningProcessor, validator) {
       .unique()
       .required(),
     paymentMode: Joi.string().required().valid(PaymentModes),
+    smsc: Joi.object({
+      defaultRealm: Joi.string(),
+      servicePlanId: Joi.string(),
+      sourceAddress: Joi.string(),
+    }),
   });
 
   async function createProvisioning(command) {
@@ -199,6 +204,11 @@ export default function provisioningService(provisioningProcessor, validator) {
         .items(Joi.string().valid(Object.values(Capabilities)))
         .unique(),
       paymentMode: Joi.string().valid(PaymentModes),
+      smsc: Joi.object({
+        defaultRealm: Joi.string(),
+        servicePlanId: Joi.string(),
+        sourceAddress: Joi.string(),
+      }),
     }).required(),
   });
 

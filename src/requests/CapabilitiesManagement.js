@@ -31,6 +31,10 @@ export const CapabilityTypeToIds = {
 };
 
 export default class CapabilitiesManagement extends CpsRequest {
+
+  static CapabilityTypes = CapabilityTypes;
+  static CapabilityTypeToIds = CapabilityTypeToIds;
+
   constructor(config) {
     super(config);
     this.uri = '/1.0/carriers/:carrierId/capabilities';
@@ -95,110 +99,32 @@ export default class CapabilitiesManagement extends CpsRequest {
     return this.post(uri.replace(':carrierId', params.carrierId), params);
   }
 
-  enableSmsCapability({
-    carrierId,
-    /* eslint-disable camelcase */
-    chargingProfile,
-    validate_source_address = true,
-    /* eslint-enable */
-    identifier = `SMS-Profile-${carrierId}`,
-    name = `SMSProfile for ${carrierId}`,
-    ...restParams,
-  }) {
+  static SmsSchema = Joi.object({
+    charging_profile: Joi.string(),
+    identifier: Joi.string(),
+    attributes: Joi.object(),
+    name: Joi.string(),
+    description: Joi.string(),
+    validate_source_address: Joi.boolean(),
+    source_address_list: Joi.array().optional(),
+    default_realm: Joi.string().required(),
+    service_plan_id: Joi.string().required(),
+    systemType: Joi.string(),
+    systemId: Joi.string().required(),
+    password: Joi.string(),
+  });
+
+  enableSmsProfileCapability(type, carrierId, params) {
     const uri = this.uri;
-    const type = 'SMS';
-
-    const rules = {
-      carrierId: Joi.string().required(),
-      type: Joi.string().required(),
-      sms_profile: Joi.object().keys({
-        charging_profile: Joi.string(),
-        identifier: Joi.string(),
-        attributes: Joi.object(),
-        name: Joi.string(),
-        description: Joi.string(),
-        validate_source_address: Joi.boolean(),
-        source_address_list: Joi.array(),
-        default_realm: Joi.string(),
-        service_plan_id: Joi.string(),
-        systemType: Joi.string(),
-        systemId: Joi.string(),
-        password: Joi.string(),
-      }).required(),
-    };
-
-    const params = {
-      carrierId,
-      type,
-      sms_profile: {
-        ...restParams,
-        identifier,
-        name,
-        charging_profile: chargingProfile,
-        validate_source_address,
-      },
-    };
-
     const validationError =
       this.validateType(type) ||
-      this.validateParams(params, rules);
+      this.validateParams(params, this.constructor.SmsSchema);
 
     if (validationError) {
       return this.validationErrorHandler(validationError);
     }
 
-    return this.post(uri.replace(':carrierId', params.carrierId), params);
-  }
-
-  enableImToSmsCapability({
-    carrierId,
-    name = `SMSProfile for ${carrierId}`,
-    /* eslint-disable camelcase */
-    chargingProfile,
-    /* eslint-enable */
-    ...restParams,
-  }) {
-    const uri = this.uri;
-    const type = 'ImToSms';
-
-    const rules = {
-      carrierId: Joi.string().required(),
-      type: Joi.string().required(),
-      sms_profile: Joi.object().keys({
-        charging_profile: Joi.string(),
-        identifier: Joi.string(),
-        attributes: Joi.object(),
-        name: Joi.string(),
-        description: Joi.string(),
-        validate_source_address: Joi.boolean(),
-        source_address_list: Joi.array(),
-        default_realm: Joi.string(),
-        service_plan_id: Joi.string(),
-        systemType: Joi.string(),
-        systemId: Joi.string(),
-        password: Joi.string(),
-      }),
-    };
-
-    const params = {
-      carrierId,
-      type,
-      sms_profile: {
-        ...restParams,
-        charging_profile: chargingProfile,
-        name,
-      },
-    };
-
-    const validationError =
-      this.validateType(type) ||
-      this.validateParams(params, rules);
-
-    if (validationError) {
-      return this.validationErrorHandler(validationError);
-    }
-
-    return this.post(uri.replace(':carrierId', params.carrierId), params);
+    return this.post(uri.replace(':carrierId', carrierId), { type, sms_profile: params });
   }
 
   enableVoiceCapability({

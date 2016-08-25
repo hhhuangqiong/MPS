@@ -1,12 +1,38 @@
 {
   "cps": {
-    "baseUrl": "http://192.168.118.23:9000",
+    "baseUrl": "http://192.168.118.34:80",
     "timeout": 15000,
     "wlServiceDomain": "maaii.com",
     "sdkServiceDomain": "m800-api.com",
     "chargeProfile": {
       "company": "m800_charge_profile",
       "user": "maaii_charge_profile"
+    },
+    "sms": {
+      "template": {
+        "charging_profile": "{{ companyChargeProfile }}",
+        "identifier": "{{ carrierId }}.sms-profile",
+        "name": "[MPS-Generated] SMS profile for {{ companyCode }}",
+        "password": "201$Maal",
+        "default_realm": "WhiteLabel",
+        "service_plan_id": "whitelabel",
+        "systemId": "WhiteLabel",
+        "systemType": "testSystem",
+        "validate_source_address": false
+      }
+    },
+    "im-to-sms": {
+      "template": {
+        "charging_profile": "{{ userChargeProfile }}",
+        "identifier": "{{ carrierId }}.im-to-sms-profile",
+        "name": "[MPS-Generated] IM-TO-SMS profile for {{ companyCode }}",
+        "password": "201$Maal",
+        "default_realm": "WhiteLabel",
+        "service_plan_id": "im2sms",
+        "systemId": "WhiteLabel",
+        "systemType": "testSystem",
+        "validate_source_address": false
+      }
     },
     "sip": {
       "gateway": {

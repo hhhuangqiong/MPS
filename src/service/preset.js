@@ -10,6 +10,11 @@ export default function presetService(validator) {
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     paymentMode: Joi.string().valid(Object.values(PaymentModes)),
     capabilities: Joi.array().items(Joi.string().valid(Object.values(Capabilities))),
+    smsc: Joi.object({
+      defaultRealm: Joi.string(),
+      servicePlanId: Joi.string(),
+      sourceAddress: Joi.string(),
+    }),
   });
 
   async function setPreset(command) {

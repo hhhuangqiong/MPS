@@ -10,6 +10,11 @@ const schema = new Schema({
   serviceType: { type: String, enum: Object.values(ServiceTypes) },
   paymentMode: { type: String, enum: Object.values(PaymentModes) },
   capabilities: { type: Array },
+  smsc: {
+    defaultRealm: { type: String },
+    servicePlanId: { type: String },
+    sourceAddress: { type: String },
+  },
 }, { id: false, versionKey: false });
 
 if (!schema.options.toJSON) schema.options.toJSON = {};

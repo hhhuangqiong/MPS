@@ -56,7 +56,11 @@ const ProvisioningProfileModel = {
   resellerCarrierId: { type: String, required: true },
   serviceType: { type: String, required: true, enum: Object.values(ServiceTypes) },
   paymentMode: { type: String, required: true, enum: PaymentModes },
-
+  smsc: {
+    defaultRealm: { type: String },
+    servicePlanId: { type: String },
+    sourceAddress: { type: String },
+  },
   // fields to be generated in process, not required
   companyId: { type: String },
   carrierId: { type: String },
