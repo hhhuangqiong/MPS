@@ -18,12 +18,6 @@ export async function getProvisioning(req, res, next) {
   const query = req.query;
   const params = req.params;
 
-  if (params.provisioningId) params.provisioningId = params.provisioningId.split(',');
-  if (query.companyId) query.companyId = query.companyId.split(',');
-  if (query.serviceType) query.serviceType = query.serviceType.split(',');
-  if (query.companyCode) query.companyCode = query.companyCode.split(',');
-  if (query.carrierId) query.carrierId = query.carrierId.split(',');
-
   try {
     const command = _.extend({}, params, query);
     const provisionings = await provisioningService.getProvisionings(command);

@@ -101,6 +101,8 @@ export default function provisioningService(provisioningProcessor, validator) {
     serviceType: Joi.array().items(Joi.string().valid(Object.values(ServiceTypes))).optional(),
     companyCode: Joi.array().items(Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY)).optional(),
     companyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
+    resellerCarrierId: Joi.array().items(Joi.string()).optional(),
+    resellerCompanyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
     search: Joi.string(),
     page: Joi.number().min(1).default(1),
     pageSize: Joi
@@ -110,6 +112,14 @@ export default function provisioningService(provisioningProcessor, validator) {
   });
 
   async function getProvisionings(command) {
+    if (command.provisioningId) command.provisioningId = command.provisioningId.split(',');
+    if (command.companyId) command.companyId = command.companyId.split(',');
+    if (command.serviceType) command.serviceType = command.serviceType.split(',');
+    if (command.companyCode) command.companyCode = command.companyCode.split(',');
+    if (command.carrierId) command.carrierId = command.carrierId.split(',');
+    if (command.resellerCarrierId) command.resellerCarrierId = command.resellerCarrierId.split(',');
+    if (command.resellerCompanyId) command.resellerCompanyId = command.resellerCompanyId.split(',');
+
     const {
       page,
       pageSize,
@@ -119,9 +129,11 @@ export default function provisioningService(provisioningProcessor, validator) {
       companyId,
       provisioningId,
       carrierId,
+      resellerCarrierId,
+      resellerCompanyId,
     } = validator.sanitize(command, schemaGetProvisionings);
-    const offset = (page - 1) * pageSize;
 
+    const offset = (page - 1) * pageSize;
     const filters = {};
     /* eslint-disable no-underscore-dangle */
     if (provisioningId) filters._id = { $in: provisioningId };
@@ -136,7 +148,8 @@ export default function provisioningService(provisioningProcessor, validator) {
     if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
     if (companyId) filters['profile.companyId'] = { $in: companyId };
     if (carrierId) filters['profile.carrierId'] = { $in: carrierId };
-
+    if (resellerCarrierId) filters['profile.resellerCarrierId'] = { $in: resellerCarrierId };
+    if (resellerCompanyId) filters['profile.resellerCompanyId'] = { $in: resellerCompanyId };
 
     const selection = _.transform(PUBLIC_PROPS, (result, prop) => {
       result[prop] = 1;
