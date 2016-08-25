@@ -15,8 +15,8 @@ function validateRerun(data, taskResult) {
   return true;
 }
 
-function getTemplateKey(template) {
-  return `${template.application_identifier}:${template.platform_id}`;
+function getKey(template, applicationIdentifier) {
+  return `${applicationIdentifier}:${template.platform_id}:${template.type}`;
 }
 
 function createCertificate(template, applicationIdentifier) {
@@ -60,7 +60,7 @@ function run(data, taskResult, cb) {
 
       // create certificate for each template, one by one, to allow retry
       _.forEach(templates.certificates, (template) => {
-        const templateKey = getTemplateKey(template);
+        const templateKey = getKey(template, applicationIdentifier);
         if (taskResult[templateKey]) {
           // skip if already created
           return;

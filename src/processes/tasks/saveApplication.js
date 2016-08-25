@@ -23,12 +23,16 @@ function rerunValidation(data, taskResult) {
   return true;
 }
 
+function reverseDomain(domain) {
+  return _.reverse(domain.split('.')).join('.');
+}
+
 function generateApplicationId(serviceType, companyCode) {
   switch (serviceType) {
     case ServiceTypes.SDK:
-      return `com.${cpsConfig.sdkServiceDomain}.${companyCode}`;
+      return `${reverseDomain(cpsConfig.sdkServiceDomain)}.${companyCode}`;
     case ServiceTypes.WHITE_LABEL:
-      return `com.${cpsConfig.wlServiceDomain}.${companyCode}`;
+      return `${reverseDomain(cpsConfig.wlServiceDomain)}.${companyCode}`;
     default:
       throw new NotImplementedError(`Service type ${serviceType} provisioning is not supported yet`);
   }
