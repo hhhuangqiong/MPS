@@ -118,7 +118,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     page: Joi.number().min(1).default(1),
     pageSize: Joi
       .number()
-      .min(5).max(50)
+      .min(5).max(500)
       .default(10),
   });
 
