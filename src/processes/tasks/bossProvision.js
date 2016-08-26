@@ -25,7 +25,6 @@ function getOffnetPrefix(carrierId) {
   return CapabilitiesManagement.getProfile(carrierId, CapabilityTypeToIds.Voice)
     .then((res) => {
       const profile = res.body;
-      return [12345678, 12345678];
 
       if (!profile.offnet_incoming_call_prefix) {
         throw new ReferenceError('Unexpected response from CPS: `offnet_incoming_call_prefix` missing in voice profile');
