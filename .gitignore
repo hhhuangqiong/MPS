@@ -6,3 +6,6 @@
 /coverage
 /build
 /doc
+
+# storage folder for bpmn
+/persist
