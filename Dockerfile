@@ -17,7 +17,9 @@ WORKDIR /app
 
 # create logs folder
 RUN mkdir logs && \
-    chmod a+w logs
+    chmod a+w logs && \
+    mkdir persist && \
+    chmod a+w persist
 
 ENV NODE_ENV=production
 
