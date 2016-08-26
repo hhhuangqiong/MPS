@@ -43,27 +43,27 @@ ioc.service('provisioningService', provisioningService, 'provisioningProcessor',
 ioc.service('presetService', presetService, 'validator');
 
 // request objects
-ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps')));
-ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps')));
-ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps')));
-ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps')));
-ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps')));
-ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps')));
-ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('cps')));
+ioc.factory('CarrierManagement', () => new CarrierManagement(nconf.get('cps:api')));
+ioc.factory('CapabilitiesManagement', () => new CapabilitiesManagement(nconf.get('cps:api')));
+ioc.factory('FeatureSetManagement', () => new FeatureSetManagement(nconf.get('cps:api')));
+ioc.factory('ApplicationManagement', () => new ApplicationManagement(nconf.get('cps:api')));
+ioc.factory('VoiceProvisioningManagement', () => new VoiceProvisioningManagement(nconf.get('cps:api')));
+ioc.factory('VerificationManagement', () => new VerificationManagement(nconf.get('cps:api')));
+ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('cps:api')));
 
-ioc.factory('NotificationManagement', () => new NotificationManagement(nconf.get('cps')));
+ioc.factory('NotificationManagement', () => new NotificationManagement(nconf.get('cps:api')));
 
 ioc.factory('CompanyManagement', (container) => {
-  const iamConfig = nconf.get('iam');
-  return new CompanyManagement(_.extend(iamConfig, { validator: container.validator }));
+  const imaConfig = nconf.get('iam:api');
+  return new CompanyManagement(_.extend(imaConfig, { validator: container.validator }));
 });
 
 ioc.factory('AccessManagement', (container) => {
-  const iamConfig = nconf.get('iam');
+  const iamConfig = nconf.get('iam:api');
   return new AccessManagement(_.extend(iamConfig, { validator: container.validator }));
 });
 
-ioc.factory('BossProvisionManagement', () => new BossProvisionManagement(nconf.get('boss')));
+ioc.factory('BossProvisionManagement', () => new BossProvisionManagement(nconf.get('boss:api')));
 
 
 export default ioc;

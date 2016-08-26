@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import request from 'superagent-bluebird-promise';
+import Throttle from 'superagent-throttle';
 import { ValidationError } from 'common-errors';
 import _ from 'lodash';
 
@@ -8,9 +9,27 @@ import validateSchema from '../utils/validateSchema';
 
 
 export default class BaseRequest {
-  constructor({ baseUrl, timeout }) {
+  constructor({
+    baseUrl,
+    timeout,
+    throttle = {},
+  }) {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
+
+    const {
+      active = true,
+      rate = 5,
+      ratePer = 10000,
+      concurrent = 20,
+     } = throttle;
+
+    this.throttle = new Throttle({
+      active,     // set false to pause queue
+      rate,          // how many requests can be sent every `ratePer`
+      ratePer,   // number of ms in which `rate` requests may be sent
+      concurrent,     // how many requests can be sent concurrently
+    });
   }
 
   normalizeParams(params) {
@@ -49,12 +68,13 @@ export default class BaseRequest {
   get(uri) {
     const url = this.getUrl(uri);
 
-    logger(`Sending GET Request to ${url}`);
+    logger(`[${(new Date()).toUTCString()}] Sending GET Request to ${url}`);
 
     return request
       .get(url)
       .timeout(this.timeout)
       .set('Accept', 'application/json')
+      .use(this.throttle.plugin())
       .promise();
   }
 
@@ -62,13 +82,14 @@ export default class BaseRequest {
     const url = this.getUrl(uri);
     const normalizedParams = this.normalizeParams(params);
 
-    logger(`Sending POST Request to ${url} with params:`, normalizedParams);
+    logger(`[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`, normalizedParams);
 
     return request
       .post(url)
       .timeout(this.timeout)
-      .send(normalizedParams)
+      .use(this.throttle.plugin())
       .set('Accept', 'application/json')
+      .send(normalizedParams)
       .promise();
   }
 }

@@ -1,6 +1,6 @@
-import _ from 'lodash';
 import isEmpty from 'lodash/isEmpty';
 import BaseRequest from './BaseRequest';
+import logger from '../utils/logger';
 
 import {
   HttpStatusError,
@@ -33,7 +33,8 @@ export default class CpsRequest extends BaseRequest {
     try {
       responseError = JSON.parse(error.res.text).error;
     } catch (e) {
-      throw new ReferenceError('Unexpected response from CPS: ', _.get(error, 'res', null), e);
+      logger('Unexpected response from CPS: ', error);
+      throw new ReferenceError(`Unexpected response from CPS ${error.res}`);
     }
 
     let parsedError;

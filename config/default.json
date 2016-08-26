@@ -1,7 +1,9 @@
 {
   "cps": {
-    "baseUrl": "http://192.168.118.34:80",
-    "timeout": 5000,
+    "api": {
+      "baseUrl": "http://192.168.118.34:80",
+      "timeout": 60000
+    },
     "wlServiceDomain": "maaii.com",
     "sdkServiceDomain": "m800-api.com",
     "chargeProfile": {
@@ -130,7 +132,10 @@
     }
   },
   "iam": {
-    "baseUrl": "http://deploy.dev.maaii.com:4004",
+    "api": {
+      "baseUrl": "http://deploy.dev.maaii.com:4004",
+      "timeout": 60000
+    },
     "adminRoleTemplate": {
       "name": "Admin",
       "service": "wlp",
@@ -188,7 +193,10 @@
     "uri": "mongodb://localhost:27017/maaii-provisioning-service"
   },
   "boss": {
-    "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
+    "api": {
+      "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
+      "timeout": 60000
+    },
     "prePaidInitialBalance": 0,
     "postPaidInitialBalance": 999999999
   }
