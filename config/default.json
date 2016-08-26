@@ -130,7 +130,59 @@
     }
   },
   "iam": {
-    "baseUrl": "http://deploy.dev.maaii.com:4004"
+    "baseUrl": "http://deploy.dev.maaii.com:4004",
+    "adminRoleTemplate": {
+      "name": "Admin",
+      "service": "wlp",
+      "company": "{{ companyId }}",
+      "permissions": {
+        "wlp:general": [
+          "read"
+        ],
+        "wlp:sms": [
+          "read"
+        ],
+        "wlp:im": [
+          "read"
+        ],
+        "wlp:call": [
+          "read"
+        ],
+        "wlp:vsf": [
+          "read"
+        ],
+        "wlp:topUp": [
+          "read"
+        ],
+        "wlp:generalOverview": [
+          "read"
+        ],
+        "wlp:endUser": [
+          "create",
+          "update",
+          "read",
+          "delete"
+        ],
+        "role": [
+          "create",
+          "update",
+          "read",
+          "delete"
+        ],
+        "user": [
+          "create",
+          "update",
+          "read",
+          "delete"
+        ],
+        "company": [
+          "create",
+          "update",
+          "read",
+          "delete"
+        ]
+      }
+    }
   },
   "mongo": {
     "uri": "mongodb://localhost:27017/maaii-provisioning-service"

@@ -27,6 +27,7 @@ export SAVE_APPLICATION from '../tasks/saveApplication';
 export CERTIFICATION_CREATION from '../tasks/certificationCreation';
 
 export COMPANY_CREATION from '../tasks/companyCreation';
+export WLP_ACCESS_CREATION from '../tasks/wlpAccessCreation';
 
 export {
   PARALLEL_ALL_START,

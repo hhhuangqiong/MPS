@@ -14,6 +14,7 @@ import VoiceProvisioningManagement from './requests/VoiceProvisioningManagement'
 import VerificationManagement from './requests/VerificationManagement';
 import CertificateManagement from './requests/CertificateManagement';
 import NotificationManagement from './requests/NotificationManagement';
+import AccessManagement from './requests/AccessManagement';
 
 import provisioningProcessor from './processes/provisioning';
 import provisioningService from './service/provisioning';
@@ -27,6 +28,7 @@ const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '..
 // configuations
 ioc.constant('cpsConfig', parseObjectArrays(nconf.get('cps')));
 ioc.constant('bossConfig', parseObjectArrays(nconf.get('boss')));
+ioc.constant('iamConfig', parseObjectArrays(nconf.get('iam')));
 
 // resources/dependencies
 /* eslint-disable global-require */
@@ -52,10 +54,14 @@ ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('
 ioc.factory('NotificationManagement', () => new NotificationManagement(nconf.get('cps')));
 
 ioc.factory('CompanyManagement', (container) => {
-  const imaConfig = nconf.get('iam');
-  return new CompanyManagement(_.extend(imaConfig, { validator: container.validator }));
+  const iamConfig = nconf.get('iam');
+  return new CompanyManagement(_.extend(iamConfig, { validator: container.validator }));
 });
 
+ioc.factory('AccessManagement', (container) => {
+  const iamConfig = nconf.get('iam');
+  return new AccessManagement(_.extend(iamConfig, { validator: container.validator }));
+});
 
 ioc.factory('BossProvisionManagement', () => new BossProvisionManagement(nconf.get('boss')));
 
