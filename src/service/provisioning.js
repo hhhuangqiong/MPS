@@ -44,9 +44,13 @@ export default function provisioningService(provisioningProcessor, validator) {
     const profileUpdates = parseResultsToProfileUpdates(taskResults);
 
     logger(`Process complete for Provisioing: ${provisioningId}, profile changes `, profileUpdates);
-
     Provisioning.findByIdAndUpdate(provisioningId, _.extend({ taskResults, taskErrors, status }, profileUpdates))
-      .exec();
+      .then(() => {
+        logger(`Successfully updated provisioning ${provisioningId} on process complete.`);
+      })
+      .catch((e) => {
+        logger('fatal', `fail to update provisioning ${provisioningId} on process complete.`, e.stack);
+      });
   });
 
   const schemaCreateProvision = Joi.object({
