@@ -1,7 +1,8 @@
 import Joi from 'joi';
-import request from 'superagent-bluebird-promise';
 import _ from 'lodash';
 import { HttpStatusError, ConnectionError } from 'common-errors';
+
+import BaseRequest from './BaseRequest';
 import logger from '../utils/logger';
 
 const contactSchema = Joi.object({
@@ -12,7 +13,7 @@ const contactSchema = Joi.object({
 
 const schema = Joi.object({
   parent: Joi.string().required(),
-  country: Joi.string().optional(),
+  country: Joi.string().required(),
   reseller: Joi.boolean().default(false),
   name: Joi.string().required(),
   themeType: Joi.string().optional(),
@@ -29,23 +30,17 @@ const schema = Joi.object({
 });
 
 
-export default class CompanyManagement {
-  constructor({ baseUrl, timeout, validator }) {
-    this.baseUrl = baseUrl;
-    this.timeout = timeout;
-    this.validator = validator;
-  }
+export default class CompanyManagement extends BaseRequest {
 
   createCompany(params) {
-    const query = this.validator.sanitize(params, schema);
-    const uri = `${this.baseUrl}/identity/companies`;
-    logger(`Making IAM create company request to ${uri}. With query`, query);
+    const uri = '/identity/companies';
+    const validationError = this.validateParams(params, schema);
 
-    return request.post(uri)
-      .timeout(this.timeout)
-      .send(query)
-      .set('Accept', 'application/json')
-      .promise()
+    if (validationError) {
+      return this.validationErrorHandler(validationError);
+    }
+
+    return this.post(uri, params)
       .catch(this.errorHandler);
   }
 

@@ -54,8 +54,8 @@ ioc.factory('CertificateManagement', () => new CertificateManagement(nconf.get('
 ioc.factory('NotificationManagement', () => new NotificationManagement(nconf.get('cps:api')));
 
 ioc.factory('CompanyManagement', (container) => {
-  const imaConfig = nconf.get('iam:api');
-  return new CompanyManagement(_.extend(imaConfig, { validator: container.validator }));
+  const iamConfig = nconf.get('iam:api');
+  return new CompanyManagement(_.extend(iamConfig, { validator: container.validator }));
 });
 
 ioc.factory('AccessManagement', (container) => {

@@ -49,7 +49,7 @@ export default function provisioningService(provisioningProcessor, validator) {
         logger(`Successfully updated provisioning ${provisioningId} on process complete.`);
       })
       .catch((e) => {
-        logger('fatal', `fail to update provisioning ${provisioningId} on process complete.`, e.stack);
+        logger(`fail to update provisioning ${provisioningId} on process complete.`, e.stack);
       });
   });
 
@@ -248,7 +248,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     const processId = await run(provisioningId, newProfile, taskResults);
 
     // update storage if process execution success
-    logger(`Run process with processId ${processId}`);
+    logger(`Run process with processId ${processId}.`);
     provisioning = await Provisioning.findByIdAndUpdate(provisioningId, {
       status: ProcessStatus.UPDATING,
       processId,

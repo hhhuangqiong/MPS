@@ -42,7 +42,7 @@ export function addProcess({ processManager, processPath, processHandlers, start
         defaultEventHandler(eventType, currentFlowObjectName, handlerName, reason, done) {
           logger(`Handler not found for event ${currentFlowObjectName}:${handlerName}<${eventType}>`);
             // Called, if no handler could be invoked.
-          done();
+          done({});
         },
         defaultErrorHandler(error, done) {
           logger('error caught within task ', error.stack);
