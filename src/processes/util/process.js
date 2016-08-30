@@ -3,6 +3,30 @@ import _ from 'lodash';
 import logger from '../../utils/logger';
 import { Error } from 'common-errors';
 
+function getTaskResults(process) {
+  try {
+    return JSON.parse(process.getProperty('taskResults')) || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function setTaskResults(process, taskResults) {
+  process.setProperty('taskResults', JSON.stringify(taskResults));
+}
+
+function getTaskErrors(process) {
+  try {
+    return JSON.parse(process.getProperty('taskErrors')) || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function setTaskErrors(process, taskErrors) {
+  process.setProperty('taskErrors', JSON.stringify(taskErrors));
+}
+
 /**
  * Helper module to integrate with processManager
  */
@@ -24,8 +48,8 @@ export function addProcess({ processManager, processPath, processHandlers, start
         [endEventName](data, done) {
           logger('info', 'process end');
 
-          const taskResults = this.getProperty('taskResults');
-          const taskErrors = this.getProperty('taskErrors');
+          const taskResults = getTaskResults(this);
+          const taskErrors = getTaskErrors(this);
           const ownerId = this.getProperty('ownerId');
 
           if (onProcessComplete) {
@@ -79,10 +103,9 @@ export function addProcess({ processManager, processPath, processHandlers, start
             logger(`Task ${currentFlowObjectName} ends with error`, taskError);
 
             // persist errors into process property
-            const processErrors = this.getProperty('taskErrors') || {};
-            processErrors[currentFlowObjectName] = taskError;
-            _.assign(processErrors, taskErrors);
-            this.setProperty('taskErrors', processErrors);
+            const errors = getTaskErrors(this);
+            errors[currentFlowObjectName] = taskError;
+            setTaskErrors(this, errors);
           } else {
             logger(`Task ${currentFlowObjectName} ends with result: `, taskResult);
 
@@ -91,10 +114,9 @@ export function addProcess({ processManager, processPath, processHandlers, start
             // designed to avoid same result properties are used across task
             _.assign(data, taskResult);
 
-            // presist erros into process property
-            const processResults = this.getProperty('taskResults') || {};
-            processResults[currentFlowObjectName] = taskResult;
-            this.setProperty('taskResults', processResults);
+            const results = getTaskResults(this);
+            results[currentFlowObjectName] = taskResult;
+            setTaskResults(this, results);
           }
           done(data);
         },

@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import request from 'superagent-bluebird-promise';
+import saLogger from 'superagent-logger';
 import { ValidationError } from 'common-errors';
 import _ from 'lodash';
 
@@ -52,11 +53,12 @@ export default class BaseRequest {
   get(uri) {
     const url = this.getUrl(uri);
 
-    logger(`[${(new Date()).toUTCString()}] Sending GET Request to ${url}`);
+    logger('debug', `[${(new Date()).toUTCString()}] Sending GET Request to ${url}`);
 
     return request
       .get(url)
       .timeout(this.timeout)
+      .use(saLogger({ outgoing: true, timestamp: true }))
       .set('Accept', 'application/json')
       .promise();
   }
@@ -65,11 +67,12 @@ export default class BaseRequest {
     const url = this.getUrl(uri);
     const normalizedParams = this.normalizeParams(params);
 
-    logger(`[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`, normalizedParams);
+    logger('debug', `[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`, normalizedParams);
 
     return request
       .post(url)
       .timeout(this.timeout)
+      .use(saLogger({ outgoing: true, timestamp: true }))
       .set('Accept', 'application/json')
       .send(normalizedParams)
       .promise();

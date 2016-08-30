@@ -49,12 +49,12 @@ function createNotification(carrierId, template) {
 }
 
 function createNotifications(carrierId, taskResult, templates) {
-  const doneNotifications = JSON.parse(taskResult.notifications || '{}');
+  const { notifications } = taskResult;
   // create notifications in parrallel
   return Promise.all(_.map(templates, template => {
     const notificationIdentifier = template.identifier;
 
-    const result = doneNotifications[notificationIdentifier];
+    const result = notifications && notifications[notificationIdentifier];
     if (result) {
       // skip if notifcation created before
       return Promise.resolve(result);
@@ -96,10 +96,10 @@ function run(data, taskResult, cb) {
         throw new Error(`${errors.length} notification creations failed: ${failureMessages}`);
       }
 
-      cb(null, { notifications: JSON.stringify(notifications), done: true });
+      cb(null, { notifications, done: true });
     })
     .catch((err) => {
-      cb(err, { notifications: JSON.stringify(notifications), done: false });
+      cb(err, { notifications, done: false });
     });
 }
 

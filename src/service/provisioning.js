@@ -44,7 +44,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     const profileUpdates = parseResultsToProfileUpdates(taskResults);
 
     logger(`Process complete for Provisioing: ${provisioningId}, profile changes `, profileUpdates);
-    Provisioning.findByIdAndUpdate(provisioningId, _.extend({ taskResults, taskErrors, status }, profileUpdates))
+    Provisioning.findByIdAndUpdate(provisioningId, _.extend({ taskResults: JSON.stringify(taskResults), taskErrors, status }, profileUpdates))
       .then(() => {
         logger(`Successfully updated provisioning ${provisioningId} on process complete.`);
       })
@@ -237,7 +237,14 @@ export default function provisioningService(provisioningProcessor, validator) {
       throw new NotFoundError(`provisioning=${provisioningId}`);
     }
 
-    const { profile: existingProfile, status, taskResults } = provisioning;
+    const { profile: existingProfile, status } = provisioning;
+
+    let taskResults;
+    try {
+      taskResults = JSON.parse(provisioning.taskResults);
+    } catch (e) {
+      taskResults = {};
+    }
 
     if (status !== ProcessStatus.COMPLETE && status !== ProcessStatus.ERROR) {
       throw new InvalidOperationError(`Cannot update provisioning when status is ${status}`);
