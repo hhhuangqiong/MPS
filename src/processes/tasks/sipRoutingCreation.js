@@ -14,7 +14,7 @@ const template = sip.routing.template;
 function validateRerun(data, taskResult) {
   const { sipRoutingProfileId } = taskResult;
   if (taskResult.sipRoutingProfileId) {
-    logger(`skip sip profile creation on rerun: ${sipRoutingProfileId}`);
+    logger.info(`skip sip profile creation on rerun: ${sipRoutingProfileId}`);
     return false;
   }
 
@@ -39,7 +39,7 @@ function run(data, taskResult, cb) {
   VoiceProvisioningManagement.sipRoutingProfileCreation(query)
     .then((res) => {
       const sipRoutingProfileId = res.body.id;
-      logger(`sip routing profile ${sipRoutingProfileId} creation complete`);
+      logger.info(`sip routing profile ${sipRoutingProfileId} creation complete`);
 
       if (!sipRoutingProfileId) {
         throw new ReferenceError('Invalid response from cps sip routing profile creation: id is missing');

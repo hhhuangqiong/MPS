@@ -43,13 +43,13 @@ export default function provisioningService(provisioningProcessor, validator) {
     const status = Object.keys(taskErrors).length > 0 ? ProcessStatus.ERROR : ProcessStatus.COMPLETE;
     const profileUpdates = parseResultsToProfileUpdates(taskResults);
 
-    logger(`Process complete for Provisioing: ${provisioningId}, profile changes `, profileUpdates);
+    logger.info(`Process complete for Provisioing: ${provisioningId}, profile changes `, profileUpdates);
     Provisioning.findByIdAndUpdate(provisioningId, _.extend({ taskResults: JSON.stringify(taskResults), taskErrors, status }, profileUpdates))
       .then(() => {
-        logger(`Successfully updated provisioning ${provisioningId} on process complete.`);
+        logger.info(`Successfully updated provisioning ${provisioningId} on process complete.`);
       })
       .catch((e) => {
-        logger(`fail to update provisioning ${provisioningId} on process complete.`, e.stack);
+        logger.info(`fail to update provisioning ${provisioningId} on process complete.`, e.stack);
       });
   });
 
@@ -255,7 +255,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     const processId = await run(provisioningId, newProfile, taskResults);
 
     // update storage if process execution success
-    logger(`Run process with processId ${processId}.`);
+    logger.info(`Run process with processId ${processId}.`);
     provisioning = await Provisioning.findByIdAndUpdate(provisioningId, {
       status: ProcessStatus.UPDATING,
       processId,

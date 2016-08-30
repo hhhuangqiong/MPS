@@ -75,7 +75,7 @@ function run(data, cb) {
   const { carrierId, capabilities } = data;
 
   if (!needActivation(capabilities)) {
-    logger('Verification Profile Creation skipped no capabilities requires.');
+    logger.info('Verification Profile Creation skipped no capabilities requires.');
     cb(null, { done: false });
     return;
   }

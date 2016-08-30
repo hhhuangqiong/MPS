@@ -1,30 +1,45 @@
 import uuid from 'uuid';
 import _ from 'lodash';
 import logger from '../../utils/logger';
-import { Error } from 'common-errors';
 
 function getTaskResults(process) {
+  const taskResults = process.getProperty('taskResults');
+  if (!taskResults) return {};
+
   try {
-    return JSON.parse(process.getProperty('taskResults')) || {};
+    return JSON.parse(taskResults) || {};
   } catch (e) {
+    logger.warning('Unable to deserialize taskResults from process', taskResults, e.stack);
     return {};
   }
 }
 
 function setTaskResults(process, taskResults) {
-  process.setProperty('taskResults', JSON.stringify(taskResults));
+  try {
+    process.setProperty('taskResults', JSON.stringify(taskResults));
+  } catch (e) {
+    logger.warning('Unable to serialize taskResults to process:', taskResults, e.stack);
+  }
 }
 
 function getTaskErrors(process) {
+  const taskErrors = process.getProperty('taskErrors');
+  if (!taskErrors) return {};
+
   try {
-    return JSON.parse(process.getProperty('taskErrors')) || {};
+    return JSON.parse(taskErrors) || {};
   } catch (e) {
+    logger.warning('Unable to deserialize taskErrors from process.', taskErrors, e.stack);
     return {};
   }
 }
 
 function setTaskErrors(process, taskErrors) {
-  process.setProperty('taskErrors', JSON.stringify(taskErrors));
+  try {
+    process.setProperty('taskErrors', JSON.stringify(taskErrors));
+  } catch (e) {
+    logger.warning('Unable to serialize taskErrors to process:', taskErrors, e.stack);
+  }
 }
 
 /**
@@ -41,12 +56,12 @@ export function addProcess({ processManager, processPath, processHandlers, start
       processPath,
       _.extend(processHandlers, {
         [startEventName](data, done) {
-          logger('info', 'process start');
+          logger.info('process start');
 
           done(data);
         },
         [endEventName](data, done) {
-          logger('info', 'process end');
+          logger.info('process end');
 
           const taskResults = getTaskResults(this);
           const taskErrors = getTaskErrors(this);
@@ -64,18 +79,18 @@ export function addProcess({ processManager, processPath, processHandlers, start
           done(data);
         },
         defaultEventHandler(eventType, currentFlowObjectName, handlerName, reason, done) {
-          logger(`Handler not found for event ${currentFlowObjectName}:${handlerName}<${eventType}>`);
+          logger.info(`Handler not found for event ${currentFlowObjectName}:${handlerName}<${eventType}>`);
             // Called, if no handler could be invoked.
           done({});
         },
         defaultErrorHandler(error, done) {
-          logger('error caught within task ', error.stack);
+          logger.info('error caught within task ', error.stack);
           const taskErrors = { UNKNOWN_TASK: error };
           // set as taskErrors for tasks beyond this point
           done({ taskErrors });
         },
         onBeginHandler(currentFlowObjectName, data, done) {
-          logger(`Task ${currentFlowObjectName} begins`);
+          logger.info(`Task ${currentFlowObjectName} begins`);
           done(data);
         },
         /**
@@ -93,21 +108,21 @@ export function addProcess({ processManager, processPath, processHandlers, start
           const taskError = taskErrors && taskErrors[currentFlowObjectName];
 
           if (!taskResult && !taskError) {
-            logger(`Task ${currentFlowObjectName} ended.`);
+            logger.info(`Task ${currentFlowObjectName} ended.`);
             // most likely not a (wrapped) task, ignores
             done(data);
             return;
           }
 
           if (taskError) {
-            logger(`Task ${currentFlowObjectName} ends with error`, taskError);
+            logger.info(`Task ${currentFlowObjectName} ends with error`, taskError);
 
             // persist errors into process property
             const errors = getTaskErrors(this);
             errors[currentFlowObjectName] = taskError;
             setTaskErrors(this, errors);
           } else {
-            logger(`Task ${currentFlowObjectName} ends with result: `, taskResult);
+            logger.info(`Task ${currentFlowObjectName} ends with result: `, taskResult);
 
             // flatten result into data for next process tasks
             // NOTE: tasks must result object as a result. process task should be
@@ -123,7 +138,7 @@ export function addProcess({ processManager, processPath, processHandlers, start
       })
     );
   } catch (e) {
-    logger('fatal', 'Error loading bpmn into engine: ', e.stack);
+    logger.emerg('Error loading bpmn into engine: ', e.stack);
   }
 
   /**
@@ -158,7 +173,10 @@ export function addProcess({ processManager, processPath, processHandlers, start
     const process = await processManager.createProcessAsync(processId);
 
     process.setProperty('ownerId', ownerId);
-    process.setProperty('taskResults', taskResults);
+
+    // seralize results into process for rerun
+    setTaskResults(process, taskResults);
+
     process.triggerEvent(startEventName, data);
 
     return processId;

@@ -33,7 +33,7 @@ export default class CpsRequest extends BaseRequest {
     try {
       responseError = JSON.parse(error.res.text).error;
     } catch (e) {
-      logger('Unexpected response from CPS: ', error);
+      logger.warning('Unexpected response from CPS: ', error);
       throw new ReferenceError(`Unexpected response from CPS ${error.res}`);
     }
 

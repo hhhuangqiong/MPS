@@ -9,7 +9,7 @@ export async function createProvisioning(req, res, next) {
     const result = await provisioningService.createProvisioning(req.body);
     res.json(result);
   } catch (e) {
-    logger('error', 'createProvisioning: Error caught ', e.stack);
+    logger.error('createProvisioning: Error caught ', e.stack);
     next(e);
   }
 }
@@ -23,7 +23,7 @@ export async function getProvisioning(req, res, next) {
     const provisionings = await provisioningService.getProvisionings(command);
     res.json(provisionings);
   } catch (e) {
-    logger('error', 'getProvisioning: Error caught ', e.stack);
+    logger.error('getProvisioning: Error caught ', e.stack);
     next(e);
   }
 }
@@ -34,7 +34,7 @@ export async function updateProvisioning(req, res, next) {
     const provisioning = await provisioningService.updateProvisioning(command);
     res.json(provisioning);
   } catch (e) {
-    logger('error', 'updateProvisioning: Error caught ', e.stack);
+    logger.error('updateProvisioning: Error caught ', e.stack);
     next(e);
   }
 }

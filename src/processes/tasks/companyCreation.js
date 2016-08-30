@@ -26,10 +26,10 @@ function run(data, cb) {
 
   const params = _.extend({ country, reseller: isReseller, parent: resellerCompanyId }, companyInfo);
 
-  logger('debug', 'IAM create Company request sent');
+  logger.debug('IAM create Company request sent');
   CompanyManagement.createCompany(params)
     .then(response => {
-      logger('debug', 'IAM create Company response received');
+      logger.debug('IAM create Company response received');
       const { id } = response.body;
 
       if (!id) {

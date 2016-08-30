@@ -20,7 +20,7 @@ function validateRerun(data, taskResult) {
   const start = getStartIndex(taskResult);
   if (start >= timesToGenerate) {
     // skip if all generated
-    logger(`Skip on rerun as all sip gateways generated: timesToGenerate=${timesToGenerate}`);
+    logger.info(`Skip on rerun as all sip gateways generated: timesToGenerate=${timesToGenerate}`);
     return false;
   }
 
@@ -41,7 +41,7 @@ function run(data, taskResult, cb) {
   }
   const start = getStartIndex(taskResult);
 
-  logger(`Creating ${timesToGenerate} sip gateways for ${carrierId} starting from ${start}`);
+  logger.info(`Creating ${timesToGenerate} sip gateways for ${carrierId} starting from ${start}`);
 
   if (start >= timesToGenerate) {
     cb(new InvalidOperationError(`invalid sip gateway timesToGenerate: ${timesToGenerate}`));
@@ -57,7 +57,7 @@ function run(data, taskResult, cb) {
       VoiceProvisioningManagement.sipGatewayCreation(query)
         .then((res) => {
           const sipGatewayId = res.body.id;
-          logger(`gateway ${sipGatewayId} creation complete`);
+          logger.info(`gateway ${sipGatewayId} creation complete`);
           if (!sipGatewayId) {
             throw new ReferenceError('Invalid response from cps sip gateway creation: id is missing');
           }

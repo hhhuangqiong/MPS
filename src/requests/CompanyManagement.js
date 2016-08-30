@@ -51,7 +51,7 @@ export default class CompanyManagement extends BaseRequest {
 
     if (isIamError) {
       // propagate iam error
-      logger('Error occured in IAM operation, propagated: ', error);
+      logger.warning('Error occured in IAM operation, propagated: ', error);
       const parsedError = new HttpStatusError(statusCode, error.message);
       parsedError.code = error.code;
 
@@ -59,12 +59,12 @@ export default class CompanyManagement extends BaseRequest {
     }
 
     if (error.timeout) {
-      logger('warn', `Request timed out at ${error.timeout} on request to IAM ${this.baseUrl}`);
+      logger.warning(`Request timed out at ${error.timeout} on request to IAM ${this.baseUrl}`);
       throw new ConnectionError(`Connect to IAM(${this.baseUrl}) failue`, error);
     }
 
     // Unknown Error
-    logger('warn', 'Unkown error occured during request to IAM');
+    logger.warning('Unkown error occured during request to IAM');
     throw new Error('Unknown error during request');
   }
 }

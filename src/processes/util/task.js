@@ -30,14 +30,14 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true 
     }
 
     if (skipOnPrevErrors && !_.isEmpty(data.taskErrors)) {
-      logger(`Task ${name} skipped due to previous task errors`);
+      logger.info(`Task ${name} skipped due to previous task errors`);
       done(data);
       return;
     }
 
     function cb(taskError, taskResult) {
       if (taskError) {
-        logger(`Task ${name} error:`, taskError.stack);
+        logger.info(`Task ${name} error:`, taskError.stack);
         data.taskErrors = data.taskErrors || {};
         data.taskErrors[name] = taskError;
       }

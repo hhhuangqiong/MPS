@@ -12,7 +12,7 @@ const { mongoose } = ioc.container;
 
 mongoose.ready.then(() => {
   server.listen(server.get('port'), () => {
-    logger(`Server is running in ${server.get('env')} at ${server.get('port')}`);
+    logger.info(`Server is running in ${server.get('env')} at ${server.get('port')}`);
   });
 });
 

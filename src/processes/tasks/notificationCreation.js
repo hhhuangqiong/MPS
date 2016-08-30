@@ -76,7 +76,7 @@ function run(data, taskResult, cb) {
   getTemplates(resellerCarrierId)
     .then((templates) => (createNotifications(carrierId, taskResult, templates)))
     .then((pendings) => {
-      logger(`performed ${pendings.length} notification creations`);
+      logger.info(`performed ${pendings.length} notification creations`);
       return Promise.each(pendings, (inspection) => {
         if (inspection.isRejected()) {
           errors.push(inspection.reason());

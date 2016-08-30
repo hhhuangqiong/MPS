@@ -53,10 +53,10 @@ function run(data, cb) {
     alias: companyCode,
   };
 
-  logger('debug', 'CPS create Carrier request sent');
+  logger.debug('CPS create Carrier request sent');
   CarrierManagement.createCarrier(params)
     .then(response => {
-      logger('debug', 'CPS create Carrier response received');
+      logger.debug('CPS create Carrier response received');
       const { id } = response.body;
 
       if (!id) {

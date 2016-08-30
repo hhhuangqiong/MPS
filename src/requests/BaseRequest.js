@@ -53,7 +53,7 @@ export default class BaseRequest {
   get(uri) {
     const url = this.getUrl(uri);
 
-    logger('debug', `[${(new Date()).toUTCString()}] Sending GET Request to ${url}`);
+    logger.debug(`[${(new Date()).toUTCString()}] Sending GET Request to ${url}`);
 
     return request
       .get(url)
@@ -67,7 +67,7 @@ export default class BaseRequest {
     const url = this.getUrl(uri);
     const normalizedParams = this.normalizeParams(params);
 
-    logger('debug', `[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`, normalizedParams);
+    logger.debug(`[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`, normalizedParams);
 
     return request
       .post(url)

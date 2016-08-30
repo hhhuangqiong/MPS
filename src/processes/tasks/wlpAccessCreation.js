@@ -37,10 +37,10 @@ function run(data, cb) {
 
   const params = compileJsonTemplate(template, data);
 
-  logger('debug', 'IAM create role request sent');
+  logger.debug('IAM create role request sent');
   AccessManagement.createRole(params)
     .then(response => {
-      logger('debug', 'IAM create role response received');
+      logger.debug('IAM create role response received');
       const { name } = response.body;
 
       if (!name) {
