@@ -2,10 +2,11 @@
 .envrc
 
 # Generated Content
-/.nyc_output
-/coverage
-/build
-/doc
+.nyc_output/
+coverage/
+build/
+doc/
+_book/
 
 # storage folder for bpmn
-/persist
+persist/

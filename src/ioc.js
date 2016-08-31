@@ -32,8 +32,8 @@ ioc.constant('iamConfig', parseObjectArrays(nconf.get('iam')));
 
 // resources/dependencies
 /* eslint-disable global-require */
-ioc.factory('mongoose', () => (require('./initializer/mongoose').default(nconf.get('mongo:uri'))));
-ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf.get('mongo:uri'))));
+ioc.factory('mongoose', () => (require('./initializer/mongoose').default(nconf.get('mongodb:uri'))));
+ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf.get('mongodb:uri'))));
 ioc.factory('validator', () => (require('./utils/validator').default()));
 /* eslint-enable */
 

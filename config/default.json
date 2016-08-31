@@ -189,7 +189,7 @@
       }
     }
   },
-  "mongo": {
+  "mongodb": {
     "uri": "mongodb://localhost:27017/maaii-provisioning-service"
   },
   "boss": {
