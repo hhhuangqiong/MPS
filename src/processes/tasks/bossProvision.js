@@ -119,7 +119,6 @@ function generateBossProvisionParams(data) {
     accountName: companyInfo.name,
     country,
     carrierIdOfReseller: resellerCarrierId,
-    // @todo check what cases can be 2?
     carriers: [
       generateBossProvisionCarrier(data),
     ],

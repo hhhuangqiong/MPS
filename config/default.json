@@ -181,10 +181,6 @@
           "delete"
         ],
         "company": [
-          "create",
-          "update",
-          "read",
-          "delete"
         ]
       }
     }

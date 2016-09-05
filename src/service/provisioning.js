@@ -10,7 +10,6 @@ import Provisioning, {
 import Joi from 'joi';
 import _ from 'lodash';
 
-// @todo to be verified on requirement
 const REGEX_NUMBER_LETTERS_ONLY = /[a-zA-Z0-9]+/;
 const REGEX_MONGO_OBJECT_ID = /^[0-9a-fA-F]{24}$/;
 
@@ -56,12 +55,7 @@ export default function provisioningService(provisioningProcessor, validator) {
   const schemaCreateProvision = Joi.object({
     companyInfo: Joi.object({
       name: Joi.string().required(),
-      description: Joi.string(),
-      // @todo validate on timezone
       timezone: Joi.string(),
-      address: Joi.string(),
-      // @todo unclear on contact
-      contact: Joi.string(),
     }),
     country: Joi.string().required(),
     companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY).required(),
@@ -198,12 +192,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     profile: Joi.object({
       companyInfo: Joi.object({
         name: Joi.string(),
-        description: Joi.string(),
-        // @todo validate on timezone
         timezone: Joi.string(),
-        address: Joi.string(),
-        // @todo unclear on contact
-        contact: Joi.string(),
       }),
       country: Joi.string(),
       companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY),

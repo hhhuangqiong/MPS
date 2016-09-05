@@ -84,9 +84,6 @@ function createApplication(platform, { applicationIdentifier, serviceType, featu
     status: 'ACTIVE',
     application_key: applicationKey,
     application_secret: applicationSecret,
-    // @todo: should be optional and not required. workaround for backend
-    // validation check atm
-    bundle_id: 'bundle_id',
   };
 
   // make request to CPS to create
