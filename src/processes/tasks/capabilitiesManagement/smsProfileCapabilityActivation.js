@@ -37,7 +37,7 @@ export default function ({ taskName, profileCapability, requestCapabilityType, t
     const smsProfile = compileJsonTemplate(template, _.extend(data, chargeProfiles));
 
     if (!smsc) {
-      throw new NotImplementedError('Default smsc not supported yet');
+      throw new ArgumentNullError('smsc');
     } else {
       // sms profile for
       smsProfile.attributes = {

@@ -23,7 +23,7 @@ const SaveApplicationSchema = {
   application_key: Joi.string(),
   application_secret: Joi.string(),
   attributes: Joi.string(),
-  bundle_id: Joi.string().required(),
+  bundle_id: Joi.string(),
 };
 
 export default class ApplicationManagement extends CpsRequest {

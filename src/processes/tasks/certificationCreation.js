@@ -34,10 +34,8 @@ function run(data, taskResult, cb) {
     return;
   }
 
-  // use default feature set template if reselleCarrierId is not provided
-  // @todo
   if (!resellerCarrierId) {
-    cb(new NotImplementedError('Non-reseller provisioning is not implemented yet'));
+    cb(new ArgumentNullError('resellerCarrierId'));
     return;
   }
 
