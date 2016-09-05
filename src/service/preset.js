@@ -29,7 +29,7 @@ export default function presetService(validator) {
     const options = { upsert: true, new: true };
 
     const preset = await Preset.findOneAndUpdate({ presetId }, sanitizedCommand, options);
-    return preset.toJSON();
+    return preset;
   }
 
   const schemaGetPreset = Joi.object({
@@ -40,7 +40,7 @@ export default function presetService(validator) {
     const { presetId } = validator.sanitize(command, schemaGetPreset);
 
     const preset = await Preset.findOne({ presetId });
-    return preset.toJSON();
+    return preset;
   }
 
   return {

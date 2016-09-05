@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.2.0">
-  <bpmn:process id="mps" name="mps" isExecutable="true">
+  <bpmn:process id="bpmn_carrier_provision_creation" name="bpmn_carrier_provision_creation" isExecutable="true">
     <bpmn:startEvent id="provisioning_start" name="PROVISIONING_START">
       <bpmn:outgoing>SequenceFlow_1as3rar</bpmn:outgoing>
     </bpmn:startEvent>
@@ -174,7 +174,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_0p0pwf2" sourceRef="Task_1r34d4n" targetRef="parallel_all_end" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="mps">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="bpmn_carrier_provision_creation">
       <bpmndi:BPMNShape id="StartEvent_1ooszcp_di" bpmnElement="provisioning_start">
         <dc:Bounds x="281" y="142" width="36" height="36" />
         <bpmndi:BPMNLabel>
