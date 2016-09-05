@@ -12,8 +12,6 @@ node "White Label Portal" {
   [Company Management] as WLP_COMPANY_MGMT
 }
 
-
-
 node "Maaii Provisioning Service (MPS)" {
   interface "REST API" as MPS_REST
   MPS_REST - [Provisioning]
