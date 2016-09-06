@@ -28,7 +28,7 @@ The application can be configured using docker container environment variables. 
 |`cps__api__baseUrl`| CPS API Endpoint |`http://192.168.118.34:80` |  |
 |`cps__api__timeout`| CPS API Endpoint Timeout | 15000 | |
 |`cps__wlServiceDomain` | Top-level domain that will be used to generated carrier Id for white label customers | maaii.com | e.g. maaiii.org |
-|`cps__wlServiceDomain` | Top-level domain that will be used to generated carrier Id for sdk customers | m800-api.com | e.g. m800-api.org |
+|`cps__sdkServiceDomain` | Top-level domain that will be used to generated carrier Id for sdk customers | m800-api.com | e.g. m800-api.org |
 |`cps__chargeProfile__company` | Company level charging profile to be used for SMS/Voice provisioning | m800_charge_profile | |
 |`cps__chargeProfile__user` | User level charging profile to be used for SMS/Voice provisioning | maaii_charge_profile | |
 |`boss__api__baseUrl`| BOSS API Endpoint |`http://192.168.135.167:10080` | |
