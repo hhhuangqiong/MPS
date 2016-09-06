@@ -55,7 +55,7 @@ export default function errorMiddleware(err, req, res, next) {
     res.status(400).json({
       error: {
         message: err,
-        name: err,
+        code: err,
       },
     });
 
@@ -64,7 +64,8 @@ export default function errorMiddleware(err, req, res, next) {
 
   res.status(500).json({
     error: {
-      message: 'Undefined error format',
+      code: 'InternalServerError',
+      message: 'Internal server error',
     },
   });
 }

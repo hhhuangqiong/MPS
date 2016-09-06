@@ -223,7 +223,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     let provisioning = await Provisioning.findById(provisioningId).exec();
     if (!provisioning) {
       // not found
-      throw new NotFoundError(`provisioning=${provisioningId}`);
+      throw new NotFoundError('Provisioning');
     }
 
     const { profile: existingProfile, status } = provisioning;

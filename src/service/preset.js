@@ -1,5 +1,5 @@
 import Joi from 'joi';
-
+import { NotFoundError } from 'common-errors';
 import Preset from '../models/Preset';
 import { ServiceTypes, PaymentModes, Capabilities } from '../models/Provisioning';
 
@@ -40,6 +40,10 @@ export default function presetService(validator) {
     const { presetId } = validator.sanitize(command, schemaGetPreset);
 
     const preset = await Preset.findOne({ presetId });
+    if (!preset) {
+      throw new NotFoundError('Preset');
+    }
+
     return preset;
   }
 
