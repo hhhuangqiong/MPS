@@ -251,7 +251,7 @@ export default function provisioningService(provisioningProcessor, validator) {
       profile: newProfile,
     }).exec();
 
-    return _.pick(provisioning, PUBLIC_PROPS);
+    return { id: provisioningId };
   }
 
   return {

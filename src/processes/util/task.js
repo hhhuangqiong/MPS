@@ -1,7 +1,6 @@
 import logger from '../../utils/logger';
 import _ from 'lodash';
-import { Error } from 'common-errors';
-
+import { getProperty } from './property';
 /**
  * Util method to create a task with process rerun validation, and automatic skip
  * if task is done with
@@ -14,7 +13,7 @@ import { Error } from 'common-errors';
  */
 export function createTask(name, task, { validateRerun, skipOnPrevErrors = true }) {
   function wrappedTask(data, done) {
-    const prevProcessResults = this.getProperty('taskResults');
+    const prevProcessResults = getProperty(this, 'taskResults', {});
     const prevProcessResult = (prevProcessResults && prevProcessResults[name]) || {};
 
     try {

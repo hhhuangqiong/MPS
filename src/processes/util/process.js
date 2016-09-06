@@ -2,44 +2,25 @@ import uuid from 'uuid';
 import _ from 'lodash';
 import logger from '../../utils/logger';
 
-function getTaskResults(process) {
-  const taskResults = process.getProperty('taskResults');
-  if (!taskResults) return {};
+import { getProperty, setProperty } from './property';
 
-  try {
-    return JSON.parse(taskResults) || {};
-  } catch (e) {
-    logger.warning('Unable to deserialize taskResults from process', taskResults, e.stack);
-    return {};
-  }
+const PROP_TASK_RESULTS = 'taskResults';
+const PROP_TASK_ERRORS = 'taskErrors';
+
+function getTaskResults(process) {
+  return getProperty(process, PROP_TASK_RESULTS, {});
 }
 
 function setTaskResults(process, taskResults) {
-  try {
-    process.setProperty('taskResults', JSON.stringify(taskResults));
-  } catch (e) {
-    logger.warning('Unable to serialize taskResults to process:', taskResults, e.stack);
-  }
+  setProperty(process, PROP_TASK_RESULTS, taskResults);
 }
 
 function getTaskErrors(process) {
-  const taskErrors = process.getProperty('taskErrors');
-  if (!taskErrors) return {};
-
-  try {
-    return JSON.parse(taskErrors) || {};
-  } catch (e) {
-    logger.warning('Unable to deserialize taskErrors from process.', taskErrors, e.stack);
-    return {};
-  }
+  return getProperty(process, PROP_TASK_ERRORS, {});
 }
 
 function setTaskErrors(process, taskErrors) {
-  try {
-    process.setProperty('taskErrors', JSON.stringify(taskErrors));
-  } catch (e) {
-    logger.warning('Unable to serialize taskErrors to process:', taskErrors, e.stack);
-  }
+  setProperty(process, PROP_TASK_ERRORS, taskErrors);
 }
 
 /**
