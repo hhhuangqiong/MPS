@@ -6,7 +6,7 @@ import { createTask } from '../../util/task';
 const CarrierManagement = ioc.container.CarrierManagement;
 
 function validateRerun(profile, taskResult) {
-  if (taskResult.carrierProfileId) {
+  if (taskResult.userCarrierProfileId) {
     // skip on rerun
     return false;
   }

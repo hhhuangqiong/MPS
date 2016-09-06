@@ -13,7 +13,7 @@ import _ from 'lodash';
 const REGEX_NUMBER_LETTERS_ONLY = /[a-zA-Z0-9]+/;
 const REGEX_MONGO_OBJECT_ID = /^[0-9a-fA-F]{24}$/;
 
-const PUBLIC_PROPS = ['id', 'profile', 'status', 'taskErrors', 'createdAt', 'updatedAt'];
+const PUBLIC_PROPS = ['id', 'profile', 'status', 'taskErrors', 'taskResults', 'createdAt', 'updatedAt'];
 
 export default function provisioningService(provisioningProcessor, validator) {
   // init provisioning process
@@ -43,7 +43,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     const profileUpdates = parseResultsToProfileUpdates(taskResults);
 
     logger.info(`Process complete for Provisioing: ${provisioningId}, profile changes `, profileUpdates);
-    Provisioning.findByIdAndUpdate(provisioningId, _.extend({ taskResults: JSON.stringify(taskResults), taskErrors, status }, profileUpdates))
+    Provisioning.findByIdAndUpdate(provisioningId, _.extend({ taskResults, taskErrors, status }, profileUpdates))
       .then(() => {
         logger.info(`Successfully updated provisioning ${provisioningId} on process complete.`);
       })
@@ -228,12 +228,7 @@ export default function provisioningService(provisioningProcessor, validator) {
 
     const { profile: existingProfile, status } = provisioning;
 
-    let taskResults;
-    try {
-      taskResults = JSON.parse(provisioning.taskResults);
-    } catch (e) {
-      taskResults = {};
-    }
+    const taskResults = provisioning.taskResults || {};
 
     if (status !== ProcessStatus.COMPLETE && status !== ProcessStatus.ERROR) {
       throw new InvalidOperationError(`Cannot update provisioning when status is ${status}`);

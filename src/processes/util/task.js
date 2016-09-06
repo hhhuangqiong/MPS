@@ -1,6 +1,9 @@
-import logger from '../../utils/logger';
+import { ArgumentNullError } from 'common-errors';
 import _ from 'lodash';
 import { getProperty } from './property';
+import logger from '../../utils/logger';
+
+
 /**
  * Util method to create a task with process rerun validation, and automatic skip
  * if task is done with
@@ -12,16 +15,25 @@ import { getProperty } from './property';
  * @param {Booleans} opts.skipOnPrevErrors
  */
 export function createTask(name, task, { validateRerun, skipOnPrevErrors = true }) {
+  if (!validateRerun) {
+    throw new ArgumentNullError('validateRerun');
+  }
+
   function wrappedTask(data, done) {
+    const ownerId = getProperty(this, 'ownerId');
     const prevProcessResults = getProperty(this, 'taskResults', {});
     const prevProcessResult = (prevProcessResults && prevProcessResults[name]) || {};
 
     try {
-      if (validateRerun && !validateRerun(data, prevProcessResult)) {
+      if (!validateRerun(data, prevProcessResult)) {
+        logger.info(`[${ownerId}] Task ${name} skipped as already completed`);
+        data.taskResults = data.taskResults || {};
+        data.taskResults[name] = prevProcessResult;
         done(data);
         return;
       }
     } catch (e) {
+      logger.info(`[${ownerId}] Task ${name} error:`, e.stack);
       data.taskErrors = data.taskErrors || {};
       data.taskErrors[name] = e;
       done(data);
@@ -29,14 +41,14 @@ export function createTask(name, task, { validateRerun, skipOnPrevErrors = true 
     }
 
     if (skipOnPrevErrors && !_.isEmpty(data.taskErrors)) {
-      logger.info(`Task ${name} skipped due to previous task errors`);
+      logger.info(`[${ownerId}] Task ${name} skipped due to previous task errors`);
       done(data);
       return;
     }
 
     function cb(taskError, taskResult) {
       if (taskError) {
-        logger.info(`Task ${name} error:`, taskError.stack);
+        logger.info(`[${ownerId}] Task ${name} error:`, taskError.stack);
         data.taskErrors = data.taskErrors || {};
         data.taskErrors[name] = taskError;
       }

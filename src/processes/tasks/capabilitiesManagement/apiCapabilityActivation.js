@@ -5,7 +5,7 @@ import { createTask } from '../../util/task';
 
 const CapabilitiesManagement = ioc.container.CapabilitiesManagement;
 
-function rerunValidation(profile, taskResult) {
+function validateRerun(profile, taskResult) {
   if (taskResult.developerId) {
     // already enabled, skip
     return false;
@@ -34,4 +34,4 @@ function run(profile, cb) {
   .catch(cb);
 }
 
-export default createTask('API_CAPABILITY_ACTIVATION', run, { rerunValidation });
+export default createTask('API_CAPABILITY_ACTIVATION', run, { validateRerun });

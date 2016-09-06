@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { NotImplementedError, ArgumentNullError } from 'common-errors';
+import { ArgumentNullError } from 'common-errors';
 
 import ioc from '../../ioc';
 import { createTask } from '../util/task';
@@ -40,6 +40,12 @@ function run(data, taskResult, cb) {
   }
 
   const certificates = {};
+  let completed;
+  try {
+    completed = JSON.parse(taskResult.certificates);
+  } catch (e) {
+    completed = {};
+  }
 
   // get feature set template by resller carrier id, i.e. use resellerCarrierId
   // as group
@@ -59,8 +65,9 @@ function run(data, taskResult, cb) {
       // create certificate for each template, one by one, to allow retry
       _.forEach(templates.certificates, (template) => {
         const templateKey = getKey(template, applicationIdentifier);
-        if (taskResult[templateKey]) {
+        if (completed[templateKey]) {
           // skip if already created
+          certificates[templateKey] = completed[templateKey];
           return;
         }
 
@@ -82,11 +89,11 @@ function run(data, taskResult, cb) {
     })
     .then(() => {
       // all certificates creation at cps completed
-      cb(null, { done: true, certificates });
+      cb(null, { done: true, certificates: JSON.stringify(certificates) });
     })
     .catch((err) => {
       // handle error with task results
-      cb(err, { done: false, certificates });
+      cb(err, { done: false, certificates: JSON.stringify(certificates) });
     });
 }
 

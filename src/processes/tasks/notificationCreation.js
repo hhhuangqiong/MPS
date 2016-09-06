@@ -8,7 +8,7 @@ import { createTask } from '../util/task';
 
 const { NotificationManagement } = ioc.container;
 
-function rerunValidation(data, taskResult) {
+function validateRerun(data, taskResult) {
   if (taskResult.done) {
     // already complete, skip
     return false;
@@ -49,15 +49,20 @@ function createNotification(carrierId, template) {
 }
 
 function createNotifications(carrierId, taskResult, templates) {
-  const { notifications } = taskResult;
+  let notifications;
+  try {
+    notifications = JSON.parse(taskResult.notifications);
+  } catch (e) {
+    notifications = {};
+  }
   // create notifications in parrallel
   return Promise.all(_.map(templates, template => {
     const notificationIdentifier = template.identifier;
 
-    const result = notifications && notifications[notificationIdentifier];
+    const result = notifications[notificationIdentifier];
     if (result) {
       // skip if notifcation created before
-      return Promise.resolve(result);
+      return Promise.resolve(result).reflect();
     }
 
     return createNotification(carrierId, template)
@@ -81,8 +86,8 @@ function run(data, taskResult, cb) {
         if (inspection.isRejected()) {
           errors.push(inspection.reason());
         } else {
-          const { identifier, id } = inspection.value();
-          notifications[identifier] = id;
+          const { identifier } = inspection.value();
+          notifications[identifier] = inspection.value();
         }
       });
     })
@@ -96,11 +101,11 @@ function run(data, taskResult, cb) {
         throw new Error(`${errors.length} notification creations failed: ${failureMessages}`);
       }
 
-      cb(null, { notifications, done: true });
+      cb(null, { notifications: JSON.stringify(notifications), done: true });
     })
     .catch((err) => {
-      cb(err, { notifications, done: false });
+      cb(err, { notifications: JSON.stringify(notifications), done: false });
     });
 }
 
-export default createTask('NOTIFICATION_CREATION', run, { rerunValidation });
+export default createTask('NOTIFICATION_CREATION', run, { validateRerun });

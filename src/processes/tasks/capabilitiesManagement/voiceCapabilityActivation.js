@@ -7,8 +7,8 @@ import { createTask } from '../../util/task';
 
 const { cpsConfig, CapabilitiesManagement } = ioc.container;
 
-function rerunValidation(data, taskResult) {
-  if (taskResult.smsProfileUd) {
+function validateRerun(data, taskResult) {
+  if (taskResult.voiceProfileId) {
     // already enabled, skip
     return false;
   }
@@ -63,4 +63,4 @@ function run(data, cb) {
   .catch(cb);
 }
 
-export default createTask('VOICE_CAPABILITY_ACTIVATION', run, { rerunValidation });
+export default createTask('VOICE_CAPABILITY_ACTIVATION', run, { validateRerun });

@@ -6,6 +6,7 @@ import { getProperty, setProperty } from './property';
 
 const PROP_TASK_RESULTS = 'taskResults';
 const PROP_TASK_ERRORS = 'taskErrors';
+const PROP_OWNER_ID = 'ownerId';
 
 function getTaskResults(process) {
   return getProperty(process, PROP_TASK_RESULTS, {});
@@ -21,6 +22,14 @@ function getTaskErrors(process) {
 
 function setTaskErrors(process, taskErrors) {
   setProperty(process, PROP_TASK_ERRORS, taskErrors);
+}
+
+function getOwnerId(process) {
+  return getProperty(process, PROP_OWNER_ID);
+}
+
+function setOwnerId(process, ownerId) {
+  setProperty(process, PROP_OWNER_ID, ownerId);
 }
 
 /**
@@ -60,18 +69,18 @@ export function addProcess({ processManager, processPath, processHandlers, start
           done(data);
         },
         defaultEventHandler(eventType, currentFlowObjectName, handlerName, reason, done) {
-          logger.info(`Handler not found for event ${currentFlowObjectName}:${handlerName}<${eventType}>`);
+          logger.info(`[${getOwnerId(this)}] Handler not found for event ${currentFlowObjectName}:${handlerName}<${eventType}>`);
             // Called, if no handler could be invoked.
           done({});
         },
         defaultErrorHandler(error, done) {
-          logger.info('error caught within task ', error.stack);
+          logger.info(`[${getOwnerId(this)}] error caught within task `, error.stack);
           const taskErrors = { UNKNOWN_TASK: error };
           // set as taskErrors for tasks beyond this point
           done({ taskErrors });
         },
         onBeginHandler(currentFlowObjectName, data, done) {
-          logger.info(`Task ${currentFlowObjectName} begins`);
+          logger.info(`[${getOwnerId(this)}] Task ${currentFlowObjectName} begins`);
           done(data);
         },
         /**
@@ -89,21 +98,21 @@ export function addProcess({ processManager, processPath, processHandlers, start
           const taskError = taskErrors && taskErrors[currentFlowObjectName];
 
           if (!taskResult && !taskError) {
-            logger.info(`Task ${currentFlowObjectName} ended.`);
+            logger.info(`[${getOwnerId(this)}] Task ${currentFlowObjectName} ended.`);
             // most likely not a (wrapped) task, ignores
             done(data);
             return;
           }
 
           if (taskError) {
-            logger.info(`Task ${currentFlowObjectName} ends with error`, taskError);
+            logger.info(`[${getOwnerId(this)}] Task ${currentFlowObjectName} ends with error`, taskError);
 
             // persist errors into process property
             const errors = getTaskErrors(this);
             errors[currentFlowObjectName] = taskError;
             setTaskErrors(this, errors);
           } else {
-            logger.info(`Task ${currentFlowObjectName} ends with result: `, taskResult);
+            logger.info(`[${getOwnerId(this)}] Task ${currentFlowObjectName} ends with result: `, taskResult);
 
             // flatten result into data for next process tasks
             // NOTE: tasks must result object as a result. process task should be
@@ -153,9 +162,9 @@ export function addProcess({ processManager, processPath, processHandlers, start
     const processId = generateProcessId();
     const process = await processManager.createProcessAsync(processId);
 
-    process.setProperty('ownerId', ownerId);
 
     // seralize results into process for rerun
+    setOwnerId(process, ownerId);
     setTaskResults(process, taskResults);
 
     process.triggerEvent(startEventName, data);

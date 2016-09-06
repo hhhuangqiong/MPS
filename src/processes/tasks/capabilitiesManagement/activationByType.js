@@ -7,7 +7,7 @@ import { createTask } from '../../util/task';
 const CapabilitiesManagement = ioc.container.CapabilitiesManagement;
 
 export default function activationByType({ name: taskName, profileCapability, requestCapabilityType }) {
-  function rerunValidation(profile, taskResult) {
+  function validateRerun(profile, taskResult) {
     const { done } = taskResult;
 
     if (done) {
@@ -45,5 +45,5 @@ export default function activationByType({ name: taskName, profileCapability, re
     .catch(cb);
   }
 
-  return createTask(taskName, run, { rerunValidation });
+  return createTask(taskName, run, { validateRerun });
 }

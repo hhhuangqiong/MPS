@@ -10,7 +10,7 @@ import { ServiceTypes, Capabilities } from '../../models/Provisioning';
 
 const { cpsConfig, ApplicationManagement } = ioc.container;
 
-function rerunValidation(data, taskResult) {
+function validateRerun(data, taskResult) {
   if (taskResult.applicationId) {
     // already complete, skip
     return false;
@@ -108,6 +108,14 @@ function run(data, taskResult, cb) {
   const { capabilities, serviceType, companyCode } = data;
 
   const applications = {};
+
+  let completed;
+  try {
+    completed = JSON.parse(taskResult.applications);
+  } catch (e) {
+    completed = {};
+  }
+
   const platforms = _.intersection(CapabilityPlatforms, capabilities);
   let pending = Promise.resolve();
 
@@ -117,7 +125,8 @@ function run(data, taskResult, cb) {
   // create application for each platform, sequentially
   _.forEach(platforms, platform => {
     // skip completed platforms (during rerun)
-    if (_.includes(_.keys(taskResult.applications), platform)) {
+    if (completed[platform]) {
+      applications[platform] = completed[platform];
       return;
     }
 
@@ -130,12 +139,12 @@ function run(data, taskResult, cb) {
 
   pending.then(() => {
     // all platforms successfully created
-    cb(null, { applications, applicationIdentifier });
+    cb(null, { applications: JSON.stringify(applications), applicationIdentifier });
   })
   .catch(err => {
     // return error with succeed created applications
-    cb(err, { applications });
+    cb(err, { applications: JSON.stringify(applications) });
   });
 }
 
-export default createTask('SAVE_APPLICATION', run, { rerunValidation });
+export default createTask('SAVE_APPLICATION', run, { validateRerun });

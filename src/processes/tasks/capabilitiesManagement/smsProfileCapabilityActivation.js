@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ReferenceError, NotImplementedError } from 'common-errors';
+import { ReferenceError, ArgumentNullError } from 'common-errors';
 
 import ioc from '../../../ioc';
 import { createTask } from '../../util/task';
@@ -8,7 +8,7 @@ import { compileJsonTemplate } from '../../../utils/nconf';
 const { cpsConfig, CapabilitiesManagement } = ioc.container;
 
 export default function ({ taskName, profileCapability, requestCapabilityType, template }) {
-  function rerunValidation(profile, taskResult) {
+  function validateRerun(profile, taskResult) {
     if (taskResult.done) {
       // already enabled, skip
       return false;
@@ -61,5 +61,5 @@ export default function ({ taskName, profileCapability, requestCapabilityType, t
       .catch(cb);
   }
 
-  return createTask(taskName, run, { rerunValidation });
+  return createTask(taskName, run, { validateRerun });
 }
