@@ -31,6 +31,8 @@ export const Capabilities = {
   PLATFORM_ANDROID: 'platform.android',
   PLATFORM_IOS: 'platform.ios',
   PLATFORM_WEB: 'platform.web',
+  END_USER_WHITELIST: 'end-user.whitelist',
+  END_USER_SUSPENSION: 'end-user.suspension',
 };
 
 export const ChargeWallets = {

@@ -148,7 +148,8 @@
         "topUp": ["read"],
         "generalOverview": ["read"],
         "verificationSdk": ["read"],
-        "endUser": ["create", "update", "read", "delete"],
+        "endUser": ["update", "read"],
+        "whitelist": ["create", "update", "read", "delete"],
         "role": ["create", "update", "read", "delete"],
         "user": ["create", "update", "read", "delete"],
         "company": []

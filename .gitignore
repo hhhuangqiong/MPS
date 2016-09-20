@@ -7,6 +7,7 @@ coverage/
 build/
 doc/
 _book/
+node_modules/
 
 # storage folder for bpmn
 persist/
