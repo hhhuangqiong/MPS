@@ -141,47 +141,17 @@
       "service": "wlp",
       "company": "{{ companyId }}",
       "permissions": {
-        "wlp:general": [
-          "read"
-        ],
-        "wlp:sms": [
-          "read"
-        ],
-        "wlp:im": [
-          "read"
-        ],
-        "wlp:call": [
-          "read"
-        ],
-        "wlp:vsf": [
-          "read"
-        ],
-        "wlp:topUp": [
-          "read"
-        ],
-        "wlp:generalOverview": [
-          "read"
-        ],
-        "wlp:endUser": [
-          "create",
-          "update",
-          "read",
-          "delete"
-        ],
-        "role": [
-          "create",
-          "update",
-          "read",
-          "delete"
-        ],
-        "user": [
-          "create",
-          "update",
-          "read",
-          "delete"
-        ],
-        "company": [
-        ]
+        "sms": ["read"],
+        "im": ["read"],
+        "call": ["read"],
+        "vsf": ["read"],
+        "topUp": ["read"],
+        "generalOverview": ["read"],
+        "verificationSdk": ["read"],
+        "endUser": ["create", "update", "read", "delete"],
+        "role": ["create", "update", "read", "delete"],
+        "user": ["create", "update", "read", "delete"],
+        "company": []
       }
     }
   },
