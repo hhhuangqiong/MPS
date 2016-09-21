@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { NotFoundError } from 'common-errors';
 import Preset from '../models/Preset';
-import { ServiceTypes, PaymentModes, Capabilities } from '../models/Provisioning';
+import { ServiceTypes, PaymentModes, Capabilities, ChargeWallets } from '../models/Provisioning';
 
 
 export default function presetService(validator) {
@@ -9,6 +9,7 @@ export default function presetService(validator) {
     presetId: Joi.string().required().max(128),
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     paymentMode: Joi.string().valid(Object.values(PaymentModes)),
+    chargeWallet: Joi.string().valid(Object.values(ChargeWallets)),
     capabilities: Joi.array().items(Joi.string().valid(Object.values(Capabilities))),
     billing: Joi.object({
       smsPackageId: Joi.number().min(0),

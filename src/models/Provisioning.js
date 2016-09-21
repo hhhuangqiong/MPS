@@ -58,6 +58,7 @@ const ProvisioningProfileModel = {
   resellerCarrierId: { type: String, required: true },
   serviceType: { type: String, required: true, enum: Object.values(ServiceTypes) },
   paymentMode: { type: String, required: true, enum: PaymentModes },
+  chargeWallet: { type: String, required: true, enum: Object.values(ChargeWallets) },
   billing: {
     smsPackageId: { type: Number },
     offnetPackageId: { type: Number },

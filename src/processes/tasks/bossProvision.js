@@ -5,7 +5,7 @@ import { ArgumentNullError, ReferenceError } from 'common-errors';
 
 import ioc from '../../ioc';
 import { createTask } from '../util/task';
-import { Capabilities } from '../../models/Provisioning';
+import { Capabilities, ChargeWallets } from '../../models/Provisioning';
 
 const { bossConfig, BossProvisionManagement, CapabilitiesManagement } = ioc.container;
 const { BossServiceTypes, BossPaymentModes } = BossProvisionManagement.constructor;
@@ -126,9 +126,15 @@ function generateBossProvisionParams(data) {
 }
 
 function run(data, cb) {
-  const { carrierId, smsPrefix } = data;
+  const { carrierId, smsPrefix, chargeWallet } = data;
   const smsPackageId = _.get(data, 'billing.smsPackageId', null);
   const offnetPackageId = _.get(data, 'billing.offnetPackageId', null);
+
+  // skip if not using m800 ocs(company) wallet
+  if (chargeWallet !== ChargeWallets.WALLET_COMPANY) {
+    cb(null, {});
+    return;
+  }
 
   if (!carrierId) {
     cb(new ArgumentNullError('carrierId'));

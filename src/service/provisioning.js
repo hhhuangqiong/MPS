@@ -6,6 +6,7 @@ import Provisioning, {
   Capabilities,
   ServiceTypes,
   PaymentModes,
+  ChargeWallets,
 } from '../models/Provisioning';
 import Joi from 'joi';
 import _ from 'lodash';
@@ -67,6 +68,7 @@ export default function provisioningService(provisioningProcessor, validator) {
       .unique()
       .required(),
     paymentMode: Joi.string().required().valid(PaymentModes),
+    chargeWallet: Joi.string().required().valid(Object.values(ChargeWallets)),
     billing: Joi.object({
       smsPackageId: Joi.number().min(0),
       offnetPackageId: Joi.number().min(0),
@@ -203,6 +205,7 @@ export default function provisioningService(provisioningProcessor, validator) {
         .items(Joi.string().valid(Object.values(Capabilities)))
         .unique(),
       paymentMode: Joi.string().valid(PaymentModes),
+      chargeWallet: Joi.string().valid(Object.values(ChargeWallets)),
       billing: Joi.object({
         smsPackageId: Joi.number().min(0),
         offnetPackageId: Joi.number().min(0),
