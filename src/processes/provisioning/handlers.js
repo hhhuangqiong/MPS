@@ -28,6 +28,7 @@ export CERTIFICATION_CREATION from '../tasks/certificationCreation';
 
 export COMPANY_CREATION from '../tasks/companyCreation';
 export WLP_ACCESS_CREATION from '../tasks/wlpAccessCreation';
+export MUMS_SIGNUP_RULE_PROVISION from '../tasks/mumsSignUpRuleProvision';
 
 export {
   PARALLEL_ALL_START,

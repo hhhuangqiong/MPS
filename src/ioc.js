@@ -15,6 +15,7 @@ import VerificationManagement from './requests/VerificationManagement';
 import CertificateManagement from './requests/CertificateManagement';
 import NotificationManagement from './requests/NotificationManagement';
 import AccessManagement from './requests/AccessManagement';
+import MumsSignUpRuleMgmt from './requests/MumsSignUpRuleMgmt';
 
 import provisioningProcessor from './processes/provisioning';
 import provisioningService from './service/provisioning';
@@ -29,6 +30,7 @@ const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '..
 ioc.constant('cpsConfig', parseObjectArrays(nconf.get('cps')));
 ioc.constant('bossConfig', parseObjectArrays(nconf.get('boss')));
 ioc.constant('iamConfig', parseObjectArrays(nconf.get('iam')));
+ioc.constant('mumsConfig', parseObjectArrays(nconf.get('mums')));
 
 // resources/dependencies
 /* eslint-disable global-require */
@@ -65,5 +67,7 @@ ioc.factory('AccessManagement', (container) => {
 
 ioc.factory('BossProvisionManagement', () => new BossProvisionManagement(nconf.get('boss:api')));
 
+ioc.factory('MumsSignUpRuleMgmt', () => new MumsSignUpRuleMgmt(nconf.get('mums:api')))
+;
 
 export default ioc;

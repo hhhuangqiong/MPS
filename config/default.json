@@ -166,5 +166,26 @@
     },
     "prePaidInitialBalance": 0,
     "postPaidInitialBalance": 999999999
+  },
+  "mums": {
+    "api": {
+      "baseUrl": "http://192.168.118.127:8083",
+      "timeout": 60000
+    },
+    "signup": {
+      "rules": {
+        "whitelistBlockAll": {
+          "applicationVersionStatus": "RELEASED",
+          "group": "DEFAULT",
+          "identityType": "PHONE_NUMBER",
+          "identity": "(.)+",
+          "regex": true,
+          "policy": "BLOCK",
+          "order": 99999,
+          "comments": "Do not allow anyone to signup unless specifically allowed.",
+          "updatedUser": "Maaii Provisioning Service"
+        }
+      }
+    }
   }
 }

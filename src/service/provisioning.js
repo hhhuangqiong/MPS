@@ -59,7 +59,7 @@ export default function provisioningService(provisioningProcessor, validator) {
       timezone: Joi.string(),
     }),
     country: Joi.string().required(),
-    companyCode: Joi.string().regex(REGEX_NUMBER_LETTERS_ONLY).required(),
+    companyCode: Joi.string().alphanum().required(),
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     resellerCompanyId: Joi.string().required().regex(REGEX_MONGO_OBJECT_ID),
     resellerCarrierId: Joi.string().required(),
