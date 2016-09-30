@@ -21,6 +21,10 @@ function validateRerun(profile, taskResult) {
   return true;
 }
 
+function normalizePrefix(prefix) {
+  return _.trimStart(prefix, '+');
+}
+
 function getOffnetPrefix(carrierId) {
   return CapabilitiesManagement.getProfile(carrierId, CapabilityTypeToIds.Voice)
     .then((res) => {
@@ -101,9 +105,9 @@ function generateBossProvisionCarrier(data) {
   return {
     carrierId,
     serviceType: BossServiceTypes[serviceType],
-    offNetPrefix: offnetPrefix,
-    offNetPrefixTest: offnetPrefixTest,
-    smsPrefix,
+    offNetPrefix: normalizePrefix(offnetPrefix),
+    offNetPrefixTest: normalizePrefix(offnetPrefixTest),
+    smsPrefix: normalizePrefix(smsPrefix),
     remarks: `Remarks for ${carrierId}`,
     currency: billing.currency,
     m800Ocs: generateM800Ocs(data),
@@ -124,6 +128,7 @@ function generateBossProvisionParams(data) {
     ],
   };
 }
+
 
 function run(data, cb) {
   const { carrierId, smsPrefix, chargeWallet } = data;

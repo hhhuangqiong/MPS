@@ -15,6 +15,8 @@ const BossPaymentModes = {
   POST_PAID: 'postpaid',
 };
 
+const PREFIX_REGEX = /^[0-9]+$/;
+
 const BossProvisionCreateSchema = Joi.object({
   id: Joi.string().required(),
   accountCode: Joi.string().alphanum().required(),
@@ -24,9 +26,9 @@ const BossProvisionCreateSchema = Joi.object({
   carriers: Joi.array().items(Joi.object({
     carrierId: Joi.string().required(),
     serviceType: Joi.string().valid(Object.values(BossServiceTypes)),
-    offNetPrefix: Joi.array().optional(),
-    offNetPrefixTest: Joi.array().optional(),
-    smsPrefix: Joi.array().optional(),
+    offNetPrefix: Joi.array().items(Joi.string().regex(PREFIX_REGEX)).optional(),
+    offNetPrefixTest: Joi.array().items(Joi.string().regex(PREFIX_REGEX)).optional(),
+    smsPrefix: Joi.array().items(Joi.string().regex(PREFIX_REGEX)).optional(),
     remarks: Joi.string(),
     currency: Joi.number(),
     m800Ocs: Joi.object({

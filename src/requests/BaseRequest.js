@@ -9,10 +9,7 @@ import validateSchema from '../utils/validateSchema';
 
 
 export default class BaseRequest {
-  constructor({
-    baseUrl,
-    timeout,
-  }) {
+  constructor({ baseUrl, timeout }) {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
   }
