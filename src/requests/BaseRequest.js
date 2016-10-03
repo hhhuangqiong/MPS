@@ -15,6 +15,9 @@ export default class BaseRequest {
   }
 
   normalizeParams(params) {
+    if (!_.isPlainObject(params)) {
+      return params;
+    }
     return _.omitBy(params, _.isUndefined);
   }
 

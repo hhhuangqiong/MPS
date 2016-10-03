@@ -21,8 +21,12 @@ function validateRerun(profile, taskResult) {
   return true;
 }
 
-function normalizePrefix(prefix) {
-  return _.trimStart(prefix, '+');
+function normalizePrefixes(prefixes) {
+  if (!prefixes) {
+    return [];
+  }
+
+  return _.map(prefixes, (prefix) => _.trimStart(prefix, '+'));
 }
 
 function getOffnetPrefix(carrierId) {
@@ -100,14 +104,14 @@ function generateM800Ocs(data) {
 }
 
 function generateBossProvisionCarrier(data) {
-  const { carrierId, serviceType, offnetPrefix, offnetPrefixTest, smsPrefix, billing } = data;
+  const { carrierId, serviceType, offnetPrefixes, offnetPrefixTest, smsPrefix, billing } = data;
 
   return {
     carrierId,
     serviceType: BossServiceTypes[serviceType],
-    offNetPrefix: normalizePrefix(offnetPrefix),
-    offNetPrefixTest: normalizePrefix(offnetPrefixTest),
-    smsPrefix: normalizePrefix(smsPrefix),
+    offNetPrefix: normalizePrefixes(offnetPrefixes),
+    offNetPrefixTest: normalizePrefixes(offnetPrefixTest),
+    smsPrefix: normalizePrefixes(smsPrefix),
     remarks: `Remarks for ${carrierId}`,
     currency: billing.currency,
     m800Ocs: generateM800Ocs(data),
@@ -164,17 +168,17 @@ function run(data, cb) {
 
   let prepareData;
   if (hasOffnet(data)) {
-    prepareData = getOffnetPrefix(carrierId).then((offnetPrefix) => (
-      _.extend({}, data, { offnetPrefix })
+    prepareData = getOffnetPrefix(carrierId).then((offnetPrefixes) => (
+      _.extend({}, data, { offnetPrefixes })
     ));
   } else {
     prepareData = Promise.resolve(data);
   }
 
   prepareData.then((preparedData) => {
-    const { offnetPrefix } = preparedData;
-    if (hasOffnet(data) && !offnetPrefix.length) {
-      throw new ArgumentNullError('offnetPrefix');
+    const { offnetPrefixes } = preparedData;
+    if (hasOffnet(data) && !offnetPrefixes.length) {
+      throw new ArgumentNullError('offnetPrefixes');
     }
 
     const params = generateBossProvisionParams(preparedData);

@@ -104,10 +104,10 @@ export default class BossProvisionManagement extends BaseRequest {
     let parsedError;
     switch (responseError.code) {
       case 10001:
-        parsedError = new InvalidOperationError(parsedError.description);
+        parsedError = new InvalidOperationError(responseError.description);
         break;
       default:
-        parsedError = new Error(parsedError.description);
+        parsedError = new Error(responseError.description);
     }
     parsedError.code = responseError.code;
 
