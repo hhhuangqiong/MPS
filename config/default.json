@@ -157,7 +157,15 @@
     }
   },
   "mongodb": {
-    "uri": "mongodb://localhost:27017/maaii-provisioning-service"
+    "uri": "mongodb://localhost:27017/maaii-provisioning-service",
+    "server": {
+      "auto_reconnect": true,
+      "poolSize": 5,
+      "socketOptions": {
+        "autoReconnect": true,
+        "keepAlive": 3000
+      }
+    }
   },
   "boss": {
     "api": {

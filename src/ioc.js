@@ -22,6 +22,9 @@ import provisioningService from './service/provisioning';
 import presetService from './service/preset';
 
 import { parseObjectArrays } from './utils/nconf';
+import initMongoose from './initializer/mongoose';
+import initBPMN from './initializer/bpmn';
+import initValidator from './utils/validator';
 
 const ioc = new Bottle();
 const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '../config'));
@@ -34,9 +37,9 @@ ioc.constant('mumsConfig', parseObjectArrays(nconf.get('mums')));
 
 // resources/dependencies
 /* eslint-disable global-require */
-ioc.factory('mongoose', () => (require('./initializer/mongoose').default(nconf.get('mongodb:uri'))));
-ioc.factory('processManager', () => (require('./initializer/bpmn').default(nconf.get('mongodb:uri'))));
-ioc.factory('validator', () => (require('./utils/validator').default()));
+ioc.factory('mongoose', () => (initMongoose(nconf.get('mongodb:uri'), nconf.get('mongodb:server'))));
+ioc.factory('processManager', () => (initBPMN(nconf.get('mongodb:uri'), nconf.get('mongodb:server'))));
+ioc.factory('validator', () => (initValidator()));
 /* eslint-enable */
 
 // services
