@@ -1,0 +1,391 @@
+swagger: '2.0'
+host: 'deploy.dev.maaii.com:4005'
+info:
+  version: '1.0.0'
+  title: MPS (Maaii Provisioning Service)
+  description: >
+    MPS enables automation of service provisioning offered by Maaii / M800.
+paths:
+  /provisioning:
+    get:
+      summary: Find provisionings
+      operationId: getProvisionings
+      tags:
+        - Provisioning
+      produces:
+        - application/json
+      parameters:
+        - name: provisioningId
+          in: query
+          description: provisioning ids to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: companyId
+          in: query
+          description: company ids to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: serviceType
+          in: query
+          description: service types to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: companyCode
+          in: query
+          description: company codes to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: carrierId
+          in: query
+          description: carrier ids to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: resellerCarrierId
+          in: query
+          description: reseller carrier ids to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: resellerCompanyId
+          in: query
+          description: reseller company ids to filter by
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: csv
+        - name: search
+          in: query
+          description: company code to search by
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: one-based page number
+          required: false
+          default: 1
+          minimum: 1
+          type: number
+          format: int32
+        - name: pageSize
+          in: query
+          description: number of items per page
+          required: false
+          default: 10
+          maximum: 500
+          type: number
+          format: int32
+      responses:
+        '200':
+          description: page of provisionings
+          schema:
+            allOf:
+              - $ref: "#/definitions/PageMeta"
+              - type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/definitions/ProvisioningWithMeta"
+    post:
+      summary: Start a new provisioning
+      operationId: createProvisioning
+      tags:
+        - Provisioning
+      parameters:
+        - name: provisioningProfile
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ProvisioningProfile"
+      responses:
+        '200':
+          description: created provisioning
+          schema:
+            $ref: "#/definitions/ProvisioningWithMeta"
+  /provisioning/{provisioningId}:
+    get:
+      summary: Find provisioning by id
+      operationId: getProvisioningById
+      tags:
+        - Provisioning
+      parameters:
+        - name: provisioningId
+          type: string
+          in: path
+          required: true
+      responses:
+        '200':
+          description: existing provisioning
+          schema:
+            $ref: "#/definitions/ProvisioningWithMeta"
+    put:
+      summary: Update provisioning
+      operationId: updateProvisioning
+      tags:
+        - Provisioning
+      parameters:
+        - name: provisioningId
+          type: string
+          in: path
+          required: true
+        - name: provisioningUpdate
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ProvisioningUpdate"
+      responses:
+        '200':
+          description: updated provisioning
+          schema:
+            $ref: "#/definitions/ProvisioningWithMeta"
+  /preset/{presetId}:
+    get:
+      summary: Get preset
+      operationId: getPreset
+      tags:
+        - Preset
+      parameters:
+        - name: presetId
+          type: string
+          in: path
+          required: true
+      responses:
+        '200':
+          description: existing preset
+          schema:
+            $ref: "#/definitions/ProvisioningPreset"
+    post:
+      summary: Set preset
+      operationId: setPreset
+      tags:
+        - Preset
+      parameters:
+        - name: presetId
+          type: string
+          in: path
+          required: true
+        - name: preset
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ProvisioningPreset"
+      responses:
+        '200':
+          description: updated preset
+          schema:
+            $ref: "#/definitions/ProvisioningPreset"
+definitions:
+  ProvisioningWithMeta:
+    allOf:
+      - $ref: "#/definitions/Provisioning"
+      - $ref: "#/definitions/TimestampMeta"
+  Provisioning:
+    type: object
+    required:
+      - id
+      - status
+      - profile
+    properties:
+      id:
+        type: string
+      status:
+        $ref: "#/definitions/ProvisioningStatus"
+      profile:
+        $ref: "#/definitions/ProvisioningProfile"
+      finishAt:
+        type: string
+        format: dateTime
+      taskErrors:
+        type: object
+        description: errors from BPMN process stages
+      taskResults:
+        type: object
+        description: results from BPMN process stages
+  ProvisioningUpdate:
+    type: object
+    required:
+      - profile
+    properties:
+      profile:
+        $ref: "#/definitions/ProvisioningProfile"
+  ProvisioningProfile:
+    allOf:
+      - $ref: "#/definitions/ProvisioningPreset"
+      - type: object
+        required:
+          - companyCode
+          - country
+          - resellerCompanyId
+          - resellerCarrierId
+        properties:
+          companyInfo:
+            $ref: "#/definitions/CompanyInfo"
+          companyCode:
+            type: string
+          country:
+            type: string
+          resellerCompanyId:
+            type: string
+          resellerCarrierId:
+            type: string
+  ProvisioningPreset:
+    type: object
+    required:
+      - serviceType
+      - paymentMode
+      - chargeWallet
+    properties:
+      capabilities:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: "#/definitions/Capability"
+      serviceType:
+        $ref: "#/definitions/ServiceType"
+      paymentMode:
+         $ref: "#/definitions/PaymentMode"
+      chargeWallet:
+        $ref: "#/definitions/ChargeWalletType"
+      billing:
+        $ref: "#/definitions/BillingOptions"
+      smsc:
+        $ref: "#/definitions/SmscOptions"
+  CompanyInfo:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      timezone:
+        type: string
+      contact:
+        type: string
+  SmscOptions:
+    type: object
+    required:
+      - needBilling
+      - defaultRealm
+      - servicePlanId
+      - sourceAddress
+    properties:
+      needBilling:
+        type: boolean
+      defaultRealm:
+        type: boolean
+      servicePlanId:
+        type: boolean
+      sourceAddress:
+        type: boolean
+  BillingOptions:
+    type: object
+    required:
+      - currency
+    properties:
+      smsPackageId:
+        type: number
+        format: int32
+      offnetPackageId:
+        type: number
+        format: int32
+      currency:
+        $ref: "#/definitions/Currency"
+  Currency:
+    type: number
+    description: currency code
+  ProvisioningStatus:
+    type: string
+    enum:
+      - CREATED
+      - IN_PROGRESS
+      - UPDATING
+      - COMPLETE
+      - ERROR
+  ChargeWalletType:
+    type: string
+    enum:
+      - WALLET_NONE
+      - WALLET_END_USER
+      - WALLET_COMPANY
+      - WALLET_OCS_INTEGRATION
+  PaymentMode:
+    type: string
+    enum:
+      - PRE_PAID
+      - POST-PAID
+  ServiceType:
+    type: string
+    enum:
+      - SDK
+      - WHITE_LABEL
+      - LIVE_CONNECT
+  Capability:
+    type: string
+    enum:
+      - im
+      - im.im-to-sms
+      - call.onnet
+      - call.offnet
+      - call.maaii-in
+      - push
+      - verification.mo
+      - verification.mt
+      - verification.sms
+      - verification.ivr
+      - vsf
+      - platform.android
+      - platform.ios
+      - platform.web
+      - end-user.whitelist
+      - end-user.suspension
+  # Share this definitions accross services?
+  PageMeta:
+    type: object
+    properties:
+      page:
+        description: one-based page number
+        type: number
+        format: int32
+        minimum: 1
+      pageSize:
+        description: number of items per page
+        type: number
+        format: int32
+        maximum: 500
+      pageTotal:
+        description: total number of pages
+        type: number
+        format: int32
+      total:
+        description: total number of items
+        type: number
+        format: int32
+  TimestampMeta:
+    type: object
+    properties:
+      createdAt:
+        type: string
+        format: dateTime
+      updatedAt:
+        type: string
+        format: dateTime

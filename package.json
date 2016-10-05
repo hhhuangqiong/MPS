@@ -14,7 +14,8 @@
     "build": "npm-run-all build:js build:bpmn",
     "build:js": "babel src --out-dir build --source-maps",
     "build:bpmn": "cp src/processes/provisioning/index.bpmn build/processes/provisioning/index.bpmn",
-    "docs": "gitbook install && gitbook build",
+    "docs": "gitbook install && gitbook build && npm run docs:api",
+    "docs:api": "m800-swagger-docs-generator -i src/api/swagger.yaml -o _apidocs",
     "lint": "eslint src/**/*.js",
     "test": "mocha --compilers js:babel-core/register --recursive test",
     "coverage": "nyc npm test",
@@ -44,7 +45,6 @@
     "url": "ssh://georgejor@gerrit.dev.maaii.com:29418/maaii-provisioning-service"
   },
   "devDependencies": {
-    "apidoc": "^0.16.1",
     "babel-cli": "^6.10.1",
     "babel-core": "^6.10.4",
     "babel-eslint": "^6.1.2",
@@ -57,6 +57,7 @@
     "eslint": "^2.13.1",
     "eslint-config-airbnb-base": "^3.0.1",
     "eslint-plugin-import": "^1.9.2",
+    "m800-swagger-docs-generator": "0.1.0-snapshot.90",
     "mocha": "^2.5.3",
     "npm-run-all": "^2.3.0",
     "nyc": "^7.1.0-candidate3",
