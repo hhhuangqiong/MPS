@@ -1,4 +1,4 @@
 {
     "gitbook": "3.1.0",
-    "plugins": ["puml"]
+    "plugins": ["puml", "theme-api"]
 }
