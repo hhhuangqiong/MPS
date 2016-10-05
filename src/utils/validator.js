@@ -11,7 +11,9 @@ export default function validator() {
     return new ValidationError(joiError.message, joiError.type, joiError.path);
   }
 
-  function sanitize(input, joiSchema, options = { abortEarly: false }) {
+  // convert false will disable auto cast values to required types
+  // (e.g a string to a number, string to be lowercased)
+  function sanitize(input, joiSchema, options = { abortEarly: false, convert: false }) {
     check.ok('joiSchema', joiSchema);
 
     const { value, error } = Joi.validate(input, joiSchema, options);
