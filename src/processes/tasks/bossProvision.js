@@ -135,7 +135,10 @@ function generateBossProvisionParams(data) {
 
 
 function run(data, cb) {
-  const { carrierId, smsPrefix, chargeWallet } = data;
+  // temporary turn off checking of sms prefix as sms prefix generation is not
+  // ready: WLP-1142
+  // const { carrierId, smsPrefix, chargeWallet } = data;
+  const { carrierId, chargeWallet } = data;
   const smsPackageId = _.get(data, 'billing.smsPackageId', null);
   const offnetPackageId = _.get(data, 'billing.offnetPackageId', null);
 
@@ -151,11 +154,12 @@ function run(data, cb) {
   }
 
   if (isChargeSms(data)) {
-    if (!smsPrefix) {
-      cb(new ArgumentNullError('smsPrefix'));
-      return;
-    }
-
+    // temporary turn off checking of sms prefix as sms prefix generation is not
+    // ready: WLP-1142
+    // if (!smsPrefix) {
+    //   cb(new ArgumentNullError('smsPrefix'));
+    //   return;
+    // }
     if (!smsPackageId) {
       cb(new ArgumentNullError('smsPackageId'));
       return;
