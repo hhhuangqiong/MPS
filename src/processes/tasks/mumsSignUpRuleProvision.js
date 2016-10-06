@@ -34,7 +34,7 @@ function run(data, cb) {
 
   if (!rules.length) {
     // skip if nothing to provision
-    cb(null, data);
+    cb(null, {});
     return;
   }
 
