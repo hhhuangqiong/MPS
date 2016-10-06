@@ -2,7 +2,7 @@
   "cps": {
     "api": {
       "baseUrl": "http://192.168.118.34:80",
-      "timeout": 60000
+      "timeout": 15000
     },
     "wlServiceDomain": "maaii.com",
     "sdkServiceDomain": "m800-api.com",
@@ -134,7 +134,7 @@
   "iam": {
     "api": {
       "baseUrl": "http://deploy.dev.maaii.com:4004",
-      "timeout": 60000
+      "timeout": 15000
     },
     "adminRoleTemplate": {
       "name": "Admin",
@@ -170,7 +170,7 @@
   "boss": {
     "api": {
       "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
-      "timeout": 60000
+      "timeout": 15000
     },
     "prePaidInitialBalance": 0,
     "postPaidInitialBalance": 999999999
@@ -178,7 +178,7 @@
   "mums": {
     "api": {
       "baseUrl": "http://192.168.118.127:8083",
-      "timeout": 60000
+      "timeout": 15000
     },
     "signup": {
       "rules": {
