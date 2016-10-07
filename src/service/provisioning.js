@@ -11,6 +11,7 @@ import Provisioning, {
 import Joi from 'joi';
 import _ from 'lodash';
 
+const REGEX_NUMBER_LOWERCASE_ONLY = /^[a-z0-9]+$/;
 const REGEX_MONGO_OBJECT_ID = /^[0-9a-fA-F]{24}$/;
 
 const PUBLIC_PROPS = ['id', 'profile', 'status', 'taskErrors', 'taskResults', 'createdAt', 'updatedAt'];
@@ -58,8 +59,7 @@ export default function provisioningService(provisioningProcessor, validator) {
       timezone: Joi.string(),
     }),
     country: Joi.string().required(),
-    companyCode: Joi.string().alphanum().lowercase()
-      .required(),
+    companyCode: Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY).required(),
     serviceType: Joi.string().valid(Object.values(ServiceTypes)),
     resellerCompanyId: Joi.string().required().regex(REGEX_MONGO_OBJECT_ID),
     resellerCarrierId: Joi.string().required(),
@@ -110,7 +110,7 @@ export default function provisioningService(provisioningProcessor, validator) {
     carrierId: Joi.array().items(Joi.string()).optional(),
     provisioningId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
     serviceType: Joi.array().items(Joi.string().valid(Object.values(ServiceTypes))).optional(),
-    companyCode: Joi.array().items(Joi.string().alphanum().lowercase()).optional(),
+    companyCode: Joi.array().items(Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY)).optional(),
     companyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
     resellerCarrierId: Joi.array().items(Joi.string()).optional(),
     resellerCompanyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
@@ -197,7 +197,7 @@ export default function provisioningService(provisioningProcessor, validator) {
         timezone: Joi.string(),
       }),
       country: Joi.string(),
-      companyCode: Joi.string().alphanum().lowercase(),
+      companyCode: Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY),
       serviceType: Joi.string().valid(Object.values(ServiceTypes)),
       resellerCompanyId: Joi.string().regex(REGEX_MONGO_OBJECT_ID),
       resellerCarrierId: Joi.string(),
