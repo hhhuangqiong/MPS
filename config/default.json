@@ -38,12 +38,21 @@
     },
     "sip": {
       "gateway": {
-        "timesToGenerate": 2,
         "template": {
-          "identifier": "{{ carrierId }}.gateway.tsbc{{ generateNumber }}",
-          "description": "Transcoding SBC #{{ generateNumber }}",
-          "host": "192.168.35.50",
-          "port": 5080,
+          "profiles": {
+            "0": {
+              "identifier": "{{ carrierId }}.gateway.tsbc1",
+              "description": "Transcoding SBC #1",
+              "host": "192.168.35.50",
+              "port": 5080
+            },
+            "1": {
+              "identifier": "{{ carrierId }}.gateway.tsbc2",
+              "description": "Transcoding SBC #2",
+              "host": "192.168.35.50",
+              "port": 5080
+            }
+          },
           "manipulation_rules": {
             "0": {
               "description": "NGN Header to Prefix Manipulation",
