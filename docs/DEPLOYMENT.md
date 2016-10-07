@@ -34,6 +34,10 @@ The application can be configured using docker container environment variables. 
 |`cps__chargeProfile__user` | User level charging profile to be used for SMS/Voice provisioning | maaii_charge_profile | |
 |`cps__verification__template__attempt_callback_url` |  The callback URL to get confirmation whether the verification can be proceeded. See [Verification Mgmt API](https://issuetracking.maaii.com:9443/display/MAAIIP/Verification+Management+HTTP+API+1.0) | `http://192.168.56.54:8087/v1.0/verification-core/internal/callback/attempt` | |
 |`cps__verification__template__completion_callback_url` | The callback URL for verification completed successfully. See [Verification Mgmt HTTP API](https://issuetracking.maaii.com:9443/display/MAAIIP/Verification+Management+HTTP+API+1.0) | `http://192.168.56.54:8087/v1.0/verification-core/internal/callback/completion`| |
+|`cps__sip__gateway__template__profiles__0__host`| Host of SIP Gateway #1 | 192.168.35.50 | |
+|`cps__sip__gateway__template__profiles__0__port`| Port of SIP Gateway #1 | 5080 | |
+|`cps__sip__gateway__template__profiles__1__host`| Host of SIP Gateway #2 | 192.168.35.50 | |
+|`cps__sip__gateway__template__profiles__1__port`| Port of SIP Gateway #2 | 5080 | |
 |`boss__api__baseUrl`| BOSS API Endpoint |`http://192.168.135.167:10080` | |
 |`boss__api__timeout`| BOSS API Timeout | 15000 | |
 |`boss__prePaidInitialBalance`| Initial wallet balance in Maaii Boss for prepaid users | 0 | |
