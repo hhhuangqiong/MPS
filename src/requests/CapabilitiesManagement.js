@@ -164,7 +164,9 @@ export default class CapabilitiesManagement extends CpsRequest {
         identifier,
         charging_profile: chargingProfile,
         routing_profile_id: sipRoutingProfileId,
-        is_onnet_charging_disabled: !enableOnnetCharging,
+        // @TODO temporary set the value
+        // is_onnet_charging_disabled true means enable the onNet charging
+        is_onnet_charging_disabled: !!enableOnnetCharging,
         is_offet_charging_disabled: !enableOffnetCharging,
         attributes,
       },

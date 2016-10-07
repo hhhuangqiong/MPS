@@ -51,6 +51,8 @@ function run(data, cb) {
   const params = {
     identifier: carrierId,
     alias: companyCode,
+    // @TODO enable the contact store service temporary
+    enable_contact_store: true,
   };
 
   logger.debug('CPS create Carrier request sent');
