@@ -40,6 +40,8 @@ The application can be configured using docker container environment variables. 
 |`boss__postPaidInitialBalance`| Initial wallet balance in Maaii Boss for postpaid users | 99999999 | |
 |`iam__api__baseUrl` | IAM API Endpoint | `http://deploy.dev.maaii.com:4004` | |
 |`iam__api__timeout` | IAM API Endpoint Timeout | `60000` | |
+|`mums__api__baseUrl` | MUMS API Endpoint | `http://192.168.118.127:8083` | |
+|`mums__api__timeout` | MUMS API Endpoint Timeout | `60000` | |
 
 
 Note: Keys defined with __ in between words are due to default setup of [nconf](https://github.com/indexzero/nconf), an npm module that we used to organize application configurations.
