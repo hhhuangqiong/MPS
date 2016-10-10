@@ -27,7 +27,7 @@ import initBPMN from './initializer/bpmn';
 import initValidator from './utils/validator';
 
 const ioc = new Bottle();
-const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, '../config'));
+const nconf = require('m800-initializers/lib/nconf')(path.resolve(__dirname, './config'));
 
 // configuations
 ioc.constant('cpsConfig', parseObjectArrays(nconf.get('cps')));
@@ -70,7 +70,6 @@ ioc.factory('AccessManagement', (container) => {
 
 ioc.factory('BossProvisionManagement', () => new BossProvisionManagement(nconf.get('boss:api')));
 
-ioc.factory('MumsSignUpRuleMgmt', () => new MumsSignUpRuleMgmt(nconf.get('mums:api')))
-;
+ioc.factory('MumsSignUpRuleMgmt', () => new MumsSignUpRuleMgmt(nconf.get('mums:api')));
 
 export default ioc;

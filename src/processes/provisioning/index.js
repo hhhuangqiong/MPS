@@ -2,6 +2,7 @@ import path from 'path';
 import { addProcess } from '../util/process';
 
 export default function provisioningProcessor(processManager) {
+  // eslint-disable-next-line global-require
   const processHandlers = require('./handlers');
 
   return addProcess({

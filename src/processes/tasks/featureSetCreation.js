@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { NotImplementedError, ArgumentNullError } from 'common-errors';
+import { ArgumentNullError } from 'common-errors';
 
 import ioc from '../../ioc';
 import { createTask } from '../util/task';

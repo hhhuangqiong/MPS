@@ -7,7 +7,7 @@ coverage/
 build/
 doc/
 _book/
-_apibook/
+_apidocs/
 node_modules/
 
 # storage folder for bpmn

@@ -37,7 +37,7 @@ function validateRerun(profile, taskResult) {
 
   const carrierId = generateCarrierId(profile.companyCode, profile.serviceType);
   if (taskResult.carrierId !== carrierId) {
-    throw new ValidationError('Company code cannot be updated', 'FIELD_IN_SERVICE', 'profile.companyCode')
+    throw new ValidationError('Company code cannot be updated', 'FIELD_IN_SERVICE', 'profile.companyCode');
   }
 
   return false;
