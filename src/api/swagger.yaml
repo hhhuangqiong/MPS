@@ -292,11 +292,11 @@ definitions:
       needBilling:
         type: boolean
       defaultRealm:
-        type: boolean
+        type: string
       servicePlanId:
-        type: boolean
+        type: string
       sourceAddress:
-        type: boolean
+        type: string
   BillingOptions:
     type: object
     required:

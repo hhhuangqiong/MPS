@@ -1,5 +1,6 @@
 import path from 'path';
 
+import chalk from 'chalk';
 import minimist from 'minimist';
 import gulp from 'gulp';
 import sourcemaps from 'gulp-sourcemaps';
@@ -15,7 +16,7 @@ const PATHS = {
   SRC_JS_FILES: path.join(ROOT, 'src/**/*.js'),
   SRC_RESOURCE_FILES: path.join(ROOT, 'src/**/!(*.js)'),
   BUILD_DIR: path.join(ROOT, 'build/src'),
-  BUILD_ENTRYPOINT_FILE: path.join(ROOT, 'build/src/server'),
+  BUILD_ENTRYPOINT_FILE: path.join(ROOT, 'build/src'),
 };
 const ENVS = {
   DEVELOPMENT: 'development',
@@ -43,9 +44,16 @@ gulp.task('compile', () => {
   const stream = gulp.src(PATHS.SRC_JS_FILES)
     .pipe(changed(PATHS.BUILD_DIR))
     .pipe(sourcemaps.init())
-    .pipe(babel({
-      sourceMap: true,
-    }))
+    .pipe(babel())
+    .on('error', function (e) {
+      if (options.env === ENVS.DEVELOPMENT) {
+        console.error(chalk.red(e.message));
+        console.error(e.codeFrame);
+        this.emit('end');
+        return;
+      }
+      throw e;
+    })
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(PATHS.BUILD_DIR));
   return stream;
@@ -58,9 +66,7 @@ gulp.task('copy-resources', () => {
   return stream;
 });
 
-const BUILD_TASKS = ['lint', 'compile', 'copy-resources'];
-gulp.task('build', BUILD_TASKS);
-gulp.task('build:nodemon', BUILD_TASKS.filter(x => x !== 'lint'));
+gulp.task('build', ['lint', 'compile', 'copy-resources']);
 
 // Run this if you don't want to start a dev server,
 // but only compile files on changes. For example if you are using and IDE to debug
@@ -68,12 +74,10 @@ gulp.task('watch', ['build'], () => {
   gulp.watch(PATHS.SRC_ALL_FILES, ['build']);
 });
 
-gulp.task('dev', ['build'], () => {
-  gulp.watch(PATHS.SRC_JS_FILES, ['lint']);
+gulp.task('dev', ['watch'], () => {
   const stream = nodemon({
     script: PATHS.BUILD_ENTRYPOINT_FILE,
-    watch: 'src',
-    tasks: ['build:nodemon'],
+    watch: PATHS.BUILD_DIR,
   });
   return stream;
 });

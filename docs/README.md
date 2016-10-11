@@ -4,7 +4,7 @@ Maaii Provisioning Service(MPS) is a service that enables automation of service 
 Maaii/M800. The main objective of the MPS is to replace the traditional manual service provisioning
 through done through CSR forms.
 
-See API docs [here](http://deploy.dev.maaii.com:9080/maaii-provisioning-server-api/latest).
+See API docs [here](http://deploy.dev.maaii.com:9080/maaii-provisioning-service-api/latest).
 
 ## Development
 

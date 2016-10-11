@@ -1,0 +1,276 @@
+import uuid from 'uuid';
+import Promise from 'bluebird';
+import { InvalidOperationError, NotFoundError, ValidationError } from 'common-errors';
+import Joi from 'joi';
+import _ from 'lodash';
+
+import { validator, check } from './util';
+import {
+  ProcessStatus,
+  ServiceTypes,
+  Capabilities,
+  PaymentModes,
+  ChargeWallets,
+  PROVISIONING_EVENT,
+} from './../domain';
+
+const REGEX_NUMBER_LOWERCASE_ONLY = /^[a-z0-9]+$/;
+const REGEX_MONGO_OBJECT_ID = /^[0-9a-fA-F]{24}$/;
+const PUBLIC_PROPS = ['id', 'profile', 'status', 'taskErrors', 'taskResults', 'createdAt', 'updatedAt'];
+
+export function provisioningService(logger, Provisioning, eventBus) {
+  check.ok('logger', logger);
+  check.ok('eventBus', eventBus);
+  check.ok('Provisioning', Provisioning);
+
+  const CREATE_PROVISIONING_SCHEMA = Joi.object({
+    companyInfo: Joi.object({
+      name: Joi.string().required(),
+      timezone: Joi.string(),
+    }),
+    country: Joi.string().required(),
+    companyCode: Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY).required(),
+    serviceType: Joi.string().valid(ServiceTypes),
+    resellerCompanyId: Joi.string().required().regex(REGEX_MONGO_OBJECT_ID),
+    resellerCarrierId: Joi.string().required(),
+    capabilities: Joi.array()
+      .items(Joi.string().valid(Object.values(Capabilities)))
+      .unique()
+      .required(),
+    paymentMode: Joi.string().required().valid(PaymentModes),
+    chargeWallet: Joi.string().required().valid(ChargeWallets),
+    billing: Joi.object({
+      smsPackageId: Joi.number().min(0),
+      offnetPackageId: Joi.number().min(0),
+      currency: Joi.number().min(0).required(),
+    }).required(),
+    smsc: Joi.object({
+      needBilling: Joi.boolean().required(),
+      defaultRealm: Joi.string().required(),
+      servicePlanId: Joi.string().required(),
+      sourceAddress: Joi.string().required(),
+    }).required(),
+  });
+
+  async function createProvisioning(command) {
+    const profile = validator.sanitize(command, CREATE_PROVISIONING_SCHEMA);
+    const provisioning = await Provisioning.create({ profile });
+    // TODO: can we use a single id here?
+    const event = {
+      processId: uuid.v4(),
+      provisioningId: provisioning.id,
+      profile,
+      previousResult: null,
+    };
+    eventBus.emit(PROVISIONING_EVENT.PROVISIONING_START_REQUESTED, event);
+    provisioning.processId = event.processId;
+    provisioning.status = ProcessStatus.IN_PROGRESS;
+    await provisioning.save();
+    return _.pick(provisioning, PUBLIC_PROPS);
+  }
+
+  const schemaGetProvisioning = Joi.object({
+    provisioningId: Joi.string().regex(REGEX_MONGO_OBJECT_ID),
+  });
+
+  async function getProvisioning(command) {
+    const sanitizedCommand = validator.sanitize(command, schemaGetProvisioning);
+    return await Provisioning.findById(sanitizedCommand.provisioningId).exec();
+  }
+
+  const GET_PROVISIONINGS_SCHEMA = Joi.object({
+    carrierId: Joi.array().items(Joi.string()).optional(),
+    provisioningId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
+    serviceType: Joi.array().items(Joi.string().valid(Object.values(ServiceTypes))).optional(),
+    companyCode: Joi.array().items(Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY)).optional(),
+    companyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
+    resellerCarrierId: Joi.array().items(Joi.string()).optional(),
+    resellerCompanyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
+    search: Joi.string(),
+    page: Joi.number().min(1).default(1),
+    pageSize: Joi
+      .number()
+      .min(5).max(500)
+      .default(10),
+  });
+
+  async function getProvisionings(command) {
+    if (command.provisioningId) command.provisioningId = command.provisioningId.split(',');
+    if (command.companyId) command.companyId = command.companyId.split(',');
+    if (command.serviceType) command.serviceType = command.serviceType.split(',');
+    if (command.companyCode) command.companyCode = command.companyCode.split(',');
+    if (command.carrierId) command.carrierId = command.carrierId.split(',');
+    if (command.resellerCarrierId) command.resellerCarrierId = command.resellerCarrierId.split(',');
+    if (command.resellerCompanyId) command.resellerCompanyId = command.resellerCompanyId.split(',');
+
+    const {
+      page,
+      pageSize,
+      search,
+      serviceType,
+      companyCode,
+      companyId,
+      provisioningId,
+      carrierId,
+      resellerCarrierId,
+      resellerCompanyId,
+    } = validator.sanitize(command, GET_PROVISIONINGS_SCHEMA);
+
+    const offset = (page - 1) * pageSize;
+    const filters = {};
+    /* eslint-disable no-underscore-dangle */
+    if (provisioningId) filters._id = { $in: provisioningId };
+
+    if (search) {
+      filters['profile.companyCode'] = { $regex: new RegExp(`.*${search}.*`) };
+    } else if (companyCode) {
+      filters['profile.companyCode'] = { $in: companyCode };
+    }
+
+    if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
+    if (companyId) filters['profile.companyId'] = { $in: companyId };
+    if (carrierId) filters['profile.carrierId'] = { $in: carrierId };
+    if (resellerCarrierId) filters['profile.resellerCarrierId'] = { $in: resellerCarrierId };
+    if (resellerCompanyId) filters['profile.resellerCompanyId'] = { $in: resellerCompanyId };
+
+    // TODO: mquery should support passing array of fields out of the box
+    const selection = _.transform(PUBLIC_PROPS, (result, prop) => {
+      result[prop] = 1;
+    }, {});
+    const query = Provisioning.find(filters)
+      .skip(offset)
+      .limit(pageSize)
+      .select(selection)
+      .sort({ createdAt: -1 });
+
+    // count() ignores skip() and limits() by default
+    const result = await Promise.props({
+      items: query.exec(),
+      count: Provisioning.find(filters).count(),
+    });
+    const pageTotal = Math.ceil(result.count / pageSize);
+
+    const items = result.items;
+    return {
+      page,
+      pageSize,
+      pageTotal,
+      total: result.count,
+      items,
+    };
+  }
+
+  const UPDATE_PROVISIONING_SCHEMA = Joi.object({
+    provisioningId: Joi.string().regex(REGEX_MONGO_OBJECT_ID).required(),
+    // only fields that are allowed to update after creation
+    profile: Joi.object({
+      companyInfo: Joi.object({
+        name: Joi.string(),
+        timezone: Joi.string(),
+      }),
+      country: Joi.string(),
+      companyCode: Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY),
+      serviceType: Joi.string().valid(Object.values(ServiceTypes)),
+      resellerCompanyId: Joi.string().regex(REGEX_MONGO_OBJECT_ID),
+      resellerCarrierId: Joi.string(),
+      capabilities: Joi.array()
+        .items(Joi.string().valid(Object.values(Capabilities)))
+        .unique(),
+      paymentMode: Joi.string().valid(PaymentModes),
+      chargeWallet: Joi.string().valid(Object.values(ChargeWallets)),
+      billing: Joi.object({
+        smsPackageId: Joi.number().min(0),
+        offnetPackageId: Joi.number().min(0),
+        currency: Joi.number().min(0),
+      }),
+      smsc: Joi.object({
+        needBilling: Joi.boolean(),
+        defaultRealm: Joi.string(),
+        servicePlanId: Joi.string(),
+        sourceAddress: Joi.string(),
+      }),
+    }).required(),
+  });
+
+  async function updateProvisioning(command) {
+    const { provisioningId, profile } = validator.sanitize(command, UPDATE_PROVISIONING_SCHEMA);
+    let provisioning = await Provisioning.findById(provisioningId).exec();
+    if (!provisioning) {
+      // not found
+      throw new NotFoundError('Provisioning');
+    }
+    const { profile: existingProfile, status } = provisioning;
+    const taskResults = provisioning.taskResults || {};
+    if (status !== ProcessStatus.COMPLETE && status !== ProcessStatus.ERROR) {
+      throw new InvalidOperationError(`Cannot update provisioning when status is ${status}`);
+    }
+    // check if difference in profile update
+    const newProfile = _.extend({}, existingProfile, profile);
+
+    // validation logic from old validateRerun
+    // TODO: check if this FIELD_IN_SERVICE is used anywhere, if not rename to more meaningful
+    if (existingProfile.companyCode !== newProfile.companyCode) {
+      throw new ValidationError('Company code cannot be updated', 'FIELD_IN_SERVICE', 'profile.companyCode');
+    }
+    if (existingProfile.serviceType !== newProfile.serviceType) {
+      throw new ValidationError('Service type cannot be updated', 'FIELD_IN_SERVICE', 'profile.serviceType');
+    }
+    // TODO: is it possible to reuse existing process from bpmn?
+    const event = {
+      provisioningId,
+      processId: uuid.v4(),
+      profile: newProfile,
+      previousResult: taskResults,
+    };
+    eventBus.emit(PROVISIONING_EVENT.PROVISIONING_START_REQUESTED, event);
+    // update storage if process execution success
+    logger.info(`Run process with processId ${event.processId}.`);
+    provisioning = await Provisioning.findByIdAndUpdate(provisioningId, {
+      status: ProcessStatus.UPDATING,
+      processId: event.processId,
+      profile: newProfile,
+    });
+    // TODO: return updated entity here?
+    return { id: provisioningId };
+  }
+
+  const COMPLETE_PROVISIONING_SCHEMA = Joi.object({
+    taskErrors: Joi.object(),
+    taskResults: Joi.object(),
+    provisioningId: Joi.string().required(),
+  }).rename('ownerId', 'provisioningId');
+
+  async function completeProvisioning(command) {
+    // check is used here instead of validator as it is system method, so it always expects valid data
+    const sanitizedCommand = check.schema('command', command, COMPLETE_PROVISIONING_SCHEMA);
+    const {
+      taskErrors,
+      taskResults,
+      provisioningId,
+    } = sanitizedCommand;
+
+    // mark provisioning status as error if any error happened during process
+    const status = Object.keys(taskErrors).length > 0 ? ProcessStatus.ERROR : ProcessStatus.COMPLETE;
+    const provisioningInterestedFields = ['companyId', 'carrierId'];
+    const profileUpdates = {};
+    _.forEach(provisioningInterestedFields, (field) => {
+      _.forEach(taskResults, (taskResult) => {
+        if (!taskResult[field]) return;
+        profileUpdates[`profile.${field}`] = taskResult[field];
+      });
+    });
+    const dbUpdate = _.extend({ taskResults, taskErrors, status }, profileUpdates);
+    await Provisioning.findByIdAndUpdate(provisioningId, dbUpdate);
+    logger.info(`Process complete for Provisioning: ${provisioningId}, profile changes `, profileUpdates);
+  }
+
+  return {
+    createProvisioning,
+    getProvisioning,
+    getProvisionings,
+    updateProvisioning,
+    completeProvisioning,
+  };
+}
+
+export default provisioningService;

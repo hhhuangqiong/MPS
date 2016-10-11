@@ -1,20 +1,31 @@
 import {
-  setPreset,
-  getPreset,
-} from './controller/preset';
+  presetController,
+  provisioningController,
+} from './controllers';
+import createErrorMiddleware from './errorMiddleware';
+import api from './api';
 
-import {
-  createProvisioning,
-  getProvisioning,
-  updateProvisioning,
-} from './controller/provisioning';
+export function register(container) {
+  container.service('PresetController', presetController, 'PresetService');
+  container.service('ProvisioningController', provisioningController, 'ProvisioningService');
+  container.service('ErrorMiddleware', createErrorMiddleware, 'logger');
 
-export default server => {
-  server.post('/provisioning', createProvisioning);
-  server.get('/provisioning', getProvisioning);
-  server.get('/provisioning/:provisioningId', getProvisioning);
-  server.put('/provisioning/:provisioningId', updateProvisioning);
+  // Grouped dependencies for less parameters in top-level components
+  container.factory('controllers', c => ({
+    presetController: c.PresetController,
+    provisioningController: c.ProvisioningController,
+  }));
+  container.factory('middlewares', c => ({
+    errorMiddleware: c.ErrorMiddleware,
+  }));
 
-  server.post('/preset/:presetId', setPreset);
-  server.get('/preset/:presetId', getPreset);
-};
+  container.service('api', api, 'controllers', 'middlewares');
+  return container;
+}
+
+// Re-export components for testing
+export * from './controllers';
+export { createErrorMiddleware } from './errorMiddleware';
+export { api } from './api';
+
+export default register;
