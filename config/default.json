@@ -98,7 +98,7 @@
                     "field_name": "From",
                     "regular_expression": "^((:?sip:)?\\+{0,1})(.*[A-Za-z_]+.*)@{{ escapedCarrierId }}$"
                   },
-                  "gateway": "{{ sipGatewayId1 }}"
+                  "gateway": "{{ sipGatewayId0 }}"
                 },
                 "1": {
                   "description": "Select caller Only Within Domain {{ carrierId }}",
@@ -108,7 +108,7 @@
                     "field_name": "From",
                     "regular_expression": "^((:?sip:)?\\+{0,1})(.*[A-Za-z_]+.*)@{{ escapedCarrierId }}$"
                   },
-                  "gateway": "{{ sipGatewayId2 }}"
+                  "gateway": "{{ sipGatewayId1 }}"
                 }
               }
             }
