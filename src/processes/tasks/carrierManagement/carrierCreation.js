@@ -53,6 +53,8 @@ function run(data, cb) {
     alias: companyCode,
     // @TODO enable the contact store service temporary
     enable_contact_store: true,
+    // @TODO should be set in the template in the future, now it will only white list to its carrier
+    partnership_restrictiveness: 'WHITE_LIST',
   };
 
   logger.debug('CPS create Carrier request sent');
