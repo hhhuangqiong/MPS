@@ -1,7 +1,7 @@
 {
   "name": "maaii-provisioning-service",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A microservice for Service Provisioning",
   "main": "index.js",
   "scripts": {

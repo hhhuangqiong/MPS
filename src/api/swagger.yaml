@@ -1,7 +1,7 @@
 swagger: '2.0'
 host: 'deploy.dev.maaii.com:4005'
 info:
-  version: '1.0.0'
+  version: '1.1.0'
   title: MPS (Maaii Provisioning Service)
   description: >
     MPS enables automation of service provisioning offered by Maaii / M800.
@@ -23,7 +23,21 @@ paths:
           items:
             type: string
           collectionFormat: csv
-        - name: companyId
+        - name: status
+          in: query
+          description: process statuses to filter by
+          required: false
+          type: array
+          items:
+            type: string
+            enum:
+              - CREATED
+              - IN_PROGRESS
+              - UPDATING
+              - COMPLETE
+              - ERROR
+          collectionFormat: csv
+        - name: profile.companyId
           in: query
           description: company ids to filter by
           required: false
@@ -31,15 +45,19 @@ paths:
           items:
             type: string
           collectionFormat: csv
-        - name: serviceType
+        - name: profile.serviceType
           in: query
           description: service types to filter by
           required: false
           type: array
           items:
             type: string
+            enum:
+              - SDK
+              - WHITE_LABEL
+              - LIVE_CONNECT
           collectionFormat: csv
-        - name: companyCode
+        - name: profile.companyCode
           in: query
           description: company codes to filter by
           required: false
@@ -47,7 +65,7 @@ paths:
           items:
             type: string
           collectionFormat: csv
-        - name: carrierId
+        - name: profile.carrierId
           in: query
           description: carrier ids to filter by
           required: false
@@ -55,7 +73,7 @@ paths:
           items:
             type: string
           collectionFormat: csv
-        - name: resellerCarrierId
+        - name: profile.resellerCarrierId
           in: query
           description: reseller carrier ids to filter by
           required: false
@@ -63,7 +81,7 @@ paths:
           items:
             type: string
           collectionFormat: csv
-        - name: resellerCompanyId
+        - name: profile.resellerCompanyId
           in: query
           description: reseller company ids to filter by
           required: false

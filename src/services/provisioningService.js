@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { validator, check } from './util';
 import {
   ProcessStatus,
+  ProcessStatuses,
   ServiceTypes,
   Capabilities,
   PaymentModes,
@@ -79,83 +80,87 @@ export function provisioningService(logger, Provisioning, eventBus) {
   }
 
   const GET_PROVISIONINGS_SCHEMA = Joi.object({
-    carrierId: Joi.array().items(Joi.string()).optional(),
-    provisioningId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
-    serviceType: Joi.array().items(Joi.string().valid(Object.values(ServiceTypes))).optional(),
-    companyCode: Joi.array().items(Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY)).optional(),
-    companyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
-    resellerCarrierId: Joi.array().items(Joi.string()).optional(),
-    resellerCompanyId: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)).optional(),
+    // TODO: strange filter, why not use GET /provisionings/{provisioningId} for the same purpose?
+    _id: Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)),
+
+    status: Joi.array().items(Joi.string().valid(ProcessStatuses)),
+
+    // Provisioning profile field filters
+    'profile.carrierId': Joi.array().items(Joi.string()).optional(),
+    'profile.serviceType': Joi.array().items(Joi.string().valid(ServiceTypes)),
+    'profile.companyCode': Joi.array().items(Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY)),
+    'profile.companyId': Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)),
+    'profile.resellerCarrierId': Joi.array().items(Joi.string()),
+    'profile.resellerCompanyId': Joi.array().items(Joi.string().regex(REGEX_MONGO_OBJECT_ID)),
+
     search: Joi.string(),
+    // Paging parameters
     page: Joi.number().min(1).default(1),
-    pageSize: Joi
-      .number()
-      .min(5).max(500)
+    pageSize: Joi.number()
+      .min(5)
+      .max(500)
       .default(10),
-  });
+  })
+  .rename('provisioningId', '_id', { ignoreUndefined: true })
+  .rename('carrierId', 'profile.carrierId', { ignoreUndefined: true })
+  .rename('serviceType', 'profile.serviceType', { ignoreUndefined: true })
+  .rename('companyCode', 'profile.companyCode', { ignoreUndefined: true })
+  .rename('companyId', 'profile.companyId', { ignoreUndefined: true })
+  .rename('resellerCarrierId', 'profile.resellerCarrierId', { ignoreUndefined: true })
+  .rename('resellerCompanyId', 'profile.resellerCompanyId', { ignoreUndefined: true });
+
+  const PROVISIONING_FILTERS = [
+    '_id',
+    'status',
+    'profile.carrierId',
+    'profile.serviceType',
+    'profile.companyCode',
+    'profile.companyId',
+    'profile.resellerCarrierId',
+    'profile.resellerCompanyId',
+    // backward compatibility
+    'provisioningId',
+    'carrierId',
+    'serviceType',
+    'companyCode',
+    'companyId',
+    'resellerCarrierId',
+    'resellerCompanyId',
+  ];
+
 
   async function getProvisionings(command) {
-    if (command.provisioningId) command.provisioningId = command.provisioningId.split(',');
-    if (command.companyId) command.companyId = command.companyId.split(',');
-    if (command.serviceType) command.serviceType = command.serviceType.split(',');
-    if (command.companyCode) command.companyCode = command.companyCode.split(',');
-    if (command.carrierId) command.carrierId = command.carrierId.split(',');
-    if (command.resellerCarrierId) command.resellerCarrierId = command.resellerCarrierId.split(',');
-    if (command.resellerCompanyId) command.resellerCompanyId = command.resellerCompanyId.split(',');
-
-    const {
-      page,
-      pageSize,
-      search,
-      serviceType,
-      companyCode,
-      companyId,
-      provisioningId,
-      carrierId,
-      resellerCarrierId,
-      resellerCompanyId,
-    } = validator.sanitize(command, GET_PROVISIONINGS_SCHEMA);
-
-    const offset = (page - 1) * pageSize;
-    const filters = {};
-    /* eslint-disable no-underscore-dangle */
-    if (provisioningId) filters._id = { $in: provisioningId };
-
+    // As joi doesn't support csv to array transform, do it before sanitization
+    command = _.mapValues(command, (value, key) => {
+      const isCsvField = _.includes(PROVISIONING_FILTERS, key) && _.isString(value);
+      return isCsvField ? value.split(',') : value;
+    });
+    const sanitizedCommand = validator.sanitize(command, GET_PROVISIONINGS_SCHEMA);
+    const filters = _(sanitizedCommand)
+      .pick(PROVISIONING_FILTERS)
+      .mapValues(arr => ({ $in: arr }))
+      .value();
+    const { search, page, pageSize } = sanitizedCommand;
     if (search) {
       filters['profile.companyCode'] = { $regex: new RegExp(`.*${search}.*`) };
-    } else if (companyCode) {
-      filters['profile.companyCode'] = { $in: companyCode };
     }
-
-    if (serviceType) filters['profile.serviceType'] = { $in: serviceType };
-    if (companyId) filters['profile.companyId'] = { $in: companyId };
-    if (carrierId) filters['profile.carrierId'] = { $in: carrierId };
-    if (resellerCarrierId) filters['profile.resellerCarrierId'] = { $in: resellerCarrierId };
-    if (resellerCompanyId) filters['profile.resellerCompanyId'] = { $in: resellerCompanyId };
-
-    // TODO: mquery should support passing array of fields out of the box
-    const selection = _.transform(PUBLIC_PROPS, (result, prop) => {
-      result[prop] = 1;
-    }, {});
-    const query = Provisioning.find(filters)
-      .skip(offset)
-      .limit(pageSize)
-      .select(selection)
-      .sort({ createdAt: -1 });
-
-    // count() ignores skip() and limits() by default
-    const result = await Promise.props({
-      items: query.exec(),
-      count: Provisioning.find(filters).count(),
+    const offset = (page - 1) * pageSize;
+    const query = Provisioning.find(filters);
+    const { items, total } = await Promise.props({
+      items: query
+        .skip(offset)
+        .limit(pageSize)
+        .select(PUBLIC_PROPS.join(' '))
+        .sort({ createdAt: -1 })
+        .exec(),
+      total: query.count(),
     });
-    const pageTotal = Math.ceil(result.count / pageSize);
-
-    const items = result.items;
+    const pageTotal = Math.ceil(total / pageSize);
     return {
       page,
       pageSize,
       pageTotal,
-      total: result.count,
+      total,
       items,
     };
   }
