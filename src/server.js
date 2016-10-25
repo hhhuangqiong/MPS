@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import metricsMiddleware from 'm800-prometheus-express';
+import healthCheck from 'm800-health-check';
 
 import { check } from './util';
 
@@ -19,6 +20,11 @@ export function createServer(logger, api, mongooseConnection, serverOptions) {
 
   async function start() {
     await mongooseConnection;
+    healthCheck(server, {
+      mongodb: {
+        mongoose: mongooseConnection,
+      },
+    });
     server.listen(serverOptions.port);
     logger.debug(`Server is listening at port ${serverOptions.port}...`);
   }
