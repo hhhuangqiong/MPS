@@ -1,5 +1,7 @@
 import winston from 'winston';
 
+import { check } from './../util';
+
 const LOG = {
   colors: {
     debug: 'blue',
@@ -12,17 +14,20 @@ const LOG = {
     alert: 'red',
   },
 };
-
-export const defaultLogger = new (winston.Logger)({
-  levels: winston.config.syslog.levels,
-  transports: [
-    new winston.transports.Console({
-      level: 'debug',
-      colorize: true,
-    }),
-  ],
-});
-
 winston.addColors(LOG.colors);
 
-export default defaultLogger;
+export function createLogger(env) {
+  check.ok('env', env);
+  const logger = new (winston.Logger)({
+    levels: winston.config.syslog.levels,
+    transports: [
+      new winston.transports.Console({
+        level: 'debug',
+        colorize: env === 'development',
+      }),
+    ],
+  });
+  return logger;
+}
+
+export default createLogger;

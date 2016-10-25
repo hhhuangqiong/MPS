@@ -9,6 +9,7 @@ import { register as registerServer } from './server';
 export function create(config) {
   const app = new Bottle();
 
+  const ENV = process.env.NODE_ENV || 'development';
   const cpsOptions = config.cps;
   const cpsApiOptions = cpsOptions.api;
   const bossOptions = config.boss;
@@ -19,7 +20,7 @@ export function create(config) {
   const mumsApiOptions = mumsOptions.api;
   const mongoOptions = config.mongodb;
   const serverOptions = {
-    env: process.env.NODE_ENV || 'development',
+    env: ENV,
     port: process.env.PORT || 3000,
   };
 
@@ -33,7 +34,7 @@ export function create(config) {
   app.constant('mumsOptions', mumsOptions);
   app.constant('mumsApiOptions', mumsApiOptions);
   app.constant('mongoOptions', mongoOptions);
-  app.constant('ENV', serverOptions.env);
+  app.constant('ENV', ENV);
   app.constant('serverOptions', serverOptions);
 
   registerInfrastructure(app);
