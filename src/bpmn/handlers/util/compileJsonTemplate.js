@@ -1,4 +1,6 @@
 import _ from 'lodash';
+import _deep from 'lodash-deep';
+_.mixin(_deep);
 
 // TODO: avoid global modifications like that!
 _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
