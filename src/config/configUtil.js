@@ -1,30 +1,19 @@
 import _ from 'lodash';
-import _deep from 'lodash-deep';
 
-_.mixin(_deep);
-
-export function parseObjectArrays(object) {
-  // just loop through children if it's array
-  if (_.isArray(object)) {
-    return _.map(object, parseObjectArrays);
+export function parseObjectArrays(obj) {
+  if (_.isArray(obj)) {
+    return obj.map(parseObjectArrays);
   }
-
-  if (!_.isPlainObject(object)) {
-    return object;
+  if (!_.isObject(obj)) {
+    return obj;
   }
-
-  const keys = Object.keys(object);
-
-  // loop through children
-  const parsed = _.reduce(object, (result, value, key) => {
-    result[key] = parseObjectArrays(value);
-    return result;
-  }, {});
-
-  if (_.every(keys, key => _.isInteger(_.parseInt(key)))) {
-    // all keys are integer
-    return _.toArray(parsed);
+  const numericKeys = _.keys(obj).map(_.parseInt);
+  if (!_.every(numericKeys, _.isInteger)) {
+    return _.mapValues(obj, parseObjectArrays);
   }
-
-  return parsed;
+  const arr = [];
+  _.each(obj, (value, key) => {
+    arr[_.parseInt(key)] = parseObjectArrays(value);
+  });
+  return arr;
 }

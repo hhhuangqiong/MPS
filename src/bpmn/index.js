@@ -172,7 +172,7 @@ export function register(container) {
     createSaveApplicationTask,
     'logger',
     'cpsOptions',
-    'CapabilitiesManagement'
+    'ApplicationManagement'
   );
   registerBpmnHandler(
     bpmnEvents.SIP_GATEWAY_CREATION,

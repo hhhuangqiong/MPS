@@ -9,9 +9,9 @@ export function createImToSmsCapabilityActivationTask(logger, capabilitiesManage
   const { template } = cpsOptions['im-to-sms'];
 
   const options = {
-    taskName: 'IM_CAPABILITY_ACTIVATION',
-    profileCapability: Capability.IM,
-    requestCapabilityType: CapabilityType.IM,
+    taskName: 'IM_TO_SMS_CAPABILITY_ACTIVATION',
+    profileCapability: Capability.IM_TO_SMS,
+    requestCapabilityType: CapabilityType.IM_TO_SMS,
     template,
   };
   return createSmsProfileCapabilityActivationTask(logger, cpsOptions, capabilitiesManagement, options);

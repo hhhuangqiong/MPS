@@ -9,15 +9,15 @@ import { register as registerServer } from './server';
 export function create(config) {
   const app = new Bottle();
 
-  const cpsOptions = config.get('cps');
+  const cpsOptions = config.cps;
   const cpsApiOptions = cpsOptions.api;
-  const bossOptions = config.get('boss');
+  const bossOptions = config.boss;
   const bossApiOptions = bossOptions.api;
-  const iamOptions = config.get('iam');
+  const iamOptions = config.iam;
   const iamApiOptions = iamOptions.api;
-  const mumsOptions = config.get('mums');
+  const mumsOptions = config.mums;
   const mumsApiOptions = mumsOptions.api;
-  const mongoOptions = config.get('mongodb');
+  const mongoOptions = config.mongodb;
   const serverOptions = {
     env: process.env.NODE_ENV || 'development',
     port: process.env.PORT || 3000,
