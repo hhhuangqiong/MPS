@@ -145,15 +145,15 @@ export function provisioningService(logger, Provisioning, eventBus) {
       filters['profile.companyCode'] = { $regex: new RegExp(`.*${search}.*`) };
     }
     const offset = (page - 1) * pageSize;
-    const query = Provisioning.find(filters);
+    const query = () => Provisioning.find(filters);
     const { items, total } = await Promise.props({
-      items: query
+      items: query()
         .skip(offset)
         .limit(pageSize)
         .select(PUBLIC_PROPS.join(' '))
         .sort({ createdAt: -1 })
         .exec(),
-      total: query.count(),
+      total: query().count(),
     });
     const pageTotal = Math.ceil(total / pageSize);
     return {
