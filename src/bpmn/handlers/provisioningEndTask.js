@@ -7,8 +7,8 @@ export function createProvisioningEndTask(logger, provisioningService) {
   return async function run(data, done) {
     logger.info('Provisioning process ended');
 
-    const taskResults = getProperty(this, 'taskResults');
-    const taskErrors = getProperty(this, 'taskErrors');
+    const taskResults = getProperty(this, 'taskResults') || {};
+    const taskErrors = getProperty(this, 'taskErrors') || {};
     const ownerId = getProperty(this, 'ownerId');
 
     const result = { ownerId, taskResults, taskErrors };
