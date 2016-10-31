@@ -2,15 +2,11 @@ import { ArgumentNullError } from 'common-errors';
 import escapeStringRegexp from 'escape-string-regexp';
 
 import { check } from './../../util';
-import { compileJsonTemplate } from './common';
 import { SIP_ROUTING_CREATION } from './bpmnEvents';
 
-export function createSipRoutingCreationTask(cpsOptions, voiceProvisioningManagement) {
-  check.ok('cpsOptions', cpsOptions);
+export function createSipRoutingCreationTask(templateService, voiceProvisioningManagement) {
+  check.ok('templateService', templateService);
   check.ok('voiceProvisioningManagement', voiceProvisioningManagement);
-
-  const { sip } = cpsOptions;
-  const template = sip.routing.template;
 
   async function createSipRouting(state, profile, context) {
     if (state.results.sipRoutingProfileId) {
@@ -27,7 +23,7 @@ export function createSipRoutingCreationTask(cpsOptions, voiceProvisioningManage
       carrierId,
       escapedCarrierId,
     };
-    const query = compileJsonTemplate(template, templateParams);
+    const query = await templateService.render('cps.sip.routing', templateParams);
     const res = await voiceProvisioningManagement.sipRoutingProfileCreation(query);
     const sipRoutingProfileId = res.body.id;
     logger.info(`sip routing profile ${sipRoutingProfileId} creation complete`);

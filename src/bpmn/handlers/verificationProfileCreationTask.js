@@ -7,15 +7,14 @@ import {
   VerificationMethod,
   CpsCapabilityType,
 } from './../../domain';
-import { compileJsonTemplate } from './common';
 import { VERIFICATION_PROFILE_CREATION } from './bpmnEvents';
 
-export function createVerificationProfileCreationTask(cpsOptions, verificationManagement, capabilitiesManagement) {
-  check.ok('cpsOptions', cpsOptions);
+export function createVerificationProfileCreationTask(templateService, verificationManagement, capabilitiesManagement) {
+  check.ok('templateService', templateService);
   check.ok('verificationManagement', verificationManagement);
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
-  const { template } = cpsOptions.verification;
+
   const VerificationCapabilities = [
     Capability.VERIFICATION_MO,
     Capability.VERIFICATION_MT,
@@ -45,10 +44,10 @@ export function createVerificationProfileCreationTask(cpsOptions, verificationMa
     });
   }
 
-  function generateVerificationProfile(params) {
+  async function generateVerificationProfile(params) {
     const { capabilities } = params;
     const verificationMethods = generateVerificationMethods(capabilities);
-    const profile = compileJsonTemplate(template, _.extend({}, params));
+    const profile = await templateService.render('cps.verification', { ...params });
     profile.enabled_verification_methods = verificationMethods;
     return profile;
   }

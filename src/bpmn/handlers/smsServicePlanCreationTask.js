@@ -1,15 +1,11 @@
 import { ArgumentNullError, ReferenceError } from 'common-errors';
 
 import { check } from './../../util';
-import { compileJsonTemplate } from './common';
 import { SMS_SERVICE_PLAN_CREATION } from './bpmnEvents';
 
-export function createSmsServicePlanCreationTask(cpsOptions, smsServicePlanManagement) {
-  check.ok('cpsOptions', cpsOptions);
+export function createSmsServicePlanCreationTask(templateService, smsServicePlanManagement) {
+  check.ok('templateService', templateService);
   check.ok('smsServicePlanManagement', smsServicePlanManagement);
-
-  const { sms } = cpsOptions;
-  const template = sms.servicePlan.template;
 
   async function createSmsServicePlan(state, profile) {
     if (state.results.smsServicePlanId) {
@@ -29,7 +25,7 @@ export function createSmsServicePlanCreationTask(cpsOptions, smsServicePlanManag
     }
 
     const templateParams = { carrierId };
-    const servicePlan = compileJsonTemplate(template, templateParams);
+    const servicePlan = await templateService.render('cps.sms.servicePlan', templateParams);
 
     const response = await smsServicePlanManagement.create(servicePlan);
     const { id: smsServicePlanId } = response.body;

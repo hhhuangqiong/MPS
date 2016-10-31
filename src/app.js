@@ -10,14 +10,6 @@ export function create(config) {
   const app = new Bottle();
 
   const ENV = process.env.NODE_ENV || 'development';
-  const cpsOptions = config.cps;
-  const cpsApiOptions = cpsOptions.api;
-  const bossOptions = config.boss;
-  const bossApiOptions = bossOptions.api;
-  const iamOptions = config.iam;
-  const iamApiOptions = iamOptions.api;
-  const signUpRuleOptions = config.signUpRule;
-  const signUpRuleApiOptions = signUpRuleOptions.api;
   const mongoOptions = config.mongodb;
   const serverOptions = {
     env: ENV,
@@ -25,30 +17,27 @@ export function create(config) {
   };
 
   // Configuration
-  app.constant('cpsOptions', cpsOptions);
   app.constant('cpsApiOptions', {
-    ...cpsApiOptions,
+    ...config.cps,
     proxyUrl: config.httpDebugProxyUrl,
   });
-  app.constant('bossOptions', bossOptions);
   app.constant('bossApiOptions', {
-    ...bossApiOptions,
+    ...config.boss,
     proxyUrl: config.httpDebugProxyUrl,
   });
-  app.constant('iamOptions', iamOptions);
   app.constant('iamApiOptions', {
-    ...iamApiOptions,
+    ...config.iam,
     proxyUrl: config.httpDebugProxyUrl,
   });
-  app.constant('signUpRuleOptions', signUpRuleOptions);
   app.constant('signUpRuleApiOptions', {
-    ...signUpRuleApiOptions,
+    ...config.signUpRule,
     proxyUrl: config.httpDebugProxyUrl,
   });
   app.constant('mongoOptions', mongoOptions);
+  app.constant('mongoTemplateStorageOptions', config.bpmn.templates);
   app.constant('ENV', ENV);
   app.constant('serverOptions', serverOptions);
-  app.constant('bpmnConcurrencyOptions', config.bpmn);
+  app.constant('bpmnConcurrencyOptions', { maxConcurrentRequests: config.bpmn.maxConcurrentRequests });
 
   registerInfrastructure(app);
   registerServices(app);

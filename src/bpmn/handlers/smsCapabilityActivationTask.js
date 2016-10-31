@@ -4,17 +4,15 @@ import { Capability, CapabilityType } from './../../domain';
 import { createSmsProfileCapabilityActivationTask } from './createSmsProfileCapabilityActivationTask';
 import { SMS_CAPABILITY_ACTIVATION } from './bpmnEvents';
 
-export function createSmsCapabilityActivationTask(capabilitiesManagement, cpsOptions) {
+export function createSmsCapabilityActivationTask(capabilitiesManagement, templateService) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
-  check.ok('cpsOptions', cpsOptions);
+  check.ok('templateService', templateService);
 
-  const { template } = cpsOptions.sms;
-
-  const activateSms = createSmsProfileCapabilityActivationTask(cpsOptions, capabilitiesManagement, {
-    requirements: [Capability.VERIFICATION_SMS],
+  const activateSms = createSmsProfileCapabilityActivationTask(templateService, capabilitiesManagement, {
     internal: Capability.VERIFICATION_SMS,
     external: CapabilityType.SMS,
-    template,
+    requirements: [Capability.VERIFICATION_SMS],
+    templateKey: 'cps.sms',
   });
 
   activateSms.$meta = {

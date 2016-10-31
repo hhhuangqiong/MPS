@@ -114,17 +114,16 @@ If the error should be entirely handled by the end user, just append a new error
 current state:
 
 ```js
-// Error structure is not defined yet, it's just a dummy example
 const userError = {
   // Think about i18n here, some code should be included to lookup the message in WLP
   name: 'IncorrectPassword',
-  path: 'nested.password',
-  message: 'Password is incorrect according to SOME_SERVICE. Please, change it to another one'
+  message: 'Password is incorrect according to SOME_SERVICE. Please, change it to another one',
+  ...context.trace
 }
 
 const updates = {
-  errors: state.errors.concat([userError])
+  errors: [userError]
 };
 
-return state;
+return updates;
 ```

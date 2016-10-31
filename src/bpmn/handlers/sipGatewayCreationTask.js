@@ -3,21 +3,17 @@ import _ from 'lodash';
 
 import { check } from './../../util';
 import { SIP_GATEWAY_CREATION } from './bpmnEvents';
-import { compileJsonTemplate, IncompleteResultError } from './common';
+import { IncompleteResultError } from './common';
 
-export function createSipGatewayCreationTask(cpsOptions, voiceProvisioningManagement) {
-  check.ok('cpsOptions', cpsOptions);
+export function createSipGatewayCreationTask(templateService, voiceProvisioningManagement) {
+  check.ok('templateService', templateService);
   check.ok('voiceProvisioningManagement', voiceProvisioningManagement);
 
   async function createSipGateway(state, profile, context) {
     const { logger } = context;
     const { sipGateways, carrierId } = state.results;
-    const { sip } = cpsOptions;
-    // A template is a composite of 2 parts
-    // 1. profile - different for each gateway
-    // 2. manipulation_rules - same for all provisioned gateways
-    // All gateway profiles should be provisioned with same manipulation_rules
-    const { profiles, manipulation_rules } = sip.gateway.template;
+    const { profiles } = await templateService.get('cps.sip.gateway');
+
     const profilesToGenerate = profiles.length;
 
     if (_.keys(sipGateways).length >= profilesToGenerate) {
@@ -29,16 +25,16 @@ export function createSipGatewayCreationTask(cpsOptions, voiceProvisioningManage
     let currentSipGateways = sipGateways;
     let error = null;
 
+    const gateway = await templateService.render('cps.sip.gateway', { carrierId });
     try {
       for (let i = start; i < profilesToGenerate; i++) {
-        const sipProfile = profiles[i];
-        const template = _.merge(sipProfile, {
-          manipulation_rules,
-        });
-        const query = compileJsonTemplate(template, { carrierId });
-        logger.debug('gateway to provision ', query);
+        const command = {
+          ...gateway.profiles[i],
+          manipulation_rules: gateway.manipulation_rules,
+        };
+        logger.debug('gateway to provision ', command);
         // call requests one by one to make it recoverable in case of failure
-        const res = await voiceProvisioningManagement.sipGatewayCreation(query);
+        const res = await voiceProvisioningManagement.sipGatewayCreation(command);
         const sipGatewayId = res.body.id;
         logger.info(`gateway ${sipGatewayId} creation complete`);
         if (!sipGatewayId) {

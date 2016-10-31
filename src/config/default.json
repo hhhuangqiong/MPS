@@ -1,195 +1,11 @@
 {
   "cps": {
-    "api": {
-      "baseUrl": "http://192.168.118.34:80",
-      "timeout": 60000
-    },
-    "wlServiceDomain": "maaii.com",
-    "sdkServiceDomain": "m800-api.com",
-    "chargeProfile": {
-      "company": "m800_charge_profile",
-      "user": "m800_charge_profile"
-    },
-    "sms": {
-      "template": {
-        "charging_profile": "{{ companyChargeProfile }}",
-        "identifier": "{{ carrierId }}.sms-profile",
-        "name": "[MPS-Generated] SMS profile for {{ companyCode }}",
-        "password": "201$Maal",
-        "default_realm": "WhiteLabel",
-        "service_plan_id": "whitelabel",
-        "systemId": "WhiteLabel",
-        "systemType": "testSystem",
-        "validate_source_address": false
-      },
-      "realm": {
-        "template": {
-          "identifier": "{{ carrierId }}.sms-realm",
-          "connection_strategy": {
-            "type": "explicit",
-            "system_id": "user1",
-            "password": "123",
-            "bindings_per_smsc": 100,
-            "binding_details": {
-              "0": {
-                "ip": "201.12.23.31",
-                "port": 1234
-              }
-            }
-          }
-        }
-      },
-      "servicePlan": {
-        "template": {
-          "identifier": "{{ carrierId }}.sms-service-plan",
-          "description": "Service plan for {{ carrierId }}"
-        }
-      }
-    },
-    "im-to-sms": {
-      "template": {
-        "charging_profile": "{{ userChargeProfile }}",
-        "identifier": "{{ carrierId }}.im-to-sms-profile",
-        "name": "[MPS-Generated] IM-TO-SMS profile for {{ companyCode }}",
-        "password": "201$Maal",
-        "default_realm": "WhiteLabel",
-        "service_plan_id": "im2sms",
-        "systemId": "WhiteLabel",
-        "systemType": "testSystem",
-        "validate_source_address": false
-      }
-    },
-    "sip": {
-      "gateway": {
-        "template": {
-          "profiles": {
-            "0": {
-              "identifier": "{{ carrierId }}.gateway.tsbc1",
-              "description": "Transcoding SBC #1",
-              "host": "192.168.35.50",
-              "port": 5080
-            },
-            "1": {
-              "identifier": "{{ carrierId }}.gateway.tsbc2",
-              "description": "Transcoding SBC #2",
-              "host": "192.168.35.50",
-              "port": 5080
-            }
-          },
-          "manipulation_rules": {
-            "0": {
-              "description": "NGN Header to Prefix Manipulation",
-              "matcher": {
-                "type": "RegExField",
-                "description": "For all numbers",
-                "field_name": "To",
-                "regular_expression": "^((:?tel:)?\\+?)([1-9]\\d+)$"
-              },
-              "manipulator": {
-                "type": "OffNetCall",
-                "description": "Replace From Header With Anonymous",
-                "from_address": "anonymous",
-                "gateway_prefix": "+00000000",
-                "enabled": false,
-                "is_passerted_id_enabled": false,
-                "is_one_card_multiple_no": false
-              }
-            }
-          }
-        }
-      },
-      "routing": {
-        "template": {
-          "identifier" : "{{ carrierId }}.profile",
-          "description": "For {{ carrierId }} carrier",
-          "trunks" : {
-            "0": {
-              "matchers" : {
-                "0": {
-                  "type": "RegExField",
-                  "description" : "Select caller Only Within Domain {{ carrierId }}",
-                  "field_name": "From",
-                  "regular_expression": "^((:?sip:)?\\+{0,1})(.*[A-Za-z_]+.*)@{{ escapedCarrierId }}$"
-                }
-              },
-              "gateway_selection_rules": {
-                "0": {
-                  "description": "Select caller Only Within Domain {{ carrierId }}",
-                  "matcher": {
-                    "type": "RegExField",
-                    "description": "Select caller Only Within Domain {{ carrierId }}",
-                    "field_name": "From",
-                    "regular_expression": "^((:?sip:)?\\+{0,1})(.*[A-Za-z_]+.*)@{{ escapedCarrierId }}$"
-                  },
-                  "gateway": "{{ sipGateways[0] }}"
-                },
-                "1": {
-                  "description": "Select caller Only Within Domain {{ carrierId }}",
-                  "matcher": {
-                    "type": "RegExField",
-                    "description": "Select caller Only Within Domain {{ carrierId }}",
-                    "field_name": "From",
-                    "regular_expression": "^((:?sip:)?\\+{0,1})(.*[A-Za-z_]+.*)@{{ escapedCarrierId }}$"
-                  },
-                  "gateway": "{{ sipGateways[1] }}"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "verification": {
-      "template": {
-        "identifier": "{{ carrierId }}.verification-profile",
-        "name": "{{ carrierId }}.verification-profile",
-        "description": "Verification profile for carrier {{ carrierId }}",
-        "attempt_callback_url": "http://192.168.56.54:8087/v1.0/verification-core/internal/callback/attempt",
-        "completion_callback_url": "http://192.168.56.54:8087/v1.0/verification-core/internal/callback/completion",
-        "sms_verification_profile" : {
-          "origin" : "{{ companyCode }}",
-          "carrier_sms_profile_name" : "{{ companyCode }}.sms-profile",
-          "carrier_sms_identifier" : "{{ smsProfileIdentifier }}",
-          "message_content" : {
-            "en_us" : "Your message is {code}",
-            "cn" : "你的代碼是 {code}"
-          }
-        },
-        "call_verification_profile" : {
-          "mo_allow_mobile_numbers_only" : true,
-          "mt_allow_mobile_numbers_only" : true
-        },
-        "two_factor_authentication_code_length": 6
-      }
-    }
+    "baseUrl": "http://192.168.118.34:80",
+    "timeout": 60000
   },
   "iam": {
-    "api": {
-      "baseUrl": "http://deploy.dev.maaii.com:4004",
-      "timeout": 15000
-    },
-    "adminRoleTemplate": {
-      "name": "Admin",
-      "service": "wlp",
-      "company": "{{ companyId }}",
-      "permissions": {
-        "sms": ["read"],
-        "im": ["read"],
-        "call": ["read"],
-        "vsf": ["read"],
-        "topUp": ["read"],
-        "generalOverview": ["read"],
-        "verificationSdk": ["read"],
-        "endUser": ["update", "read"],
-        "whitelist": ["create", "update", "read", "delete"],
-        "role": ["create", "update", "read", "delete"],
-        "user": ["create", "update", "read", "delete"],
-        "company": [],
-        "endUserExport": ["read"],
-        "imExport": ["read"],
-        "callExport": ["read"]
-      }
-    }
+    "baseUrl": "http://deploy.dev.maaii.com:4004",
+    "timeout": 15000
   },
   "mongodb": {
     "uri": "mongodb://localhost:27017/maaii-provisioning-service",
@@ -203,36 +19,19 @@
     }
   },
   "boss": {
-    "api": {
-      "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
-      "timeout": 15000
-    },
-    "prePaidInitialBalance": 0,
-    "postPaidInitialBalance": 999999999
+    "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
+    "timeout": 15000
   },
   "signUpRule": {
-    "api": {
-      "baseUrl": "http://192.168.118.127:8083",
-      "timeout": 15000
-    },
-    "signup": {
-      "rules": {
-        "whitelistBlockAll": {
-          "applicationVersionStatus": "RELEASED",
-          "group": "DEFAULT",
-          "identityType": "PHONE_NUMBER",
-          "identity": "(.)+",
-          "regex": true,
-          "policy": "BLOCK",
-          "order": 99999,
-          "comments": "Do not allow anyone to signup unless specifically allowed.",
-          "updatedUser": "Maaii Provisioning Service"
-        }
-      }
-    }
+    "baseUrl": "http://192.168.118.127:8083",
+    "timeout": 15000
   },
   "httpDebugProxyUrl": null,
   "bpmn": {
-    "maxConcurrentRequests": 4
+    "maxConcurrentRequests": 4,
+    "templates": {
+      "collectionName": "config",
+      "documentId": "templates"
+    }
   }
 }

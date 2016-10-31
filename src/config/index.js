@@ -1,9 +1,5 @@
 import path from 'path';
-
-import _ from 'lodash';
 import nconf from 'nconf';
-
-import { parseObjectArrays } from './configUtil';
 
 const ROOT = __dirname;
 const ENV = process.env.NODE_ENV || 'development';
@@ -17,9 +13,5 @@ nconf
   .file('default-file', path.join(ROOT, 'default.json'));
 
 const config = nconf.get();
-const SERVICES = ['cps', 'boss', 'iam', 'signUpRule'];
-_.each(SERVICES, service => {
-  config[service] = parseObjectArrays(config[service]);
-});
 
 export default config;

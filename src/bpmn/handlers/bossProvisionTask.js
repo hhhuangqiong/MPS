@@ -12,8 +12,8 @@ import {
 import { BOSS_PROVISION } from './bpmnEvents';
 import { check } from './../../util';
 
-export function createBossProvisionTask(bossOptions, bossProvisionManagement, capabilitiesManagement) {
-  check.ok('bossOptions', bossOptions);
+export function createBossProvisionTask(templateService, bossProvisionManagement, capabilitiesManagement) {
+  check.ok('templateService', templateService);
   check.ok('bossProvisionManagement', bossProvisionManagement);
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
@@ -61,15 +61,15 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
     return uuid.v1();
   }
 
-  function generateM800Ocs(data) {
+  function generateM800Ocs(data, bossTemplate) {
     const { paymentMode } = data;
     const m800Ocs = {};
 
     let initialBalance;
     if (BossPaymentMode[paymentMode] === BossPaymentMode.POST_PAID) {
-      initialBalance = _.parseInt(bossOptions.postPaidInitialBalance);
+      initialBalance = _.parseInt(bossTemplate.postPaidInitialBalance);
     } else {
-      initialBalance = _.parseInt(bossOptions.prePaidInitialBalance);
+      initialBalance = _.parseInt(bossTemplate.prePaidInitialBalance);
     }
 
     if (isChargeSms(data)) {
@@ -97,7 +97,7 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
     return m800Ocs;
   }
 
-  function generateBossProvisionCarrier(options) {
+  function generateBossProvisionCarrier(options, bossTemplate) {
     const { carrierId, serviceType, offnetPrefixes, offnetPrefixTest, smsPrefix, billing } = options;
 
     return {
@@ -108,11 +108,11 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
       smsPrefix: normalizePrefixes(smsPrefix),
       remarks: `Remarks for ${carrierId}`,
       currency: billing.currency,
-      m800Ocs: generateM800Ocs(options),
+      m800Ocs: generateM800Ocs(options, bossTemplate),
     };
   }
 
-  function generateBossProvisionParams(options) {
+  function generateBossProvisionParams(options, bossTemplate) {
     const { resellerCarrierId, companyCode, companyInfo, country } = options;
 
     return {
@@ -122,7 +122,7 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
       country,
       carrierIdOfReseller: resellerCarrierId,
       carriers: [
-        generateBossProvisionCarrier(options),
+        generateBossProvisionCarrier(options, bossTemplate),
       ],
     };
   }
@@ -185,7 +185,8 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
       smsc: profile.smsc,
     };
 
-    const bossParams = generateBossProvisionParams(provisionRequirements);
+    const bossTemplate = await templateService.get('boss');
+    const bossParams = generateBossProvisionParams(provisionRequirements, bossTemplate);
     const response = await bossProvisionManagement.create(bossParams);
     const { id: bossProvisionId, success } = response.body;
     if (!success) {

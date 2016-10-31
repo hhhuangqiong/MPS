@@ -5,8 +5,8 @@ import { check } from './../../util';
 import { VOICE_CAPABILITY_ACTIVATION } from './bpmnEvents';
 import { Capability } from './../../domain';
 
-export function createVoiceCapabilityActivationTask(cpsOptions, capabilitiesManagement) {
-  check.ok('cpsOptions', cpsOptions);
+export function createVoiceCapabilityActivationTask(templateService, capabilitiesManagement) {
+  check.ok('templateService', templateService);
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
   // from definition, voice should be enabled on either ONNET/OFFNET/MAAIN_IN is
@@ -34,7 +34,7 @@ export function createVoiceCapabilityActivationTask(cpsOptions, capabilitiesMana
     const enableOnnetCharging = _.includes(capabilities, Capability.CALL_ONNET);
     const enableOffnetCharging = _.includes(capabilities, Capability.CALL_OFFNET);
     // should be specified in form for Phase 2. defaults to company level now.
-    const chargingProfile = cpsOptions.chargeProfile.company;
+    const chargingProfile = await templateService.get('cps.chargeProfile.company');
 
     const res = await capabilitiesManagement.enableVoiceCapability({
       carrierId,

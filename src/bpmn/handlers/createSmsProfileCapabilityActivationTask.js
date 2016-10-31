@@ -4,10 +4,9 @@ import { ReferenceError, ArgumentNullError } from 'common-errors';
 
 import { check } from './../../util';
 import { Capability, CapabilityType } from './../../domain';
-import { compileJsonTemplate } from './common';
 
-export function createSmsProfileCapabilityActivationTask(cpsOptions, capabilitiesManagement, capabilityOptions) {
-  check.ok('cpsOptions', cpsOptions);
+export function createSmsProfileCapabilityActivationTask(templateService, capabilitiesManagement, capabilityOptions) {
+  check.ok('templateService', templateService);
   check.ok('capabilitiesManagement', capabilitiesManagement);
   capabilityOptions = check.schema('capabilityOptions', capabilityOptions, Joi.object({
     requirements: Joi.array()
@@ -16,7 +15,7 @@ export function createSmsProfileCapabilityActivationTask(cpsOptions, capabilitie
       .required(),
     internal: Joi.string().allow([Capability.IM_TO_SMS, Capability.VERIFICATION_SMS]).required(),
     external: Joi.string().allow([CapabilityType.IM_TO_SMS, CapabilityType.SMS]).required(),
-    template: Joi.object(),
+    templateKey: Joi.string().required(),
   }));
 
   async function activateCapability(state, profile) {
@@ -30,18 +29,18 @@ export function createSmsProfileCapabilityActivationTask(cpsOptions, capabilitie
     if (!shouldBeActivated) {
       return null;
     }
+    const chargeProfileTemplate = await templateService.get('cps.chargeProfile');
 
     const chargeProfiles = {
-      companyChargeProfile: cpsOptions.chargeProfile.company,
-      userChargeProfile: cpsOptions.chargeProfile.user,
+      companyChargeProfile: chargeProfileTemplate.company,
+      userChargeProfile: chargeProfileTemplate.user,
     };
 
     const data = {
       ...state.results,
       ...profile,
     };
-    const smsProfile = compileJsonTemplate(capabilityOptions.template, _.extend(data, chargeProfiles));
-
+    const smsProfile = await templateService.render(capabilityOptions.templateKey, _.extend(data, chargeProfiles));
     if (!smsc) {
       throw new ArgumentNullError('smsc');
     } else {

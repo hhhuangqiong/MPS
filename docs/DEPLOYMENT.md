@@ -16,7 +16,6 @@ docker.dev.maaii.com/m800/maaii-provisioning-service
 
 Checkout the latest docker image specifications (e.g. exposed ports, mount volumes) from the [git repo](http://gerrit.dev.maaii.com/gitweb?p=maaii-provisioning-service.git;a=tree)
 
-
 ## Application Configurations - Docker Container Environment Variables
 
 The application can be configured using docker container environment variables. A list of configuration available configuration keys are specified below:
@@ -26,26 +25,38 @@ The application can be configured using docker container environment variables. 
 |TZ|NodeJs runtime timezone|Asia/Hong_Kong| |
 |`mongodb__uri`| MongoDB URI in [Standard Connection String](https://docs.mongodb.com/manual/reference/connection-string/) format |`mongodb://testbed-usr:testbed-pw@192.168.119.71,192.168.119.73/m800-whitelabel-portal?connectTimeoutMS=300000` | |
 |`monogdb__server`| Options for MongoDB connection. Namespace to provide extra mongoDB server options for connection. For available configurations, see [Node.js MongoDB Driver API](http://mongodb.github.io/node-mongodb-native/2.2/api/Server.html) | | monogdb__server__socketOptions__autoReconnect=true |
-|`cps__api__baseUrl`| CPS API Endpoint |`http://192.168.118.34:80` |  |
-|`cps__api__timeout`| CPS API Endpoint Timeout | 15000 | |
-|`cps__wlServiceDomain` | Top-level domain that will be used to generated carrier Id for white label customers | maaii.com | e.g. maaiii.org |
-|`cps__sdkServiceDomain` | Top-level domain that will be used to generated carrier Id for sdk customers | m800-api.com | e.g. m800-api.org |
-|`cps__chargeProfile__company` | Company level charging profile to be used for SMS/Voice provisioning | m800_charge_profile | |
-|`cps__chargeProfile__user` | User level charging profile to be used for SMS/Voice provisioning | maaii_charge_profile | |
-|`cps__verification__template__attempt_callback_url` |  The callback URL to get confirmation whether the verification can be proceeded. See [Verification Mgmt API](https://issuetracking.maaii.com:9443/display/MAAIIP/Verification+Management+HTTP+API+1.0) | `http://192.168.56.54:8087/v1.0/verification-core/internal/callback/attempt` | |
-|`cps__verification__template__completion_callback_url` | The callback URL for verification completed successfully. See [Verification Mgmt HTTP API](https://issuetracking.maaii.com:9443/display/MAAIIP/Verification+Management+HTTP+API+1.0) | `http://192.168.56.54:8087/v1.0/verification-core/internal/callback/completion`| |
-|`cps__sip__gateway__template__profiles__0__host`| Host of SIP Gateway #1 | 192.168.35.50 | |
-|`cps__sip__gateway__template__profiles__0__port`| Port of SIP Gateway #1 | 5080 | |
-|`cps__sip__gateway__template__profiles__1__host`| Host of SIP Gateway #2 | 192.168.35.50 | |
-|`cps__sip__gateway__template__profiles__1__port`| Port of SIP Gateway #2 | 5080 | |
-|`boss__api__baseUrl`| BOSS API Endpoint |`http://192.168.135.167:10080` | |
-|`boss__api__timeout`| BOSS API Timeout | 15000 | |
-|`boss__prePaidInitialBalance`| Initial wallet balance in Maaii Boss for prepaid users | 0 | |
-|`boss__postPaidInitialBalance`| Initial wallet balance in Maaii Boss for postpaid users | 99999999 | |
-|`iam__api__baseUrl` | IAM API Endpoint | `http://deploy.dev.maaii.com:4004` | |
-|`iam__api__timeout` | IAM API Endpoint Timeout | `15000` | |
+|`cps__baseUrl`| CPS API Endpoint |`http://192.168.118.34:80` |  |
+|`cps__timeout`| CPS API Endpoint Timeout | 60000 | |
+|`boss__baseUrl`| BOSS API Endpoint |`http://192.168.135.167:10080` | |
+|`boss__timeout`| BOSS API Timeout | 15000 | |
+|`iam__baseUrl` | IAM API Endpoint | `http://deploy.dev.maaii.com:4004` | |
+|`iam__timeout` | IAM API Endpoint Timeout | `15000` | |
 |`signUpRule__api__baseUrl` | Sign up rule service API Endpoint | `http://192.168.118.127:8083` | |
 |`signUpRule__api__timeout` | Sign up rule service API Endpoint Timeout | `15000` | |
-
+|`bpmn__maxConcurrentRequests` | Max concurrent requests that would sent to backend APIs during single BPMN stage | `4`
+|`bpmn__templates__collectionName` | MongoDB collection name for provisioning templates configuration | `config`
+|`bpmn__templates__documentId` | MongoDB document _id where templates are stored | `templates`
 
 Note: Keys defined with __ in between words are due to default setup of [nconf](https://github.com/indexzero/nconf), an npm module that we used to organize application configurations.
+
+## Provisioning Process Configuration
+
+Application reads provisioning configuration template from MongoDB. 
+See the [previous section](#Application-Configurations-Docker-Container-Environment-Variables)
+to see how to configure collection name and document id.
+ 
+If the configuration is not provided in the database, application will read the default 
+configuration which is shipped with the source code. 
+
+You can update the template configuration using simple mongo shell script
+```js
+var json = cat('/path/to/templates.json');
+var doc = JSON.parse(json);
+db.config.update({_id: 'templates'}, doc, {upsert: true});
+```
+
+You can use the following default `templates.json` as a reference
+
+[include](../src/services/templates.json)
+
+

@@ -1,15 +1,11 @@
-import _ from 'lodash';
 import { ReferenceError, NotImplementedError, ArgumentNullError } from 'common-errors';
 
 import { check } from './../../util';
-import { compileJsonTemplate } from './common';
 import { WLP_ACCESS_CREATION } from './bpmnEvents';
 
-export function createWlpAccessCreationTask(iamOptions, accessManagement) {
-  check.ok('iamOptions', iamOptions);
+export function createWlpAccessCreationTask(templateService, accessManagement) {
+  check.ok('templateService', templateService);
   check.ok('accessManagement', accessManagement);
-
-  const { adminRoleTemplate } = iamOptions;
 
   async function createAdminRole(state, profile, context) {
     if (state.results.adminRoleCreated) {
@@ -21,13 +17,12 @@ export function createWlpAccessCreationTask(iamOptions, accessManagement) {
     if (isReseller) {
       throw new NotImplementedError('Provisioning reseller company is not supported yet');
     }
-    const template = _.clone(adminRoleTemplate);
-    // unset company mgmt permission for non reseller
-    template.permissions.company = [];
     if (!companyId) {
       throw new ArgumentNullError('companyId');
     }
-    const params = compileJsonTemplate(template, { companyId });
+    const params = await templateService.render('iam.adminRole', { companyId });
+    // Unset company management permission for non reseller
+    params.permissions.company = [];
 
     logger.debug('IAM create role request sent');
     const response = await accessManagement.createRole(params);

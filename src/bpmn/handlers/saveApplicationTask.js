@@ -10,15 +10,15 @@ import { IncompleteResultError } from './common';
 import { check } from './../../util';
 import { SAVE_APPLICATION } from './bpmnEvents';
 
-export function createSaveApplicationTask(cpsOptions, applicationManagement) {
-  check.ok('cpsOptions', cpsOptions);
+export function createSaveApplicationTask(templateService, applicationManagement) {
+  check.ok('templateService', templateService);
   check.ok('applicationManagement', applicationManagement);
 
   function reverseDomain(domain) {
     return _.reverse(domain.split('.')).join('.');
   }
 
-  function generateApplicationId(serviceType, companyCode) {
+  function generateApplicationId(serviceType, companyCode, cpsOptions) {
     switch (serviceType) {
       case ServiceType.SDK:
         return `${reverseDomain(cpsOptions.sdkServiceDomain)}.${companyCode}`;
@@ -112,7 +112,8 @@ export function createSaveApplicationTask(cpsOptions, applicationManagement) {
       .difference(_.keys(currentApplications))
       .value();
 
-    const applicationIdentifier = generateApplicationId(serviceType, companyCode);
+    const cpsOptions = await templateService.get('cps');
+    const applicationIdentifier = generateApplicationId(serviceType, companyCode, cpsOptions);
 
     let error = null;
     try {

@@ -16,12 +16,21 @@ import {
 } from './external';
 import presetService from './presetService';
 import provisioningService from './provisioningService';
+import templateService from './templateService';
+import {
+  memoryKeyValueStorage,
+  mongoKeyValueStorage,
+  compositeKeyValueStorage,
+} from './storage';
+import templates from './templates.json';
 import {
   createProvisioningModel,
   createPresetModel,
 } from './models';
+
 export * from './models';
 export * from './util';
+export * from './storage';
 export * from './presetService';
 export * from './provisioningService';
 
@@ -53,9 +62,24 @@ export function register(container) {
     Preset: c.Preset,
   }));
 
-  // MPS (exposed) services
+  // Storage services
+  container.service(
+    'MongoTemplateKeyValueStorage',
+    mongoKeyValueStorage,
+    'mongooseConnection',
+    'mongoTemplateStorageOptions'
+  );
+  container.factory('TemplateStorage', c => {
+    const mongoStorage = c.MongoTemplateKeyValueStorage;
+    const memoryStorage = memoryKeyValueStorage(templates);
+    return compositeKeyValueStorage([mongoStorage, memoryStorage]);
+  });
+
+  // MPS exposed and internal services
   container.service('PresetService', presetService, 'Preset');
   container.service('ProvisioningService', provisioningService, 'logger', 'Provisioning', 'eventBus');
+  container.service('TemplateService', templateService, 'TemplateStorage');
+
   return container;
 }
 

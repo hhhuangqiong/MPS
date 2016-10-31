@@ -73,14 +73,14 @@ export function register(container) {
   registerBpmnHandler(
     bpmnEvents.BOSS_PROVISION,
     createBossProvisionTask,
-    'bossOptions',
+    'TemplateService',
     'BossProvisionManagement',
     'CapabilitiesManagement',
   );
   registerBpmnHandler(
     bpmnEvents.CARRIER_CREATION,
     createCarrierCreationTask,
-    'cpsOptions',
+    'TemplateService',
     'CarrierManagement'
   );
   registerBpmnHandler(
@@ -112,12 +112,12 @@ export function register(container) {
     bpmnEvents.IM_TO_SMS_CAPABILITY_ACTIVATION,
     createImToSmsCapabilityActivationTask,
     'CapabilitiesManagement',
-    'cpsOptions'
+    'TemplateService'
   );
   registerBpmnHandler(
     bpmnEvents.SIGN_UP_RULE_PROVISION,
     createSignUpRuleProvisionTask,
-    'signUpRuleOptions',
+    'TemplateService',
     'SignUpRuleMgmt'
   );
   registerBpmnHandler(
@@ -144,26 +144,26 @@ export function register(container) {
   registerBpmnHandler(
     bpmnEvents.SAVE_APPLICATION,
     createSaveApplicationTask,
-    'cpsOptions',
+    'TemplateService',
     'ApplicationManagement'
   );
   registerBpmnHandler(
     bpmnEvents.SIP_GATEWAY_CREATION,
     createSipGatewayCreationTask,
-    'cpsOptions',
+    'TemplateService',
     'VoiceProvisioningManagement'
   );
   registerBpmnHandler(
     bpmnEvents.SIP_ROUTING_CREATION,
     createSipRoutingCreationTask,
-    'cpsOptions',
+    'TemplateService',
     'VoiceProvisioningManagement',
   );
   registerBpmnHandler(
     bpmnEvents.SMS_CAPABILITY_ACTIVATION,
     createSmsCapabilityActivationTask,
     'CapabilitiesManagement',
-    'cpsOptions'
+    'TemplateService'
   );
   registerBpmnHandler(
     bpmnEvents.TOPUP_CAPABILITY_ACTIVATION,
@@ -178,32 +178,32 @@ export function register(container) {
   registerBpmnHandler(
     bpmnEvents.VOICE_CAPABILITY_ACTIVATION,
     createVoiceCapabilityActivationTask,
-    'cpsOptions',
+    'TemplateService',
     'CapabilitiesManagement'
   );
   registerBpmnHandler(
     bpmnEvents.VERIFICATION_PROFILE_CREATION,
     createVerificationProfileCreationTask,
-    'cpsOptions',
+    'TemplateService',
     'VerificationManagement',
     'CapabilitiesManagement'
   );
   registerBpmnHandler(
     bpmnEvents.WLP_ACCESS_CREATION,
     createWlpAccessCreationTask,
-    'iamOptions',
+    'TemplateService',
     'AccessManagement'
   );
   registerBpmnHandler(
     bpmnEvents.SMS_REALM_CREATION,
     createSmsRealmCreationTask,
-    'cpsOptions',
+    'TemplateService',
     'SmsRealmManagement'
   );
   registerBpmnHandler(
     bpmnEvents.SMS_SERVICE_PLAN_CREATION,
     createSmsServicePlanCreationTask,
-    'cpsOptions',
+    'TemplateService',
     'SmsServicePlanManagement'
   );
 

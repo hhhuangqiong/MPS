@@ -1,15 +1,11 @@
 import { ArgumentNullError, ReferenceError } from 'common-errors';
 
 import { check } from './../../util';
-import { compileJsonTemplate } from './common';
 import { SMS_REALM_CREATION } from './bpmnEvents';
 
-export function createSmsRealmCreationTask(cpsOptions, smsRealmManagement) {
-  check.ok('cpsOptions', cpsOptions);
+export function createSmsRealmCreationTask(templateService, smsRealmManagement) {
+  check.ok('templateService', templateService);
   check.ok('smsRealmManagement', smsRealmManagement);
-
-  const { sms } = cpsOptions;
-  const template = sms.realm.template;
 
   async function createSmsRealm(state, profile) {
     if (state.results.smsRealmId) {
@@ -28,10 +24,8 @@ export function createSmsRealmCreationTask(cpsOptions, smsRealmManagement) {
       return null;
     }
 
-    const templateParams = { carrierId };
-    const smsRealm = compileJsonTemplate(template, templateParams);
-    smsRealm.connection_strategy.system_id = realm.systemId;
-    smsRealm.connection_strategy.password = realm.password;
+    const templateParams = { carrierId, ...realm };
+    const smsRealm = await templateService.render('cps.sms.realm', templateParams);
     smsRealm.connection_strategy.binding_details = realm.bindingDetails;
 
     const response = await smsRealmManagement.create(smsRealm);
