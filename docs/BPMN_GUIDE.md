@@ -38,7 +38,7 @@ async function runTask(state, profile, context) {
     results: {
       uniqueProcessResult,
     },
-    errors: []
+    errors: [],
   };
 }
 
@@ -76,7 +76,16 @@ Public process state is verified using Joi schema after each handler is invoked.
 If you need to add new properties, please adjust the schema as well. 
 The state schema is located at `/src/bpmn/handlers/common/state.js`
 
-## Error handling
+**Immutability notice**
+
+It is also important that each time the provisioning is created or **updated**,
+a different BPMN process instance is used with another process id because of 
+[limitation](https://github.com/e2ebridge/bpmn/issues/36) of BPMN engine we use.
+It's done to ensure the process can run on any instance of MPS in load-balanced deployments.
+In case of update previous results from `public.results` are passed as an additional property 
+together with the updated profile in an initial event.
+
+## Error Handling
 
 If the handler throws (rejects) with an error it is considered to be a **system** error.
 The process would fail with `ERROR` state as soon as such error is encountered.
@@ -90,15 +99,13 @@ If you need to persist partial result for the later usage, but stop the process 
 **system** error use `IncompleteResultError`
 
 ```js
-const newState = {
-  ...state,
+const updates = {
   results: {
-    ...state.results,
     partialResults: [success1, success2],
   },
 }
 
-throw new IncompleteResultError(newState, new Error('The system error happened.'));
+throw new IncompleteResultError(updates, new Error('The system error happened.'));
 ```
 
 #### User Errors
@@ -115,8 +122,7 @@ const userError = {
   message: 'Password is incorrect according to SOME_SERVICE. Please, change it to another one'
 }
 
-const state = {
-  ...state,
+const updates = {
   errors: state.errors.concat([userError])
 };
 
