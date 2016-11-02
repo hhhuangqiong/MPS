@@ -1,82 +1,26 @@
-import { NotFoundError, NotPermittedError } from 'common-errors';
+import _ from 'lodash';
+import serializeError from 'serialize-error';
 
-import { check } from './../util';
+import { check, formatError, isClientError } from './../util';
 
-export function createErrorMiddleware(logger) {
+export function createErrorMiddleware(logger, env) {
   check.ok('logger', logger);
+  check.predicate('env', env, _.isString);
 
   // eslint-disable-next-line no-unused-vars
   return function errorMiddleware(err, req, res, next) {
-    // TODO: reuse existing logic from common-errors
-    // TODO: extract common code
-    // https://github.com/shutterstock/node-common-errors/blob/master/lib/middleware/errorHandler.js
-    logger.error(err.message, err);
-
-    const joiValidationError = err.data && err.data[0];
-
-    if (joiValidationError) {
-      joiValidationError.name = 'ValidationError';
-
-      res.status(422).json({
-        error: joiValidationError,
-      });
-
-      return;
+    if (!err) {
+      logger.warning(`Falsey error in error middleware: ${err}`, err);
+      next();
     }
-
-    if (err instanceof NotPermittedError) {
-      res.status(403).json({
-        error: {
-          message: err.args['0'],
-          code: err.name,
-          stack: process.env.NODE_ENV === 'production' ? {} : err.stack,
-        },
-      });
-
-      return;
+    if (!err instanceof Error) {
+      logger.warning(`Weird error which is not instanceof Error in error middleware: ${err}.`, err);
     }
-
-    if (err instanceof NotFoundError) {
-      res.status(404).json({
-        error: {
-          message: err.message,
-          code: err.name,
-          stack: process.env.NODE_ENV === 'production' ? {} : err.stack,
-        },
-      });
-      return;
-    }
-
-
-    if (err instanceof Error) {
-      res.status(500).json({
-        error: {
-          message: err.message,
-          code: err.name,
-          stack: process.env.NODE_ENV === 'production' ? {} : err.stack,
-        },
-      });
-
-      return;
-    }
-
-    if (typeof err === 'string') {
-      res.status(400).json({
-        error: {
-          message: err,
-          code: err,
-        },
-      });
-
-      return;
-    }
-
-    res.status(500).json({
-      error: {
-        code: 'InternalServerError',
-        message: 'Internal server error',
-      },
-    });
+    const jsonError = formatError(err, env === 'development');
+    const level = isClientError(jsonError) ? 'warning' : 'error';
+    // Always log all available properties
+    logger[level](err.message, serializeError(err));
+    res.status(jsonError.status).send({ error: jsonError });
   };
 }
 

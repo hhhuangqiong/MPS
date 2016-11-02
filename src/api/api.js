@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { NotFoundError } from 'common-errors';
 
 import { check } from './../util';
 
@@ -28,6 +29,9 @@ export function api(controllers, middlewares) {
   router.post('/preset/:presetId', presetController.setPreset);
   router.get('/preset/:presetId', presetController.getPreset);
 
+  router.use((req, res, next) => {
+    next(new NotFoundError(req.path));
+  });
   router.use(errorMiddleware);
 
   return router;

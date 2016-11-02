@@ -122,6 +122,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/definitions/ProvisioningWithMeta"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
     post:
       summary: Start a new provisioning
       operationId: createProvisioning
@@ -138,6 +142,14 @@ paths:
           description: created provisioning
           schema:
             $ref: "#/definitions/ProvisioningWithMeta"
+        '422':
+          description: validation error
+          schema:
+            $ref: "#/definitions/ValidationErrorWrapper"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
   /provisioning/{provisioningId}:
     get:
       summary: Find provisioning by id
@@ -154,6 +166,10 @@ paths:
           description: existing provisioning
           schema:
             $ref: "#/definitions/ProvisioningWithMeta"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
     put:
       summary: Update provisioning
       operationId: updateProvisioning
@@ -174,6 +190,14 @@ paths:
           description: updated provisioning
           schema:
             $ref: "#/definitions/ProvisioningWithMeta"
+        '422':
+          description: validation error
+          schema:
+            $ref: "#/definitions/ValidationErrorWrapper"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
   /preset/{presetId}:
     get:
       summary: Get preset
@@ -190,6 +214,10 @@ paths:
           description: existing preset
           schema:
             $ref: "#/definitions/ProvisioningPreset"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
     post:
       summary: Set preset
       operationId: setPreset
@@ -210,6 +238,14 @@ paths:
           description: updated preset
           schema:
             $ref: "#/definitions/ProvisioningPreset"
+        '422':
+          description: validation error
+          schema:
+            $ref: "#/definitions/ValidationErrorWrapper"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
 definitions:
   ProvisioningWithMeta:
     allOf:
@@ -377,6 +413,61 @@ definitions:
       - end-user.whitelist
       - end-user.suspension
   # Share this definitions accross services?
+  ErrorWrapper:
+    type: object
+    required:
+      - error
+    properties:
+      error:
+        $ref: '#/definitions/Error'
+  ValidationErrorWrapper:
+    type: object
+    required:
+      - error
+    properties:
+      error:
+        $ref: '#/definitions/ValidationError'
+  Error:
+    type: object
+    required:
+      - message
+      - name
+      - status
+    properties:
+      message:
+        type: string
+      name:
+        type: string
+      code:
+        type: number
+        format: int32
+      status:
+        type: number
+        format: int32
+        example: 404
+  ValidationError:
+    allOf:
+      - $ref: '#/definitions/Error'
+      - type: object
+        properties:
+          details:
+            type: array
+            items:
+              $ref: '#/definitions/ValidationErrorDetail'
+  ValidationErrorDetail:
+    type: object
+    required:
+      - message
+      - path
+    properties:
+      message:
+        type: string
+      path:
+        type: string
+        example: 'nested.field'
+      type:
+        type: string
+        example: 'string.min'
   PageMeta:
     type: object
     properties:

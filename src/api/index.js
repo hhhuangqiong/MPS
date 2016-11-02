@@ -8,7 +8,7 @@ import api from './api';
 export function register(container) {
   container.service('PresetController', presetController, 'PresetService');
   container.service('ProvisioningController', provisioningController, 'ProvisioningService');
-  container.service('ErrorMiddleware', createErrorMiddleware, 'logger');
+  container.service('ErrorMiddleware', createErrorMiddleware, 'logger', 'ENV');
 
   // Grouped dependencies for less parameters in top-level components
   container.factory('controllers', c => ({
