@@ -1,5 +1,6 @@
 # Settings
 .envrc
+src/config/*.personal.json
 
 # Generated Content
 .nyc_output/

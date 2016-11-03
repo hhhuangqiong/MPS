@@ -6,11 +6,19 @@ import _ from 'lodash';
 
 import validateSchema from './validateSchema';
 
+let proxyInitialized = false;
+
 export default class BaseRequest {
-  constructor(logger, { baseUrl, timeout }) {
+  constructor(logger, { baseUrl, timeout, proxyUrl }) {
     this.logger = logger;
     this.baseUrl = baseUrl;
     this.timeout = timeout;
+    this.proxyUrl = proxyUrl;
+    if (proxyUrl && !proxyInitialized) {
+      // eslint-disable-next-line
+      require('superagent-proxy')(request);
+      proxyInitialized = true;
+    }
   }
 
   normalizeParams(params) {
@@ -51,11 +59,12 @@ export default class BaseRequest {
 
   get(uri) {
     const url = this.getUrl(uri);
-
     this.logger.debug(`[${(new Date()).toUTCString()}] Sending GET Request to ${url}`);
-
-    return request
-      .get(url)
+    let req = request.get(url);
+    if (this.proxyUrl) {
+      req = req.proxy(this.proxyUrl);
+    }
+    return req
       .timeout(this.timeout)
       .use(saLogger({ outgoing: true, timestamp: true }))
       .set('Accept', 'application/json')
@@ -65,11 +74,15 @@ export default class BaseRequest {
   post(uri, params) {
     const url = this.getUrl(uri);
     const normalizedParams = this.normalizeParams(params);
-
-    this.logger.debug(`[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`, normalizedParams);
-
-    return request
-      .post(url)
+    this.logger.debug(
+      `[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`,
+      normalizedParams
+    );
+    let req = request.post(url);
+    if (this.proxyUrl) {
+      req = req.proxy(this.proxyUrl);
+    }
+    return req
       .timeout(this.timeout)
       .use(saLogger({ outgoing: true, timestamp: true }))
       .set('Accept', 'application/json')

@@ -1,12 +1,13 @@
 import path from 'path';
 
+import _ from 'lodash';
 import Joi from 'joi';
 import { ProcessManager } from 'bpmn';
 import Promise from 'bluebird';
 
 import { check } from './../util';
 import { PROVISIONING_EVENT } from './../domain';
-import * as BPMN_EVENTS from './bpmnEvents';
+import { bpmnEvents, decorateBpmnTask, decorateBpmnHandler } from './handlers';
 
 const BPMN_FILE_PATH = path.join(__dirname, 'provisioning.bpmn');
 
@@ -16,7 +17,7 @@ export function provisioningProcessManager(logger, mongoOptions, bpmnHandlers, e
     uri: Joi.string().required(),
     server: Joi.object().required(),
   }));
-  check.members('bpmnHandlers', bpmnHandlers, BPMN_EVENTS);
+  check.members('bpmnHandlers', bpmnHandlers, _.values(bpmnEvents));
   check.ok('eventBus', eventBus);
 
   const bpmn = new ProcessManager({
@@ -30,20 +31,42 @@ export function provisioningProcessManager(logger, mongoOptions, bpmnHandlers, e
     },
   });
   Promise.promisifyAll(bpmn);
-  bpmn.addBpmnFilePath(BPMN_FILE_PATH, bpmnHandlers);
+
+  // Simple tasks which need to be bound to process instance
+  const HANDLERS = [
+    bpmnEvents.DEFAULT_EVENT_HANDLER,
+    bpmnEvents.DEFAULT_ERROR_HANDLER,
+    bpmnEvents.PROVISIONING_START,
+    bpmnEvents.PROVISIONING_END,
+  ];
+  // Reducer-like business tasks
+  const TASKS = _.difference(_.values(bpmnEvents), HANDLERS);
+
+  const decoratedHandlers = _(bpmnHandlers)
+    .pickBy((value, key) => HANDLERS.includes(key))
+    .mapValues(handler => decorateBpmnHandler(handler, logger))
+    .value();
+  const decoratedTasks = _(bpmnHandlers)
+    .pickBy((value, key) => TASKS.includes(key))
+    .mapValues(handler => decorateBpmnTask(handler, logger))
+    .value();
+
+  const allHandlers = {
+    ...decoratedHandlers,
+    ...decoratedTasks,
+  };
+  bpmn.addBpmnFilePath(BPMN_FILE_PATH, allHandlers);
 
   async function run(params) {
     check.schema('params', params, Joi.object({
       processId: Joi.string().required(),
       provisioningId: Joi.string().required(),
       profile: Joi.object().required(),
-      previousResult: Joi.object().allow(null).optional(),
+      previousResults: Joi.object().allow(null).optional(),
     }));
 
     const process = await bpmn.createProcessAsync(params.processId);
-    process.setProperty('ownerId', params.provisioningId);
-    process.setProperty('taskResults', params.previousResult);
-    process.triggerEvent(BPMN_EVENTS.PROVISIONING_START, params.profile);
+    process.triggerEvent(bpmnEvents.PROVISIONING_START, params);
     return params.processId;
   }
 

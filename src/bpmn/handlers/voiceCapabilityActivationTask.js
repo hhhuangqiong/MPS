@@ -1,17 +1,13 @@
 import _ from 'lodash';
-import { ReferenceError, ArgumentNullError } from 'common-errors';
+import { ReferenceError } from 'common-errors';
 
-import { check, createTask } from './util';
+import { check } from './../../util';
+import { VOICE_CAPABILITY_ACTIVATION } from './bpmnEvents';
 import { Capability } from './../../domain';
 
-export function createVoiceCapabilityActivationTask(logger, cpsOptions, capabilitiesManagement) {
-  check.ok('logger', logger);
+export function createVoiceCapabilityActivationTask(cpsOptions, capabilitiesManagement) {
   check.ok('cpsOptions', cpsOptions);
   check.ok('capabilitiesManagement', capabilitiesManagement);
-
-  function validateRerun(data, taskResult) {
-    return !taskResult.voiceProfileId;
-  }
 
   // from definition, voice should be enabled on either ONNET/OFFNET/MAAIN_IN is
   // enabled in provisioning profile
@@ -24,43 +20,45 @@ export function createVoiceCapabilityActivationTask(logger, cpsOptions, capabili
     return _.intersection(capabilities, any).length > 0;
   }
 
-  function run(data, cb) {
-    const { carrierId, capabilities, sipRoutingProfileId } = data;
-
-    if (!sipRoutingProfileId) {
-      cb(new ArgumentNullError('sipRoutingProfileId'));
-      return;
+  async function activateVoice(state, profile) {
+    if (state.results.voiceProfileId) {
+      return null;
     }
+    const { carrierId, sipRoutingProfileId } = state.results;
+    const { capabilities } = profile;
 
     if (!needActivation(capabilities)) {
-      cb(null, { done: false });
-      return;
+      return null;
     }
 
     const enableOnnetCharging = _.includes(capabilities, Capability.CALL_ONNET);
     const enableOffnetCharging = _.includes(capabilities, Capability.CALL_OFFNET);
-
     // should be specified in form for Phase 2. defaults to company level now.
     const chargingProfile = cpsOptions.chargeProfile.company;
-    capabilitiesManagement.enableVoiceCapability({
+
+    const res = await capabilitiesManagement.enableVoiceCapability({
       carrierId,
       sipRoutingProfileId,
       enableOnnetCharging,
       enableOffnetCharging,
       chargingProfile,
-    }).then(res => {
-      const { id: voiceProfileId } = res.body;
-
-      if (!voiceProfileId) {
-        throw new ReferenceError('Unexpected response from CPS sms activation: id missing');
-      }
-
-      cb(null, { voiceProfileId });
-    })
-      .catch(cb);
+    });
+    const { id: voiceProfileId } = res.body;
+    if (!voiceProfileId) {
+      throw new ReferenceError('Unexpected response from CPS sms activation: id missing');
+    }
+    return {
+      results: {
+        voiceProfileId,
+      },
+    };
   }
 
-  return createTask('VOICE_CAPABILITY_ACTIVATION', run, { validateRerun }, logger);
+  activateVoice.$meta = {
+    name: VOICE_CAPABILITY_ACTIVATION,
+  };
+
+  return activateVoice;
 }
 
 export default createVoiceCapabilityActivationTask;

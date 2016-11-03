@@ -31,20 +31,20 @@ function schema(argumentName, obj, joiSchema, message) {
   if (!result.error) {
     return result.value;
   }
-  const error = new ArgumentError(argumentName, result.error);
+  const error = new ArgumentError(argumentName);
   const messages = [error.message];
   if (_.isString(message) && message.length > 0) {
     messages.push(message);
   }
-  messages.push(result.error.message);
-  error.message = messages.join(' ');
+  messages.push(result.error.annotate());
+  error.message = messages.join('\n');
   throw error;
 }
 
 function predicate(argumentName, obj, func, message) {
   ensureArgumentName(argumentName);
   const test = _.isArray(func)
-    ? (x) => _.all(func, p => p(x))
+    ? (x) => _.every(func, f => f(x))
     : func;
   if (test(obj)) {
     return obj;
@@ -58,6 +58,7 @@ function predicate(argumentName, obj, func, message) {
 
 function members(argumentName, obj, requiredKeys) {
   ensureArgumentName(argumentName);
+  schema('requiredKeys', requiredKeys, Joi.array().items(Joi.string()).min(1));
   const existingKeys = _.chain(obj)
     .omit(_.isUndefined)
     .omit(_.isNull)

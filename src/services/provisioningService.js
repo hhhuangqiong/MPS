@@ -61,7 +61,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
       processId: uuid.v4(),
       provisioningId: provisioning.id,
       profile,
-      previousResult: null,
+      previousResults: null,
     };
     eventBus.emit(PROVISIONING_EVENT.PROVISIONING_START_REQUESTED, event);
     provisioning.processId = event.processId;
@@ -152,7 +152,8 @@ export function provisioningService(logger, Provisioning, eventBus) {
         .limit(pageSize)
         .select(PUBLIC_PROPS.join(' '))
         .sort({ createdAt: -1 })
-        .exec(),
+        .exec()
+        .then(i => i.map(x => x.toJSON())),
       total: query().count(),
     });
     const pageTotal = Math.ceil(total / pageSize);
@@ -225,7 +226,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
       provisioningId,
       processId: uuid.v4(),
       profile: newProfile,
-      previousResult: taskResults,
+      previousResults: taskResults,
     };
     eventBus.emit(PROVISIONING_EVENT.PROVISIONING_START_REQUESTED, event);
     // update storage if process execution success
@@ -240,31 +241,32 @@ export function provisioningService(logger, Provisioning, eventBus) {
   }
 
   const COMPLETE_PROVISIONING_SCHEMA = Joi.object({
-    taskErrors: Joi.object(),
-    taskResults: Joi.object(),
+    errors: Joi.array().default([]),
+    results: Joi.object(),
     provisioningId: Joi.string().required(),
-  }).rename('ownerId', 'provisioningId');
+  });
 
   async function completeProvisioning(command) {
     // check is used here instead of validator as it is system method, so it always expects valid data
     const sanitizedCommand = check.schema('command', command, COMPLETE_PROVISIONING_SCHEMA);
     const {
-      taskErrors,
-      taskResults,
+      errors,
+      results,
       provisioningId,
     } = sanitizedCommand;
 
     // mark provisioning status as error if any error happened during process
-    const status = Object.keys(taskErrors).length > 0 ? ProcessStatus.ERROR : ProcessStatus.COMPLETE;
-    const provisioningInterestedFields = ['companyId', 'carrierId'];
-    const profileUpdates = {};
-    _.forEach(provisioningInterestedFields, (field) => {
-      _.forEach(taskResults, (taskResult) => {
-        if (!taskResult[field]) return;
-        profileUpdates[`profile.${field}`] = taskResult[field];
-      });
-    });
-    const dbUpdate = _.extend({ taskResults, taskErrors, status }, profileUpdates);
+    const status = errors.length > 0 ? ProcessStatus.ERROR : ProcessStatus.COMPLETE;
+    const FIELDS_TO_UPDATE_IN_PROFILE = ['companyId', 'carrierId'];
+    const profileUpdates = _(results)
+      .pick(FIELDS_TO_UPDATE_IN_PROFILE)
+      .mapKeys((value, key) => `profile.${key}`)
+      .value();
+    const dbUpdate = _.extend({
+      taskResults: results,
+      taskErrors: errors,
+      status,
+    }, profileUpdates);
     await Provisioning.findByIdAndUpdate(provisioningId, dbUpdate);
     logger.info(`Process complete for Provisioning: ${provisioningId}, profile changes `, profileUpdates);
   }

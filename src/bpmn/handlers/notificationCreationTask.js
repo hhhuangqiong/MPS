@@ -1,113 +1,80 @@
 import _ from 'lodash';
 import Promise from 'bluebird';
+import Joi from 'joi';
 import { ReferenceError, Error } from 'common-errors';
 
-import { check, createTask } from './util';
+import { IncompleteResultError } from './common';
+import { check } from './../../util';
+import { NOTIFICATION_CREATION } from './bpmnEvents';
 
-export function createNotificationCreationTask(logger, notificationManagement) {
-  check.ok('logger', logger);
+export function createNotificationCreationTask(notificationManagement, concurrencyOptions) {
   check.ok('notificationManagement', notificationManagement);
-
-  function validateRerun(data, taskResult) {
-    if (taskResult.done) {
-      // already complete, skip
-      return false;
-    }
-    return true;
-  }
+  concurrencyOptions = check.schema('concurrencyOptions', concurrencyOptions, Joi.object({
+    maxConcurrentRequests: Joi.number().default(4),
+  }));
 
   // get templates by resellerCarrierId
-  function getTemplates(resellerCarrierId) {
-    return notificationManagement.getTemplates({ group: resellerCarrierId })
-      .then(res => {
-        const { notifications: templates } = res.body;
-
-        if (!_.isArray(templates)) {
-          throw new ReferenceError('Unexpected response from CPS: expecting `notifications` array');
-        }
-
-        return templates;
-      });
-  }
-
-  function createNotification(carrierId, template) {
-    template.carrier = carrierId;
-    return notificationManagement.save(template)
-      .then((res) => {
-        const { id } = res.body;
-
-        if (!id) {
-          throw new ReferenceError('Unexpected response from CPS. id missing');
-        }
-
-        return {
-          identifier: template.identifier,
-          id,
-        };
-      });
-  }
-
-  function createNotifications(carrierId, taskResult, templates) {
-    let notifications;
-    try {
-      notifications = JSON.parse(taskResult.notifications);
-    } catch (e) {
-      notifications = {};
+  async function getTemplates(resellerCarrierId) {
+    const res = await notificationManagement.getTemplates({ group: resellerCarrierId });
+    const { notifications: templates } = res.body;
+    if (!_.isArray(templates)) {
+      throw new ReferenceError('Unexpected response from CPS: expecting `notifications` array');
     }
-    // create notifications in parrallel
-    return Promise.all(_.map(templates, template => {
-      const notificationIdentifier = template.identifier;
-
-      const result = notifications[notificationIdentifier];
-      if (result) {
-        // skip if notifcation created before
-        return Promise.resolve(result).reflect();
-      }
-
-      return createNotification(carrierId, template)
-      // reflect to wait for all requests to complete regardless any failure
-        .reflect();
-    }));
+    return templates;
   }
 
-
-  function run(data, taskResult, cb) {
-    const { carrierId, resellerCarrierId } = data;
-
-    const notifications = {};
-    const errors = [];
-
-    getTemplates(resellerCarrierId)
-      .then((templates) => (createNotifications(carrierId, taskResult, templates)))
-      .then((pendings) => {
-        logger.info(`performed ${pendings.length} notification creations`);
-        return Promise.each(pendings, (inspection) => {
-          if (inspection.isRejected()) {
-            errors.push(inspection.reason());
-          } else {
-            const { identifier } = inspection.value();
-            notifications[identifier] = inspection.value();
-          }
-        });
-      })
-      .then(() => {
-        if (errors.length > 0) {
-          // fail if any save requests failed
-          const failureMessages = _.reduce(Object.values(errors), (result, err) => {
-            const errorMessage = `${err.name}(${err.message})`;
-            return `${result}\n\n.${errorMessage}`;
-          }, '');
-          throw new Error(`${errors.length} notification creations failed: ${failureMessages}`);
-        }
-
-        cb(null, { notifications: JSON.stringify(notifications), done: true });
-      })
-      .catch((err) => {
-        cb(err, { notifications: JSON.stringify(notifications), done: false });
-      });
+  async function createNotification(carrierId, template) {
+    template.carrier = carrierId;
+    const res = await notificationManagement.save(template);
+    const { id } = res.body;
+    if (!id) {
+      throw new ReferenceError('Unexpected response from CPS. id missing');
+    }
+    return id;
   }
 
-  return createTask('NOTIFICATION_CREATION', run, { validateRerun }, logger);
+  async function createNotifications(state, profile) {
+    const { notifications, notificationsCreated, carrierId } = state.results;
+    if (notificationsCreated) {
+      return null;
+    }
+    const templates = await getTemplates(profile.resellerCarrierId);
+    // Create as many notifications as possible in parallel, but ignore errors for now
+    const tasks = Promise.resolve(templates)
+      .filter(template => !notifications.includes(template.identifier))
+      .map(
+        template => Promise.resolve(createNotification(carrierId, template)).reflect(),
+        { concurrency: concurrencyOptions.maxConcurrentRequests }
+      );
+    const allResults = await Promise.all(tasks);
+    // Split errors and successful results
+    const [errors, createdNotifications] = _(allResults)
+      .partition(i => i.isRejected())
+      .thru(([rejected, resolved]) => [rejected.map(x => x.reason()), resolved.map(x => x.value())])
+      .value();
+
+    let updates = null;
+    if (createdNotifications.length > 0) {
+      updates = {
+        results: {
+          notificationsCreated: errors.length === 0,
+          notifications: notifications.concat(createdNotifications),
+        },
+      };
+    }
+    if (errors.length > 0) {
+      const messages = errors.map(x => `[${x.name}]: ${x.message}`).join('\n');
+      const aggregateError = new Error(`${errors.length} notification creations failed: ${messages}.`);
+      throw new IncompleteResultError(updates, aggregateError);
+    }
+    return updates;
+  }
+
+  createNotifications.$meta = {
+    name: NOTIFICATION_CREATION,
+  };
+
+  return createNotifications;
 }
 
 export default createNotificationCreationTask;

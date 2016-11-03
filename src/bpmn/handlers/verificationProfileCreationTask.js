@@ -1,35 +1,21 @@
 import _ from 'lodash';
 import { ArgumentNullError, ReferenceError } from 'common-errors';
 
-import { check, createTask, compileJsonTemplate } from './util';
+import { check } from './../../util';
 import {
   Capability,
   VerificationMethod,
   CpsCapabilityType,
 } from './../../domain';
+import { compileJsonTemplate } from './common';
+import { VERIFICATION_PROFILE_CREATION } from './bpmnEvents';
 
-export function createVerificationProfileCreationTask(
-  logger,
-  cpsOptions,
-  verificationManagement,
-  capabilitiesManagement
-) {
-  check.ok('logger', logger);
+export function createVerificationProfileCreationTask(cpsOptions, verificationManagement, capabilitiesManagement) {
   check.ok('cpsOptions', cpsOptions);
   check.ok('verificationManagement', verificationManagement);
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
   const { template } = cpsOptions.verification;
-
-  function validateRerun(profile, taskResult) {
-    if (taskResult.verificationProfileId) {
-      // skip on rerun
-      return false;
-    }
-
-    return true;
-  }
-
   const VerificationCapabilities = [
     Capability.VERIFICATION_MO,
     Capability.VERIFICATION_MT,
@@ -59,71 +45,67 @@ export function createVerificationProfileCreationTask(
     });
   }
 
-  function generateVerificationProfile(data) {
-    const { capabilities } = data;
+  function generateVerificationProfile(params) {
+    const { capabilities } = params;
     const verificationMethods = generateVerificationMethods(capabilities);
-    const profile = compileJsonTemplate(template, _.extend({}, data));
+    const profile = compileJsonTemplate(template, _.extend({}, params));
     profile.enabled_verification_methods = verificationMethods;
     return profile;
   }
 
-  function getSmsProfileIdentifier(carrierId) {
-    return capabilitiesManagement.getProfile(carrierId, CpsCapabilityType.SMS)
-      .then((res) => {
-        const { identifier } = res.body;
-
-        if (!identifier) {
-          throw new ReferenceError('Unexpected response from CPS: `identifier` missing in sms profile');
-        }
-
-        return identifier;
-      });
+  async function getSmsProfileIdentifier(carrierId) {
+    const res = await capabilitiesManagement.getProfile(carrierId, CpsCapabilityType.SMS);
+    const { identifier } = res.body;
+    if (!identifier) {
+      throw new ReferenceError('Unexpected response from CPS: `identifier` missing in sms profile');
+    }
+    return identifier;
   }
 
-  function run(data, cb) {
-    const { carrierId, capabilities } = data;
+  async function createVerificationProfile(state, profile, context) {
+    if (state.results.verificationProfileId) {
+      return null;
+    }
+    const { logger } = context;
+    const { carrierId } = state.results;
+    const { capabilities } = profile;
 
     if (!needActivation(capabilities)) {
       logger.info('Verification Profile Creation skipped no capabilities requires.');
-      cb(null, { done: false });
-      return;
+      return null;
     }
-
     if (!carrierId) {
-      cb(new ArgumentNullError('carrierId'));
-      return;
+      throw new ArgumentNullError('carrierId');
     }
-
-    let prepareData;
-    if (_.includes(capabilities, Capability.VERIFICATION_SMS)) {
-      prepareData = getSmsProfileIdentifier(carrierId)
-        .then((smsProfileIdentifier) => {
-          if (!smsProfileIdentifier) throw new ArgumentNullError('smsProfileIdentifier');
-          return _.extend({}, data, { smsProfileIdentifier });
-        });
-    } else {
-      prepareData = Promise.resolve(data);
+    const params = {
+      ...state.results,
+      ...profile,
+    };
+    if (capabilities.includes(Capability.VERIFICATION_SMS)) {
+      const smsProfileIdentifier = await getSmsProfileIdentifier(carrierId);
+      if (!smsProfileIdentifier) {
+        throw new ArgumentNullError('smsProfileIdentifier');
+      }
+      params.smsProfileIdentifier = smsProfileIdentifier;
     }
-
-    prepareData.then((preparedData) => {
-      const profile = generateVerificationProfile(preparedData);
-
-      return verificationManagement.saveProfile(carrierId, profile);
-    })
-      .then(response => {
-        const { id: verificationProfileId } = response.body;
-
-        if (!verificationProfileId) {
-          throw new ReferenceError('id not defined in response from carrier profile creation');
-        }
-
-        cb(null, { verificationProfileId });
-      })
-      .catch(cb);
+    const verificationProfile = await generateVerificationProfile(params);
+    const response = await verificationManagement.saveProfile(carrierId, verificationProfile);
+    const { id: verificationProfileId } = response.body;
+    if (!verificationProfileId) {
+      throw new ReferenceError('id not defined in response from carrier profile creation');
+    }
+    return {
+      results: {
+        verificationProfileId,
+      },
+    };
   }
 
-  return createTask('VERIFICATION_PROFILE_CREATION', run, { validateRerun }, logger);
+  createVerificationProfile.$meta = {
+    name: VERIFICATION_PROFILE_CREATION,
+  };
+
+  return createVerificationProfile;
 }
 
 export default createVerificationProfileCreationTask;
-

@@ -268,11 +268,11 @@ definitions:
         type: string
         format: dateTime
       taskErrors:
-        type: object
-        description: errors from BPMN process stages
+        type: array
+        items:
+          $ref: "#/definitions/ProvisioningError"
       taskResults:
-        type: object
-        description: results from BPMN process stages
+        $ref: "#/definitions/ProvisioningResult"
   ProvisioningUpdate:
     type: object
     required:
@@ -322,6 +322,104 @@ definitions:
         $ref: "#/definitions/BillingOptions"
       smsc:
         $ref: "#/definitions/SmscOptions"
+  ProvisioningResult:
+    type: object
+    properties:
+      adminRoleCreated:
+        type: boolean
+      developerId:
+        type: string
+      bossProvisionId:
+        type: string
+      carrierId:
+        type: string
+        example: 'carrier.maaii.org'
+      carrierProfileId:
+        type: string
+      certificates:
+        type: array
+        items:
+          type: object
+          properties:
+            certificateId:
+              type: string
+            templateId:
+              type: string
+      certificatesCreated:
+        type: boolean
+      companyId:
+        type: string
+      capabilities:
+        type: array
+        items:
+          $ref: '#/definitions/Capability'
+      featureSetId:
+        type: string
+      featureSetIdentifier:
+        type: string
+      smsProfileId:
+        type: string
+      signUpRuleIds:
+        type: array
+        items:
+          type: string
+      notifications:
+        type: array
+        items:
+          type: string
+      notificationsCreated:
+        type: boolean
+      applicationIdentifier:
+        type: string
+      applications:
+        type: array
+        items:
+          type: object
+          properties:
+            app:
+              type: object
+            platform:
+              type: string
+              enum:
+                - platform.ios
+                - platform.android
+      sipGateways:
+        type: array
+        items:
+          type: string
+      sipRoutingProfileId:
+        type: string
+      userCarrierProfileId:
+        type: string
+      verificationProfileId:
+        type: string
+      voiceProfileId:
+        type: string
+  ProvisioningError:
+    type: object
+    description: user or system errors during provisioning process
+    required:
+      - message
+      - name
+    properties:
+      message:
+        type: string
+        description: error message in english
+      name:
+        $ref: '#/definitions/ProvisioningErrorType'
+      traceId:
+        type: string
+        description: trace id associated with the error
+        example: NOTIFICATION_CREATION:a17a4306-77b2-4c09-a7c8-9e9dddb8fba7
+      eventName:
+        type: string
+        description: associated event name
+        example: NOTIFICATION_CREATION
+  ProvisioningErrorType:
+    type: string
+    description: error code / type
+    enum:
+      - SystemError
   CompanyInfo:
     type: object
     required:

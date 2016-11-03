@@ -1,16 +1,21 @@
-import { check, createCapabilityActivationByTypeTask } from './util';
+import { check } from './../../util';
 import { Capability, CapabilityType } from './../../domain';
+import { createCapabilityActivationTask } from './createCapabilityActivationTask';
+import { ONNET_CAPABILITY_ACTIVATION } from './bpmnEvents';
 
-export function createOnnetCapabilityActivationTask(logger, capabilitiesManagement) {
-  check.ok('logger', logger);
+export function createOnnetCapabilityActivationTask(capabilitiesManagement) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
-  const options = {
-    name: 'ONNET_CAPABILITY_ACTIVATION',
-    profileCapability: [Capability.CALL_ONNET],
-    requestCapabilityType: CapabilityType.ONNET,
+  const activateOnnet = createCapabilityActivationTask(capabilitiesManagement, {
+    internal: Capability.CALL_ONNET,
+    external: CapabilityType.ONNET,
+  });
+
+  activateOnnet.$meta = {
+    name: ONNET_CAPABILITY_ACTIVATION,
   };
-  return createCapabilityActivationByTypeTask(logger, capabilitiesManagement, options);
+
+  return activateOnnet;
 }
 
 export default createOnnetCapabilityActivationTask;

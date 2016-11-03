@@ -42,6 +42,7 @@ export const Capability = {
   PLATFORM_WEB: 'platform.web',
   END_USER_WHITELIST: 'end-user.whitelist',
   END_USER_SUSPENSION: 'end-user.suspension',
+  TOP_UP: 'top-up',
 };
 export const Capabilities = _.values(Capability);
 

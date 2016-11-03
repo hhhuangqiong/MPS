@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import uuid from 'uuid';
 import _ from 'lodash';
 import { NotImplementedError, ArgumentNullError } from 'common-errors';
@@ -7,21 +6,13 @@ import {
   ServiceType,
   Capability,
 } from './../../domain';
-import { check, createTask } from './util';
+import { IncompleteResultError } from './common';
+import { check } from './../../util';
+import { SAVE_APPLICATION } from './bpmnEvents';
 
-export function createSaveApplicationTask(logger, cpsOptions, applicationManagement) {
-  check.ok('logger', logger);
+export function createSaveApplicationTask(cpsOptions, applicationManagement) {
   check.ok('cpsOptions', cpsOptions);
   check.ok('applicationManagement', applicationManagement);
-
-  function validateRerun(data, taskResult) {
-    if (taskResult.applicationId) {
-      // already complete, skip
-      return false;
-    }
-
-    return true;
-  }
 
   function reverseDomain(domain) {
     return _.reverse(domain.split('.')).join('.');
@@ -42,12 +33,12 @@ export function createSaveApplicationTask(logger, cpsOptions, applicationManagem
     return `mapp${uuid.v1()}`;
   }
 
-// TODO: looks like a not secure way to generate application secret
+  // TODO: looks like a not secure way to generate application secret
   function generateApplicationSecret() {
     return uuid.v1();
   }
 
-  const CapabilityPlatforms = [
+  const PlatformCapabilities = [
     Capability.PLATFORM_ANDROID,
     Capability.PLATFORM_IOS,
     Capability.PLATFORM_WEB,
@@ -57,11 +48,14 @@ export function createSaveApplicationTask(logger, cpsOptions, applicationManagem
     return `com.maaii.${platform}`;
   }
 
-  function createApplication(platform, { applicationIdentifier, serviceType, featureSetIdentifier, developerId }) {
+  async function createApplication(
+    platform,
+    { applicationIdentifier, serviceType, featureSetIdentifier, developerId }
+    ) {
     const platformIdentifier = generatePlatformIdentifier(platform);
 
     if (!featureSetIdentifier) {
-      return Promise.reject(new ArgumentNullError('featureSetIdentifier'));
+      throw new ArgumentNullError('featureSetIdentifier');
     }
 
     const firstApplicationVersion = {
@@ -92,67 +86,70 @@ export function createSaveApplicationTask(logger, cpsOptions, applicationManagem
     };
 
     // make request to CPS to create
-    return applicationManagement.saveApplication(params)
-      .then((res) => {
-        const applicationId = res.body.id;
-
-        if (!applicationId) {
-          throw new ReferenceError(`Unexpected response format from CPS: ${res.body}`);
-        }
-
-        return {
-          applicationId,
-          applicationKey,
-          applicationSecret,
-        };
-      });
-  }
-
-
-  function run(data, taskResult, cb) {
-    const { capabilities, serviceType, companyCode } = data;
-
-    const applications = {};
-
-    let completed;
-    try {
-      completed = JSON.parse(taskResult.applications);
-    } catch (e) {
-      completed = {};
+    const res = await applicationManagement.saveApplication(params);
+    const applicationId = res.body.id;
+    if (!applicationId) {
+      throw new ReferenceError(`Unexpected response format from CPS: ${res.body}`);
     }
 
-    const platforms = _.intersection(CapabilityPlatforms, capabilities);
-    let pending = Promise.resolve();
-
-    const applicationIdentifier = generateApplicationId(serviceType, companyCode);
-    data.applicationIdentifier = applicationIdentifier;
-
-    // create application for each platform, sequentially
-    _.forEach(platforms, platform => {
-      // skip completed platforms (during rerun)
-      if (completed[platform]) {
-        applications[platform] = completed[platform];
-        return;
-      }
-
-      pending = pending.then(() => createApplication(platform, data))
-        .then((result) => {
-          // mark successful results
-          applications[platform] = result;
-        });
-    });
-
-    pending.then(() => {
-      // all platforms successfully created
-      cb(null, { applications: JSON.stringify(applications), applicationIdentifier });
-    })
-      .catch(err => {
-        // return error with succeed created applications
-        cb(err, { applications: JSON.stringify(applications) });
-      });
+    return {
+      applicationId,
+      applicationKey,
+      applicationSecret,
+    };
   }
 
-  return createTask('SAVE_APPLICATION', run, { validateRerun }, logger);
+  async function saveApplication(state, profile) {
+    if (state.results.applicationId) {
+      return null;
+    }
+    const { applications, featureSetIdentifier, developerId } = state.results;
+    const { capabilities, serviceType, companyCode } = profile;
+
+    let currentApplications = applications;
+    const platforms = _(PlatformCapabilities)
+      .intersection(capabilities)
+      .difference(_.keys(currentApplications))
+      .value();
+
+    const applicationIdentifier = generateApplicationId(serviceType, companyCode);
+
+    let error = null;
+    try {
+      for (const platform of platforms) {
+        const params = {
+          applicationIdentifier,
+          serviceType,
+          featureSetIdentifier,
+          developerId,
+        };
+        const result = await createApplication(platform, params);
+        currentApplications = [...currentApplications, {
+          platform,
+          app: result,
+        }];
+      }
+    } catch (e) {
+      error = e;
+    }
+
+    const updates = {
+      results: {
+        applicationIdentifier,
+        applications: currentApplications,
+      },
+    };
+    if (error) {
+      throw new IncompleteResultError(updates, error);
+    }
+    return updates;
+  }
+
+  saveApplication.$meta = {
+    name: SAVE_APPLICATION,
+  };
+
+  return saveApplication;
 }
 
 export default createSaveApplicationTask;

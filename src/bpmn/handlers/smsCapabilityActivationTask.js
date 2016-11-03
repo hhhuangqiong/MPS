@@ -1,20 +1,26 @@
-import { check, createSmsProfileCapabilityActivationTask } from './util';
+import { check } from './../../util';
 import { Capability, CapabilityType } from './../../domain';
 
-export function createSmsCapabilityActivationTask(logger, capabilitiesManagement, cpsOptions) {
-  check.ok('logger', logger);
+import { createSmsProfileCapabilityActivationTask } from './createSmsProfileCapabilityActivationTask';
+import { SMS_CAPABILITY_ACTIVATION } from './bpmnEvents';
+
+export function createSmsCapabilityActivationTask(capabilitiesManagement, cpsOptions) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
   check.ok('cpsOptions', cpsOptions);
 
   const { template } = cpsOptions.sms;
 
-  const options = {
-    taskName: 'SMS_CAPABILITY_ACTIVATION',
-    profileCapability: [Capability.VERIFICATION_SMS],
-    requestCapabilityType: CapabilityType.SMS,
+  const activateSms = createSmsProfileCapabilityActivationTask(cpsOptions, capabilitiesManagement, {
+    internal: Capability.VERIFICATION_SMS,
+    external: CapabilityType.SMS,
     template,
+  });
+
+  activateSms.$meta = {
+    name: SMS_CAPABILITY_ACTIVATION,
   };
-  return createSmsProfileCapabilityActivationTask(logger, cpsOptions, capabilitiesManagement, options);
+
+  return activateSms;
 }
 
 export default createSmsCapabilityActivationTask;

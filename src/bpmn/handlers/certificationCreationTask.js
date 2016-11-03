@@ -1,19 +1,12 @@
 import _ from 'lodash';
 import { ArgumentNullError } from 'common-errors';
 
-import { createTask, check } from './util';
+import { check } from './../../util';
+import { IncompleteResultError } from './common';
+import { CERTIFICATION_CREATION } from './bpmnEvents';
 
-export function createCertificationCreationTask(logger, certificateManagement) {
-  check.ok('logger', logger);
+export function createCertificationCreationTask(certificateManagement) {
   check.ok('certificateManagement', certificateManagement);
-
-  function validateRerun(data, taskResult) {
-    if (taskResult.done) {
-      // certicaates already created, skip
-      return false;
-    }
-    return true;
-  }
 
   function getKey(template, applicationIdentifier) {
     return `${applicationIdentifier}:${template.platform_id}:${template.type}`;
@@ -22,81 +15,70 @@ export function createCertificationCreationTask(logger, certificateManagement) {
   function createCertificate(template, applicationIdentifier) {
     const certificate = _.clone(template);
     certificate.application_identifier = applicationIdentifier;
-
     return certificateManagement.create(certificate);
   }
 
-  function run(data, taskResult, cb) {
-    const { resellerCarrierId, applicationIdentifier } = data;
+  async function createCertificates(state, profile) {
+    if (state.results.certificatesCreated) {
+      return null;
+    }
+    const { resellerCarrierId } = profile;
+    const { applicationIdentifier, certificates: previousCertificates } = state.results;
+    let currentCertificates = previousCertificates;
 
     if (!applicationIdentifier) {
-      cb(new ArgumentNullError('carrierId'));
-      return;
+      throw new ArgumentNullError('applicationIdentifier');
     }
 
     if (!resellerCarrierId) {
-      cb(new ArgumentNullError('resellerCarrierId'));
-      return;
+      throw new ArgumentNullError('resellerCarrierId');
     }
 
-    const certificates = {};
-    let completed;
+    let res = await certificateManagement.getTemplates(resellerCarrierId);
+    const templates = res.body;
+    if (!templates.group || !_.isArray(templates.certificates)) {
+      throw new ReferenceError('Unexpected response from CPS: key attr \'group\' missing');
+    }
+    const certificatesByTemplateId = _.keyBy(templates.certificates, x => x.templateId);
+    const certificateTemplates = templates.certificates
+      .filter(t => !certificatesByTemplateId[getKey(t, applicationIdentifier)]);
+    let error = null;
     try {
-      completed = JSON.parse(taskResult.certificates);
-    } catch (e) {
-      completed = {};
-    }
-
-    // get feature set template by resller carrier id, i.e. use resellerCarrierId
-    // as group
-    certificateManagement.getTemplates(resellerCarrierId)
-      .then((res) => {
-        const templates = res.body;
-        if (!templates.group || !_.isArray(templates.certificates)) {
-          throw new ReferenceError('Unexpected response from CPS: key attr \'group\' missing');
+      for (const certificateTemplate of certificateTemplates) {
+        const templateKey = getKey(certificateTemplate, applicationIdentifier);
+        res = await createCertificate(certificateTemplate, applicationIdentifier);
+        const { id: certificateId } = res.body;
+        if (!certificateId) {
+          throw new ReferenceError('Unexpected resposne from CPS: key attr \'id\' is missing');
         }
-
-        return templates;
-      })
-      .then((templates) => {
-        // create certificate for each template
-        let pending = Promise.resolve();
-
-        // create certificate for each template, one by one, to allow retry
-        _.forEach(templates.certificates, (template) => {
-          const templateKey = getKey(template, applicationIdentifier);
-          if (completed[templateKey]) {
-            // skip if already created
-            certificates[templateKey] = completed[templateKey];
-            return;
-          }
-
-          pending = pending.then(() => createCertificate(template, applicationIdentifier))
-            .then((res) => {
-              const { id: certificateId } = res.body;
-
-              if (!certificateId) {
-                throw new ReferenceError('Unexpected resposne from CPS: key attr \'id\' is missing');
-              }
-
-              // save results each step
-              certificates[templateKey] = certificateId;
-            });
-        });
-
-        // create feature set with template
-        return pending;
-      })
-      .then(() => {
-        // all certificates creation at cps completed
-        cb(null, { done: true, certificates: JSON.stringify(certificates) });
-      })
-      .catch((err) => {
-        // handle error with task results
-        cb(err, { done: false, certificates: JSON.stringify(certificates) });
-      });
+        currentCertificates = [...currentCertificates, {
+          templateId: templateKey,
+          certificateId,
+        }];
+      }
+    } catch (e) {
+      error = e;
+    }
+    let updates = null;
+    if (currentCertificates !== previousCertificates) {
+      updates = {
+        results: {
+          certificates: currentCertificates,
+          certificatesCreated: !error,
+        },
+      };
+    }
+    if (error) {
+      throw new IncompleteResultError(updates, error);
+    }
+    return updates;
   }
-  return createTask('CERTIFICATION_CREATION', run, { validateRerun }, logger);
+
+  createCertificates.$meta = {
+    name: CERTIFICATION_CREATION,
+  };
+
+  return createCertificates;
 }
 
 export default createCertificationCreationTask;

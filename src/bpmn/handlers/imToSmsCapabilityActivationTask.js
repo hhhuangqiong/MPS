@@ -1,20 +1,27 @@
-import { check, createSmsProfileCapabilityActivationTask } from './util';
+import { check } from './../../util';
 import { Capability, CapabilityType } from './../../domain';
 
-export function createImToSmsCapabilityActivationTask(logger, capabilitiesManagement, cpsOptions) {
-  check.ok('logger', logger);
+import { createSmsProfileCapabilityActivationTask } from './createSmsProfileCapabilityActivationTask';
+import { IM_TO_SMS_CAPABILITY_ACTIVATION } from './bpmnEvents';
+
+
+export function createImToSmsCapabilityActivationTask(capabilitiesManagement, cpsOptions) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
   check.ok('cpsOptions', cpsOptions);
 
   const { template } = cpsOptions['im-to-sms'];
 
-  const options = {
-    taskName: 'IM_TO_SMS_CAPABILITY_ACTIVATION',
-    profileCapability: Capability.IM_TO_SMS,
-    requestCapabilityType: CapabilityType.IM_TO_SMS,
+  const activateImToSms = createSmsProfileCapabilityActivationTask(cpsOptions, capabilitiesManagement, {
+    internal: Capability.IM_TO_SMS,
+    external: CapabilityType.IM_TO_SMS,
     template,
+  });
+
+  activateImToSms.$meta = {
+    name: IM_TO_SMS_CAPABILITY_ACTIVATION,
   };
-  return createSmsProfileCapabilityActivationTask(logger, cpsOptions, capabilitiesManagement, options);
+
+  return activateImToSms;
 }
 
 export default createImToSmsCapabilityActivationTask;

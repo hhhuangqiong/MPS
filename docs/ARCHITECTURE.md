@@ -63,7 +63,8 @@ for a Reseller  on Reseller provisioning through WLP.
 
 An open source BPMN engine that conforms to BPMN 2.0 standard. The engine runs
 with a given .bpmn and triggers and the corresponding provision task to do
-the provisioning. See https://github.com/e2ebridge/bpmn for details.
+the provisioning. See [BPMN Guide](BPMN_GUIDE.md) and https://github.com/e2ebridge/bpmn 
+for details.
 
 ## Identity Access Management
 

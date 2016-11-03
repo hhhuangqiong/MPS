@@ -34,7 +34,9 @@ authentication, error-handling, metrics, etc.)
 - bpmn
 
 Coordinates provisioning process event handlers. 
-Open bpmn/provisioning.bpmn in [Camunda Modeler](https://camunda.org/download/modeler/) to see the flow of events
+Open bpmn/provisioning.bpmn in [Camunda Modeler](https://camunda.org/download/modeler/) to see 
+the flow of events. See [BPMN Guide](BPMN_GUIDE.md) for additional details about module 
+organization.
 
 - config
 

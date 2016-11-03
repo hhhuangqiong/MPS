@@ -1,11 +1,20 @@
-import m800Config from 'm800-initializers/lib/nconf';
+import path from 'path';
+
 import _ from 'lodash';
+import nconf from 'nconf';
 
 import { parseObjectArrays } from './configUtil';
 
-const CONFIG_PATH = __dirname;
+const ROOT = __dirname;
+const ENV = process.env.NODE_ENV || 'development';
 
-const nconf = m800Config(CONFIG_PATH);
+nconf
+  .argv()
+  .env({ separator: '__' })
+  .file('env-user-file', path.join(ROOT, `${ENV}.personal.json`))
+  .file('env-file', path.join(ROOT, `${ENV}.json`))
+  .file('default-user-file', path.join(ROOT, 'default.personal.json'))
+  .file('default-file', path.join(ROOT, 'default.json'));
 
 const config = nconf.get();
 const SERVICES = ['cps', 'boss', 'iam', 'mums'];

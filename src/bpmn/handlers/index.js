@@ -1,4 +1,14 @@
 import * as gateways from './gateways';
+import * as bpmnEvents from './bpmnEvents';
+
+export * from './common';
+export * from './decorators';
+export * from './lifecycle';
+
+export {
+  gateways,
+  bpmnEvents,
+};
 
 export * from './apiCapabilityActivationTask';
 export * from './bossProvisionTask';
@@ -23,17 +33,3 @@ export * from './userCarrierProfileCreationTask';
 export * from './verificationProfileCreationTask';
 export * from './voiceCapabilityActivationTask';
 export * from './wlpAccessCreationTask';
-
-export * from './provisioningStartTask';
-export * from './provisioningEndTask';
-
-export * from './defaultHandler';
-export * from './defaultErrorHandler';
-export * from './taskStartHandler';
-export * from './taskEndHandler';
-
-export * as util from './util';
-
-export {
-  gateways,
-};

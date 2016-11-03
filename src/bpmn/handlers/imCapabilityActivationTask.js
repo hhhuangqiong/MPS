@@ -1,16 +1,21 @@
-import { check, createCapabilityActivationByTypeTask } from './util';
+import { check } from './../../util';
 import { Capability, CapabilityType } from './../../domain';
+import { IM_CAPABILITY_ACTIVATION } from './bpmnEvents';
+import { createCapabilityActivationTask } from './createCapabilityActivationTask';
 
-export function createImCapabilityActivationTask(logger, capabilitiesManagement) {
-  check.ok('logger', logger);
+export function createImCapabilityActivationTask(capabilitiesManagement) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
-  const options = {
-    name: 'IM_CAPABILITY_ACTIVATION',
-    profileCapability: Capability.IM,
-    requestCapabilityType: CapabilityType.IM,
+  const activateIm = createCapabilityActivationTask(capabilitiesManagement, {
+    internal: Capability.IM,
+    external: CapabilityType.IM,
+  });
+
+  activateIm.$meta = {
+    name: IM_CAPABILITY_ACTIVATION,
   };
-  return createCapabilityActivationByTypeTask(logger, capabilitiesManagement, options);
+
+  return activateIm;
 }
 
 export default createImCapabilityActivationTask;

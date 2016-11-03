@@ -1,57 +1,52 @@
 import { ArgumentNullError } from 'common-errors';
-import _ from 'lodash';
 import escapeStringRegexp from 'escape-string-regexp';
 
-import { check, createTask, compileJsonTemplate } from './util';
+import { check } from './../../util';
+import { compileJsonTemplate } from './common';
+import { SIP_ROUTING_CREATION } from './bpmnEvents';
 
-export function createSipRoutingCreationTask(logger, cpsOptions, voiceProvisioningManagement) {
-  check.ok('logger', logger);
+export function createSipRoutingCreationTask(cpsOptions, voiceProvisioningManagement) {
   check.ok('cpsOptions', cpsOptions);
   check.ok('voiceProvisioningManagement', voiceProvisioningManagement);
 
   const { sip } = cpsOptions;
   const template = sip.routing.template;
 
-  function validateRerun(data, taskResult) {
-    const { sipRoutingProfileId } = taskResult;
-    if (taskResult.sipRoutingProfileId) {
-      logger.info(`skip sip profile creation on rerun: ${sipRoutingProfileId}`);
-      return false;
+  async function createSipRouting(state, profile, context) {
+    if (state.results.sipRoutingProfileId) {
+      return null;
     }
-
-    return true;
-  }
-
-  function run(data, taskResult, cb) {
-    const { carrierId } = data;
-
+    const { logger } = context;
+    const { carrierId, sipGateways } = state.results;
     if (!carrierId) {
-      cb(new ArgumentNullError('carrierId'));
-      return;
+      throw new ArgumentNullError('carrierId');
     }
-
     const escapedCarrierId = escapeStringRegexp(carrierId);
-
-    // expecting create gateway ids to be passed in from data
-    const templateParams = _.extend({ carrierId, escapedCarrierId }, data);
+    const templateParams = {
+      sipGateways,
+      carrierId,
+      escapedCarrierId,
+    };
     const query = compileJsonTemplate(template, templateParams);
+    const res = await voiceProvisioningManagement.sipRoutingProfileCreation(query);
+    const sipRoutingProfileId = res.body.id;
+    logger.info(`sip routing profile ${sipRoutingProfileId} creation complete`);
 
-    // call requests one by one to make it recoverable incase of failure
-    voiceProvisioningManagement.sipRoutingProfileCreation(query)
-      .then((res) => {
-        const sipRoutingProfileId = res.body.id;
-        logger.info(`sip routing profile ${sipRoutingProfileId} creation complete`);
-
-        if (!sipRoutingProfileId) {
-          throw new ReferenceError('Invalid response from cps sip routing profile creation: id is missing');
-        }
-
-        cb(null, { sipRoutingProfileId });
-      })
-      .catch(cb);
+    if (!sipRoutingProfileId) {
+      throw new ReferenceError('Invalid response from cps sip routing profile creation: id is missing');
+    }
+    return {
+      results: {
+        sipRoutingProfileId,
+      },
+    };
   }
 
-  return createTask('SIP_ROUTING_CREATION', run, { validateRerun }, logger);
+  createSipRouting.$meta = {
+    name: SIP_ROUTING_CREATION,
+  };
+
+  return createSipRouting;
 }
 
 export default createSipRoutingCreationTask;

@@ -10,15 +10,15 @@ import {
 export class CpsRequest extends BaseRequest {
   get(uri) {
     return super.get(uri)
-      .catch(this.errorHandler);
+      .catch(e => this.handleError(e));
   }
 
   post(uri, params) {
     return super.post(uri, params)
-      .catch(e => this.errorHandler(e));
+      .catch(e => this.handleError(e));
   }
 
-  errorHandler(error) {
+  handleError(error) {
     const isHttpStatusError = !isEmpty(error.body);
 
     if (isHttpStatusError) {

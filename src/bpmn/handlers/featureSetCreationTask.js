@@ -1,21 +1,11 @@
 import _ from 'lodash';
 import { ArgumentNullError } from 'common-errors';
 
-import { check, createTask } from './util';
+import { check } from './../../util';
+import { FEATURE_SET_CREATION } from './bpmnEvents';
 
-export function createFeatureSetCreationTask(logger, featureSetManagement) {
-  check.ok('logger', logger);
+export function createFeatureSetCreationTask(featureSetManagement) {
   check.ok('featureSetManagement', featureSetManagement);
-
-  function validateRerun(data, taskResult) {
-    if (taskResult.featureSetId) {
-      // feature set already created, skip
-      return false;
-    }
-
-    return true;
-  }
-
 
   function generateFeatureSetFromTemplate(carrierId, template) {
     const identifier = `${carrierId}.feature-set`;
@@ -27,50 +17,48 @@ export function createFeatureSetCreationTask(logger, featureSetManagement) {
     };
   }
 
-  function run(data, taskResult, cb) {
-    const { resellerCarrierId, carrierId } = data;
+  async function createFeatureSet(state, profile) {
+    if (state.results.featureSetId) {
+      return null;
+    }
+    const { carrierId } = state.results;
+    const { resellerCarrierId } = profile;
 
     if (!carrierId) {
-      cb(new ArgumentNullError('carrierId'));
-      return;
+      throw new ArgumentNullError('carrierId');
     }
-
     if (!resellerCarrierId) {
-      cb(new ArgumentNullError('resellerCarrierId'));
-      return;
+      throw new ArgumentNullError('resellerCarrierId');
     }
 
-    let featureSet;
+    let res = await featureSetManagement.getFeatureSetTemplate(resellerCarrierId);
+    const template = res.body;
+    if (!template.group || !_.isArray(template.features)) {
+      throw new ReferenceError('Unexpected response from CPS: key attr \'group\' missing');
+    }
+    // get identifiers from the feature set templates;
+    const featureSet = generateFeatureSetFromTemplate(carrierId, template);
+    // create feature set with template
+    res = await featureSetManagement.createFeatureSet(featureSet);
+    const { id: featureSetId } = res.body;
+    if (!featureSetId) {
+      throw new ReferenceError('Unexpected resposne from CPS: key attr \'id\' is missing');
+    }
+    const featureSetIdentifier = featureSet.identifier;
 
-    // get feature set template by resller carrier id, i.e. use resellerCarrierId
-    // as group
-    featureSetManagement.getFeatureSetTemplate(resellerCarrierId)
-      .then((res) => {
-        const template = res.body;
-        if (!template.group || !_.isArray(template.features)) {
-          throw new ReferenceError('Unexpected response from CPS: key attr \'group\' missing');
-        }
-
-        // get identifiers from the feature set templates;
-        featureSet = generateFeatureSetFromTemplate(carrierId, template);
-
-        // create feature set with template
-        return featureSetManagement.createFeatureSet(featureSet);
-      })
-      .then((res) => {
-        const { id: featureSetId } = res.body;
-
-        if (!featureSetId) {
-          throw new ReferenceError('Unexpected resposne from CPS: key attr \'id\' is missing');
-        }
-
-        const featureSetIdentifier = featureSet.identifier;
-        cb(null, { featureSetId, featureSetIdentifier });
-      })
-      .catch(cb);
+    return {
+      results: {
+        featureSetId,
+        featureSetIdentifier,
+      },
+    };
   }
 
-  return createTask('FEATURE_SET_CREATION', run, { validateRerun }, logger);
+  createFeatureSet.$meta = {
+    name: FEATURE_SET_CREATION,
+  };
+
+  return createFeatureSet;
 }
 
 export default createFeatureSetCreationTask;

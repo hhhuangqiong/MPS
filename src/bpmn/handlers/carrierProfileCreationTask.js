@@ -1,19 +1,18 @@
 import { ArgumentNullError, ReferenceError } from 'common-errors';
 
-import { check, createTask } from './util';
+import { check } from './../../util';
+import { CARRIER_PROFILE_CREATION } from './bpmnEvents';
 
-export function createCarrierProfileCreationTask(logger, carrierManagement) {
-  check.ok('logger', logger);
+export function createCarrierProfileCreationTask(carrierManagement) {
   check.ok('carrierManagement', carrierManagement);
 
-  function validateRerun(profile, taskResult) {
-    return !taskResult.carrierProfileId;
-  }
-
-  function run(profile, cb) {
-    const { carrierId } = profile;
+  async function createCarrierProfile(state) {
+    if (state.results.carrierProfileId) {
+      return null;
+    }
+    const { carrierId } = state.results;
     if (!carrierId) {
-      cb(new ArgumentNullError('carrierId'));
+      throw new ArgumentNullError('carrierId');
     }
     const params = {
       carrierId,
@@ -23,21 +22,23 @@ export function createCarrierProfileCreationTask(logger, carrierManagement) {
         'com|maaii|service|voip|route': 'mss',
       },
     };
-
-    carrierManagement.createCarrierProfile(params)
-      .then(response => {
-        const { id: carrierProfileId } = response.body;
-
-        if (!carrierProfileId) {
-          throw new ReferenceError('id not defined in response from carrier profile creation');
-        }
-
-        cb(null, { carrierProfileId });
-      })
-      .catch(cb);
+    const response = await carrierManagement.createCarrierProfile(params);
+    const { id: carrierProfileId } = response.body;
+    if (!carrierProfileId) {
+      throw new ReferenceError('id not defined in response from carrier profile creation');
+    }
+    return {
+      results: {
+        carrierProfileId,
+      },
+    };
   }
 
-  return createTask('CARRIER_PROFILE_CREATION', run, { validateRerun }, logger);
+  createCarrierProfile.$meta = {
+    name: CARRIER_PROFILE_CREATION,
+  };
+
+  return createCarrierProfile;
 }
 
 export default createCarrierProfileCreationTask;

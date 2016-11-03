@@ -2,13 +2,13 @@
   "cps": {
     "api": {
       "baseUrl": "http://192.168.118.34:80",
-      "timeout": 15000
+      "timeout": 60000
     },
     "wlServiceDomain": "maaii.com",
     "sdkServiceDomain": "m800-api.com",
     "chargeProfile": {
       "company": "m800_charge_profile",
-      "user": "maaii_charge_profile"
+      "user": "m800_charge_profile"
     },
     "sms": {
       "template": {
@@ -98,7 +98,7 @@
                     "field_name": "From",
                     "regular_expression": "^((:?sip:)?\\+{0,1})(.*[A-Za-z_]+.*)@{{ escapedCarrierId }}$"
                   },
-                  "gateway": "{{ sipGatewayId0 }}"
+                  "gateway": "{{ sipGateways[0] }}"
                 },
                 "1": {
                   "description": "Select caller Only Within Domain {{ carrierId }}",
@@ -108,7 +108,7 @@
                     "field_name": "From",
                     "regular_expression": "^((:?sip:)?\\+{0,1})(.*[A-Za-z_]+.*)@{{ escapedCarrierId }}$"
                   },
-                  "gateway": "{{ sipGatewayId1 }}"
+                  "gateway": "{{ sipGateways[1] }}"
                 }
               }
             }
@@ -204,5 +204,9 @@
         }
       }
     }
+  },
+  "httpDebugProxyUrl": null,
+  "bpmn": {
+    "maxConcurrentRequests": 4
   }
 }

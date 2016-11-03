@@ -26,16 +26,29 @@ export function create(config) {
 
   // Configuration
   app.constant('cpsOptions', cpsOptions);
-  app.constant('cpsApiOptions', cpsApiOptions);
+  app.constant('cpsApiOptions', {
+    ...cpsApiOptions,
+    proxyUrl: config.httpDebugProxyUrl,
+  });
   app.constant('bossOptions', bossOptions);
-  app.constant('bossApiOptions', bossApiOptions);
+  app.constant('bossApiOptions', {
+    ...bossApiOptions,
+    proxyUrl: config.httpDebugProxyUrl,
+  });
   app.constant('iamOptions', iamOptions);
-  app.constant('iamApiOptions', iamApiOptions);
+  app.constant('iamApiOptions', {
+    ...iamApiOptions,
+    proxyUrl: config.httpDebugProxyUrl,
+  });
   app.constant('mumsOptions', mumsOptions);
-  app.constant('mumsApiOptions', mumsApiOptions);
+  app.constant('mumsApiOptions', {
+    ...mumsApiOptions,
+    proxyUrl: config.httpDebugProxyUrl,
+  });
   app.constant('mongoOptions', mongoOptions);
   app.constant('ENV', ENV);
   app.constant('serverOptions', serverOptions);
+  app.constant('bpmnConcurrencyOptions', config.bpmn);
 
   registerInfrastructure(app);
   registerServices(app);

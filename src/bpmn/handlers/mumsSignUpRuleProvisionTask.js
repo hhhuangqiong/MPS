@@ -1,72 +1,52 @@
 import _ from 'lodash';
 import { ArgumentNullError } from 'common-errors';
 
-import { check, createTask } from './util';
+import { check } from './../../util';
 import { Capability } from './../../domain';
+import { MUMS_SIGNUP_RULE_PROVISION } from './bpmnEvents';
 
-export function createMumsSignUpRuleProvisionTask(logger, mumsOptions, mumsSignUpRuleMgmt) {
-  check.ok('logger', logger);
+export function createMumsSignUpRuleProvisionTask(mumsOptions, mumsSignUpRuleManagement) {
   check.ok('mumsOptions', mumsOptions);
-  check.ok('mumsSignUpRuleMgmt', mumsSignUpRuleMgmt);
+  check.ok('mumsSignUpRuleManagement', mumsSignUpRuleManagement);
 
   const { whitelistBlockAll } = _.get(mumsOptions, 'signup.rules');
 
-  function validateRerun(profile, taskResult) {
-    if (taskResult.savedIds) {
-      // run successfully before, skip
-      return false;
+  async function provisionSignUpRules(state, profile, context) {
+    if (!profile.capabilities.includes(Capability.END_USER_WHITELIST)) {
+      return null;
     }
-
-    return true;
-  }
-
-  function needWhitelistProvision(capabilities) {
-    return _.intersection(capabilities, [Capability.END_USER_WHITELIST]).length > 0;
-  }
-
-  function run(data, cb) {
-    const { capabilities, carrierId } = data;
-    const rules = [];
-
-    if (needWhitelistProvision(capabilities)) {
-      rules.push(whitelistBlockAll);
+    if (state.results.signUpRuleIds.length > 0) {
+      return null;
     }
-
-    if (!rules.length) {
-      // skip if nothing to provision
-      cb(null, {});
-      return;
-    }
-
+    const { logger } = context;
+    const { carrierId } = state.results;
     if (!carrierId) {
-      cb(new ArgumentNullError('carrierId'));
-      return;
+      throw new ArgumentNullError('carrierId');
     }
-
-    mumsSignUpRuleMgmt.create({
-      carrierId,
-      rules,
-    })
-      .then((res) => {
-        const { savedIds, failedMessages } = res.body;
-
-        if (!_.isArray(savedIds) || savedIds.length <= 0) {
-          logger.error('Fail to provision sign up rules');
-
-          if (failedMessages) {
-            logger.error('Failure messsages from backend: ', failedMessages);
-            throw failedMessages;
-          }
-
-          throw new ReferenceError('Expecting `savedIds` but not available.');
-        }
-
-        cb(null, { savedIds });
-      })
-      .catch(cb);
+    const rules = [whitelistBlockAll];
+    const res = await mumsSignUpRuleManagement.create({ carrierId, rules });
+    const { savedIds, failedMessages } = res.body;
+    if (!_.isArray(savedIds) || savedIds.length === 0) {
+      logger.error('Fail to provision sign up rules');
+      if (failedMessages) {
+        logger.error('Failure messsages from backend: ', failedMessages);
+        const messages = failedMessages.map(x => x.errorDetails.message).join('\n');
+        throw new ReferenceError(`Sign up rules provisioning failed: ${messages}`);
+      }
+      throw new ReferenceError('Expecting `savedIds` but not available.');
+    }
+    return {
+      results: {
+        signUpRuleIds: savedIds,
+      },
+    };
   }
 
-  return createTask('MUMS_SIGNUP_RULE_PROVISION', run, { validateRerun }, logger);
+  provisionSignUpRules.$meta = {
+    name: MUMS_SIGNUP_RULE_PROVISION,
+  };
+
+  return provisionSignUpRules;
 }
 
 export default createMumsSignUpRuleProvisionTask;

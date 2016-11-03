@@ -38,5 +38,3 @@ export const PROVISIONING_END = 'PROVISIONING_END';
 
 export const DEFAULT_EVENT_HANDLER = 'defaultEventHandler';
 export const DEFAULT_ERROR_HANDLER = 'defaultErrorHandler';
-export const ON_BEGIN_HANDLER = 'onBeginHandler';
-export const ON_END_HANDLER = 'onEndHandler';

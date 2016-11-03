@@ -1,12 +1,12 @@
 import { ArgumentError, NotImplementedError, ReferenceError } from 'common-errors';
 
-import { check, createTask } from './util';
+import { CARRIER_CREATION } from './bpmnEvents';
+import { check } from './../../util';
 import {
   ServiceType,
 } from './../../domain';
 
-export function createCarrierCreationTask(logger, cpsOptions, carrierManagement) {
-  check.ok('logger', logger);
+export function createCarrierCreationTask(cpsOptions, carrierManagement) {
   check.ok('cpsOptions', cpsOptions);
   check.ok('carrierManagement', carrierManagement);
 
@@ -30,14 +30,14 @@ export function createCarrierCreationTask(logger, cpsOptions, carrierManagement)
     return `${companyCode}.${topDomain}`;
   }
 
-  function validateRerun(profile, taskResult) {
-    return !taskResult.carrierId;
-  }
-
-  function run(data, cb) {
-    const { companyCode, serviceType } = data;
-
+  async function createCarrier(state, profile, context) {
+    if (state.results.carrierId) {
+      return null;
+    }
+    const { logger } = context;
+    const { companyCode, serviceType } = profile;
     const carrierId = generateCarrierId(companyCode, serviceType);
+
     const params = {
       identifier: carrierId,
       alias: companyCode,
@@ -48,21 +48,25 @@ export function createCarrierCreationTask(logger, cpsOptions, carrierManagement)
     };
 
     logger.debug('CPS create Carrier request sent');
-    carrierManagement.createCarrier(params)
-      .then(response => {
-        logger.debug('CPS create Carrier response received');
-        const { id } = response.body;
+    const response = await carrierManagement.createCarrier(params);
+    logger.debug('CPS create Carrier response received');
+    const { id } = response.body;
+    if (!id) {
+      throw new ReferenceError('id is not defined in response body for carrier creation');
+    }
 
-        if (!id) {
-          throw new ReferenceError('id is not defined in response body for carrier creation');
-        }
-
-        cb(null, { carrierId: id });
-      })
-      .catch(cb);
+    return {
+      results: {
+        carrierId,
+      },
+    };
   }
 
-  return createTask('CARRIER_CREATION', run, { validateRerun }, logger);
+  createCarrier.$meta = {
+    name: CARRIER_CREATION,
+  };
+
+  return createCarrier;
 }
 
 export default createCarrierCreationTask;

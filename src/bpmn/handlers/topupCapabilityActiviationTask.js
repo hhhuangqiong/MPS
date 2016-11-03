@@ -1,16 +1,21 @@
-import { check, createCapabilityActivationByTypeTask } from './util';
+import { check } from './../../util';
 import { Capability, CapabilityType } from './../../domain';
+import { createCapabilityActivationTask } from './createCapabilityActivationTask';
+import { TOPUP_CAPABILITY_ACTIVATION } from './bpmnEvents';
 
-export function createTopupCapabilityActivationTask(logger, capabilitiesManagement) {
-  check.ok('logger', logger);
+export function createTopUpCapabilityActivationTask(capabilitiesManagement) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
-  const options = {
-    name: 'TOPUP_CAPABILITY_ACTIVATION',
-    profileCapability: Capability.TOP_UP,
-    requestCapabilityType: CapabilityType.TOP_UP,
+  const activateTopUp = createCapabilityActivationTask(capabilitiesManagement, {
+    internal: Capability.TOP_UP,
+    external: CapabilityType.TOP_UP,
+  });
+
+  activateTopUp.$meta = {
+    name: TOPUP_CAPABILITY_ACTIVATION,
   };
-  return createCapabilityActivationByTypeTask(logger, capabilitiesManagement, options);
+
+  return activateTopUp;
 }
 
-export default createTopupCapabilityActivationTask;
+export default createTopUpCapabilityActivationTask;

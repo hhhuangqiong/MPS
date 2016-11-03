@@ -1,27 +1,19 @@
 import { ArgumentNullError, ReferenceError } from 'common-errors';
 
-import { check, createTask } from './util';
+import { check } from './../../util';
+import { USER_CARRIER_PROFILE_CREATION } from './bpmnEvents';
 
-export function createUserCarrierProfileCreationTask(logger, carrierManagement) {
-  check.ok('logger', logger);
+export function createUserCarrierProfileCreationTask(carrierManagement) {
   check.ok('carrierManagement', carrierManagement);
 
-  function validateRerun(profile, taskResult) {
-    if (taskResult.userCarrierProfileId) {
-      // skip on rerun
-      return false;
+  async function createUserCarrierProfile(state) {
+    if (state.results.userCarrierProfileId) {
+      return null;
     }
-
-    return true;
-  }
-
-  function run(data, cb) {
-    const { carrierId } = data;
-
+    const { carrierId } = state.results;
     if (!carrierId) {
-      cb(new ArgumentNullError('carrierId'));
+      throw new ArgumentNullError('carrierId');
     }
-
     const params = {
       carrierId,
       attributes: {
@@ -41,19 +33,23 @@ export function createUserCarrierProfileCreationTask(logger, carrierManagement) 
       },
     };
 
-    carrierManagement.createUserCarrierProfile(params)
-      .then(response => {
-        const { id: userCarrierProfileId } = response.body;
-        if (!userCarrierProfileId) {
-          throw new ReferenceError('userCarrierProfileId is not defined in response body');
-        }
-
-        cb(null, { userCarrierProfileId });
-      })
-      .catch(cb);
+    const response = await carrierManagement.createUserCarrierProfile(params);
+    const { id: userCarrierProfileId } = response.body;
+    if (!userCarrierProfileId) {
+      throw new ReferenceError('userCarrierProfileId is not defined in response body');
+    }
+    return {
+      results: {
+        userCarrierProfileId,
+      },
+    };
   }
 
-  return createTask('USER_CARRIER_PROFILE_CREATION', run, { validateRerun }, logger);
+  createUserCarrierProfile.$meta = {
+    name: USER_CARRIER_PROFILE_CREATION,
+  };
+
+  return createUserCarrierProfile;
 }
 
 export default createUserCarrierProfileCreationTask;

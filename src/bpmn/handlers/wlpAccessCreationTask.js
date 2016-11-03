@@ -1,58 +1,53 @@
 import _ from 'lodash';
 import { ReferenceError, NotImplementedError, ArgumentNullError } from 'common-errors';
 
-import { check, createTask, compileJsonTemplate } from './util';
+import { check } from './../../util';
+import { compileJsonTemplate } from './common';
+import { WLP_ACCESS_CREATION } from './bpmnEvents';
 
-export function createWlpAccessCreationTask(logger, iamOptions, accessManagement) {
-  check.ok('logger', logger);
+export function createWlpAccessCreationTask(iamOptions, accessManagement) {
   check.ok('iamOptions', iamOptions);
   check.ok('accessManagement', accessManagement);
 
   const { adminRoleTemplate } = iamOptions;
 
-  function validateRerun(profile, taskResult) {
-    if (taskResult.done) {
-      // run successfully before, skip
-      return false;
+  async function createAdminRole(state, profile, context) {
+    if (state.results.adminRoleCreated) {
+      return null;
     }
-
-    return true;
-  }
-
-  function run(data, cb) {
-    const { companyId, isReseller } = data;
-
+    const { logger } = context;
+    const { isReseller } = profile;
+    const { companyId } = state.results;
     if (isReseller) {
-      cb(new NotImplementedError('Provisioning reseller company is not supported yet'));
-      return;
+      throw new NotImplementedError('Provisioning reseller company is not supported yet');
     }
     const template = _.clone(adminRoleTemplate);
     // unset company mgmt permission for non reseller
     template.permissions.company = [];
-
     if (!companyId) {
-      cb(new ArgumentNullError('companyId'));
-      return;
+      throw new ArgumentNullError('companyId');
     }
-
-    const params = compileJsonTemplate(template, data);
+    const params = compileJsonTemplate(template, { companyId });
 
     logger.debug('IAM create role request sent');
-    accessManagement.createRole(params)
-      .then(response => {
-        logger.debug('IAM create role response received');
-        const { name } = response.body;
-
-        if (!name) {
-          throw new ReferenceError('name is not defined in response body for role creation');
-        }
-
-        cb(null, { done: true });
-      })
-      .catch(cb);
+    const response = await accessManagement.createRole(params);
+    logger.debug('IAM create role response received');
+    const { name } = response.body;
+    if (!name) {
+      throw new ReferenceError('name is not defined in response body for role creation');
+    }
+    return {
+      results: {
+        adminRoleCreated: true,
+      },
+    };
   }
 
-  return createTask('WLP_ACCESS_CREATION', run, { validateRerun }, logger);
+  createAdminRole.$meta = {
+    name: WLP_ACCESS_CREATION,
+  };
+
+  return createAdminRole;
 }
 
 export default createWlpAccessCreationTask;

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import mongoose, { Schema } from 'mongoose';
 import unqiueValidator from 'mongoose-unique-validator';
 import timestamps from 'mongoose-timestamp';
@@ -44,6 +45,7 @@ const profileSchema = {
   carrierId: { type: String },
 };
 
+
 const schema = new Schema({
   profile: profileSchema,
   // Caches the updated status from the last provisioning process
@@ -58,14 +60,39 @@ const schema = new Schema({
   finishAt: Date,
 }, { versionKey: false });
 
-if (!schema.options.toJSON) schema.options.toJSON = {};
-schema.options.toJSON.transform = (doc, ret) => {
-  // remove the _id of every document before returning the result
-  /* eslint-disable no-underscore-dangle */
-  ret.id = ret._id;
-  delete ret._id;
-  /* eslint-disable no-underscore-dangle */
-};
+schema.set('toJSON', {
+  getters: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
+
+// Temporary fixes to migrate all provisioning documents to the new schema
+schema.path('taskErrors').get(storedValue => {
+  if (!storedValue) {
+    return [];
+  }
+  if (_.isArray(storedValue)) {
+    return storedValue;
+  }
+  return _(storedValue)
+    .map((value, key) => ({
+      ...value,
+      eventName: key,
+      traceId: key,
+    }))
+    .value();
+});
+schema.path('taskResults').get(storedValue => {
+  if (!storedValue) {
+    return {};
+  }
+  if (!storedValue.COMPANY_CREATION) {
+    return storedValue;
+  }
+  return _.extend({}, ..._.values(storedValue));
+});
 
 schema.plugin(timestamps);
 schema.plugin(unqiueValidator);
