@@ -180,6 +180,8 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
       offnetPrefixes,
       offnetPrefixTest: null,
       smsPrefix,
+      paymentMode: profile.paymentMode,
+      capabilities: profile.capabilities,
     };
 
     const bossParams = generateBossProvisionParams(provisionRequirements);
