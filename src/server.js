@@ -16,7 +16,6 @@ export function createServer(logger, api, mongooseConnection, serverOptions) {
   server.use(metricsMiddleware());
   server.use(morgan('common'));
   server.use(bodyParser.json());
-  server.use(api);
 
   async function start() {
     await mongooseConnection;
@@ -25,6 +24,7 @@ export function createServer(logger, api, mongooseConnection, serverOptions) {
         mongoose: mongooseConnection,
       },
     });
+    server.use(api);
     server.listen(serverOptions.port);
     logger.debug(`Server is listening at port ${serverOptions.port}...`);
   }
