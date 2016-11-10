@@ -182,6 +182,7 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
       smsPrefix,
       paymentMode: profile.paymentMode,
       capabilities: profile.capabilities,
+      smsc: profile.smsc,
     };
 
     const bossParams = generateBossProvisionParams(provisionRequirements);
