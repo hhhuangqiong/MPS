@@ -21,6 +21,29 @@
         "systemId": "WhiteLabel",
         "systemType": "testSystem",
         "validate_source_address": false
+      },
+      "realm": {
+        "template": {
+          "identifier": "{{ carrierId }}.sms-realm",
+          "connection_strategy": {
+            "type": "explicit",
+            "system_id": "user1",
+            "password": "123",
+            "bindings_per_smsc": 100,
+            "binding_details": {
+              "0": {
+                "ip": "201.12.23.31",
+                "port": 1234
+              }
+            }
+          }
+        }
+      },
+      "servicePlan": {
+        "template": {
+          "identifier": "{{ carrierId }}.sms-service-plan",
+          "description": "Service plan for {{ carrierId }}"
+        }
       }
     },
     "im-to-sms": {

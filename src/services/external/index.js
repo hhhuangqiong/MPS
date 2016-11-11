@@ -15,3 +15,5 @@ export * from './SignUpRuleMgmt';
 export * from './NotificationManagement';
 export * from './VerificationManagement';
 export * from './VoiceProvisioningManagement';
+export * from './SmsRealmManagement';
+export * from './SmsServicePlanManagement';

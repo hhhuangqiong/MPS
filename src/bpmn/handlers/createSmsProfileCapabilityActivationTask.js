@@ -19,7 +19,7 @@ export function createSmsProfileCapabilityActivationTask(cpsOptions, capabilitie
   }));
 
   async function activateCapability(state, profile) {
-    const { carrierId, capabilities } = state.results;
+    const { carrierId, capabilities, smsRealmId, smsServicePlanId } = state.results;
     const { smsc } = profile;
     const alreadyActivated = _.difference(requiredCapabilities.internal, capabilities).length === 0;
     if (alreadyActivated) {
@@ -48,8 +48,8 @@ export function createSmsProfileCapabilityActivationTask(cpsOptions, capabilitie
       smsProfile.attributes = {
         PREFIX: '',
       };
-      smsProfile.default_realm = smsc.defaultRealm;
-      smsProfile.service_plan_id = smsc.servicePlanId;
+      smsProfile.default_realm = smsRealmId || smsc.defaultRealm;
+      smsProfile.service_plan_id = smsServicePlanId || smsc.servicePlanId;
       smsProfile.source_address_list = [{ as_number: smsc.sourceAddress }];
     }
 

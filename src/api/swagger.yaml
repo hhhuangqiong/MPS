@@ -300,6 +300,8 @@ definitions:
             type: string
           resellerCarrierId:
             type: string
+          smsc:
+            $ref: "#/definitions/SmscOptions"
   ProvisioningPreset:
     type: object
     required:
@@ -395,6 +397,10 @@ definitions:
         type: string
       voiceProfileId:
         type: string
+      smsRealmId:
+        type: string
+      smsServicePlanId:
+        type: string
   ProvisioningError:
     type: object
     description: user or system errors during provisioning process
@@ -437,8 +443,6 @@ definitions:
     type: object
     required:
       - needBilling
-      - defaultRealm
-      - servicePlanId
       - sourceAddress
     properties:
       needBilling:
@@ -449,6 +453,36 @@ definitions:
         type: string
       sourceAddress:
         type: string
+      realm:
+        $ref: "#/definitions/Realm"
+  Realm:
+    type: object
+    required:
+    - systemId
+    - password
+    - bindingDetails
+    properties:
+      systemId:
+        type: string
+      password:
+        type: string
+      bindingDetails:
+        type: array
+        items:
+          $ref: '#/definitions/BindingDetail'
+        x-array-min-size: 1
+        description: user must have one or more binding details
+  BindingDetail:
+    type: object
+    required:
+    - ip
+    - port
+    properties:
+      ip:
+        type: string
+      port:
+        type: number
+        format: int32
   BillingOptions:
     type: object
     required:

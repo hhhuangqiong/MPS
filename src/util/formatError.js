@@ -58,6 +58,7 @@ function formatMongooseValidationError(err) {
 
 function formatValidationError(err) {
   const formatted = _.pick(err, KNOWN_ERROR_PROPERTIES);
+  formatted.status = 422;
   formatted.details = err.errors.map(fieldError => ({
     message: fieldError.message,
     path: fieldError.field,
