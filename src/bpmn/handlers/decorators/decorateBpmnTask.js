@@ -18,6 +18,7 @@ export function decorateBpmnTask(handler, rootLogger) {
     return {
       message: `System error occurred. Contact support with the following trace id: ${traceId}.`,
       name: 'SystemError',
+      code: 'SYSTEM_ERROR',
       traceId,
       eventName,
     };
@@ -28,9 +29,10 @@ export function decorateBpmnTask(handler, rootLogger) {
     const store = createStore(this);
 
     let state = store.get();
-    // Stop entire process as soon as at least 1 system error encountered
-    if (_.keys(state.system.errors).length > 0) {
-      logger.warning('Skipped handler because of system errors in previous tasks.');
+    // Stop entire process as soon as at least 1 error encountered
+    const errorsCount = state.system.errors.length + state.public.errors.length;
+    if (errorsCount > 0) {
+      logger.warning(`Skipped handler because of ${errorsCount} error(s) in previous tasks.`);
       return input;
     }
 

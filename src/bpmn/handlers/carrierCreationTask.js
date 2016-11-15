@@ -1,4 +1,5 @@
-import { ArgumentError, NotImplementedError, ReferenceError } from 'common-errors';
+import _ from 'lodash';
+import { ArgumentError, NotImplementedError, ReferenceError, ValidationError } from 'common-errors';
 
 import { CARRIER_CREATION } from './bpmnEvents';
 import { check } from './../../util';
@@ -48,18 +49,30 @@ export function createCarrierCreationTask(cpsOptions, carrierManagement) {
     };
 
     logger.debug('CPS create Carrier request sent');
-    const response = await carrierManagement.createCarrier(params);
-    logger.debug('CPS create Carrier response received');
-    const { id } = response.body;
-    if (!id) {
-      throw new ReferenceError('id is not defined in response body for carrier creation');
+    try {
+      const response = await carrierManagement.createCarrier(params);
+      logger.debug('CPS create Carrier response received');
+      const { id } = response.body;
+      if (!id) {
+        throw new ReferenceError('id is not defined in response body for carrier creation');
+      }
+      return {
+        results: {
+          carrierId,
+        },
+      };
+    } catch (e) {
+      if (e instanceof ValidationError && e.code === carrierManagement.errorNames.CARRIER_ALREADY_EXISTS) {
+        const userError = {
+          ..._.pick(e, ['message', 'name', 'code']),
+          ...context.trace,
+          // Not unique company code which MPS is unaware about leads to duplicate carrier id in CPS
+          path: 'profile.companyCode',
+        };
+        return { errors: [userError] };
+      }
+      throw e;
     }
-
-    return {
-      results: {
-        carrierId,
-      },
-    };
   }
 
   createCarrier.$meta = {
