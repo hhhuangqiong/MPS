@@ -17,7 +17,7 @@ nconf
   .file('default-file', path.join(ROOT, 'default.json'));
 
 const config = nconf.get();
-const SERVICES = ['cps', 'boss', 'iam', 'mums'];
+const SERVICES = ['cps', 'boss', 'iam', 'signUpRule'];
 _.each(SERVICES, service => {
   config[service] = parseObjectArrays(config[service]);
 });

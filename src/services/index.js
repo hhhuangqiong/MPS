@@ -10,7 +10,7 @@ import {
   CompanyManagement,
   AccessManagement,
   BossProvisionManagement,
-  MumsSignUpRuleMgmt,
+  SignUpRuleMgmt,
 } from './external';
 import presetService from './presetService';
 import provisioningService from './provisioningService';
@@ -38,8 +38,8 @@ export function register(container) {
   container.service('AccessManagement', AccessManagement, 'logger', 'iamApiOptions');
   // BOSS services
   container.service('BossProvisionManagement', BossProvisionManagement, 'logger', 'bossApiOptions');
-  // MUMS services
-  container.service('MumsSignUpRuleMgmt', MumsSignUpRuleMgmt, 'logger', 'mumsApiOptions');
+  // sign up rule services
+  container.service('SignUpRuleMgmt', SignUpRuleMgmt, 'logger', 'signUpRuleApiOptions');
 
   // Models
   container.service('Provisioning', createProvisioningModel, 'mongooseConnection');

@@ -33,7 +33,7 @@ const SignUpRuleCreationSchema = Joi.object({
   })),
 });
 
-export class MumsSignUpRuleMgmt extends BaseRequest {
+export class SignUpRuleMgmt extends BaseRequest {
 
   static ApplicationVersionStatus = ApplicationVersionStatus;
   static IdentityTypes = IdentityTypes;
@@ -63,7 +63,7 @@ export class MumsSignUpRuleMgmt extends BaseRequest {
     try {
       responseError = JSON.parse(error.res.text).error;
     } catch (e) {
-      throw new ReferenceError(`Unexpected response from Mums: ${_.get(error, 'res.text', 'Empty response body')}`, e);
+      throw new ReferenceError(`Unexpected response from Sign Up Rule Service: ${_.get(error, 'res.text', 'Empty response body')}`, e);
     }
 
     let parsedError;
@@ -80,4 +80,4 @@ export class MumsSignUpRuleMgmt extends BaseRequest {
   }
 }
 
-export default MumsSignUpRuleMgmt;
+export default SignUpRuleMgmt;

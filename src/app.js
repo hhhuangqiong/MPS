@@ -16,8 +16,8 @@ export function create(config) {
   const bossApiOptions = bossOptions.api;
   const iamOptions = config.iam;
   const iamApiOptions = iamOptions.api;
-  const mumsOptions = config.mums;
-  const mumsApiOptions = mumsOptions.api;
+  const signUpRuleOptions = config.signUpRule;
+  const signUpRuleApiOptions = signUpRuleOptions.api;
   const mongoOptions = config.mongodb;
   const serverOptions = {
     env: ENV,
@@ -40,9 +40,9 @@ export function create(config) {
     ...iamApiOptions,
     proxyUrl: config.httpDebugProxyUrl,
   });
-  app.constant('mumsOptions', mumsOptions);
-  app.constant('mumsApiOptions', {
-    ...mumsApiOptions,
+  app.constant('signUpRuleOptions', signUpRuleOptions);
+  app.constant('signUpRuleApiOptions', {
+    ...signUpRuleApiOptions,
     proxyUrl: config.httpDebugProxyUrl,
   });
   app.constant('mongoOptions', mongoOptions);

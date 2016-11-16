@@ -184,7 +184,7 @@
     "prePaidInitialBalance": 0,
     "postPaidInitialBalance": 999999999
   },
-  "mums": {
+  "signUpRule": {
     "api": {
       "baseUrl": "http://192.168.118.127:8083",
       "timeout": 15000

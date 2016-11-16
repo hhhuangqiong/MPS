@@ -19,7 +19,7 @@ export * from './companyCreationTask';
 export * from './featureSetCreationTask';
 export * from './imCapabilityActivationTask';
 export * from './imToSmsCapabilityActivationTask';
-export * from './mumsSignUpRuleProvisionTask';
+export * from './signUpRuleProvisionTask';
 export * from './notificationCreationTask';
 export * from './offnetCapabilityActivationTask';
 export * from './onnetCapabilityActivationTask';

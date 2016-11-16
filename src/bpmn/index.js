@@ -12,7 +12,7 @@ import {
   createFeatureSetCreationTask,
   createImCapabilityActivationTask,
   createImToSmsCapabilityActivationTask,
-  createMumsSignUpRuleProvisionTask,
+  createSignUpRuleProvisionTask,
   createNotificationCreationTask,
   createOnnetCapabilityActivationTask,
   createOffnetCapabilityActivationTask,
@@ -113,10 +113,10 @@ export function register(container) {
     'cpsOptions'
   );
   registerBpmnHandler(
-    bpmnEvents.MUMS_SIGNUP_RULE_PROVISION,
-    createMumsSignUpRuleProvisionTask,
-    'mumsOptions',
-    'MumsSignUpRuleMgmt'
+    bpmnEvents.SIGNUP_RULE_PROVISION,
+    createSignUpRuleProvisionTask,
+    'signUpRuleOptions',
+    'SignUpRuleMgmt'
   );
   registerBpmnHandler(
     bpmnEvents.NOTIFICATION_CREATION,

@@ -3,13 +3,13 @@ import { ArgumentNullError } from 'common-errors';
 
 import { check } from './../../util';
 import { Capability } from './../../domain';
-import { MUMS_SIGNUP_RULE_PROVISION } from './bpmnEvents';
+import { SIGNUP_RULE_PROVISION } from './bpmnEvents';
 
-export function createMumsSignUpRuleProvisionTask(mumsOptions, mumsSignUpRuleManagement) {
-  check.ok('mumsOptions', mumsOptions);
-  check.ok('mumsSignUpRuleManagement', mumsSignUpRuleManagement);
+export function createSignUpRuleProvisionTask(signUpRuleOptions, signUpRuleManagement) {
+  check.ok('signUpRuleOptions', signUpRuleOptions);
+  check.ok('signUpRuleManagement', signUpRuleManagement);
 
-  const { whitelistBlockAll } = _.get(mumsOptions, 'signup.rules');
+  const { whitelistBlockAll } = _.get(signUpRuleOptions, 'signup.rules');
 
   async function provisionSignUpRules(state, profile, context) {
     if (!profile.capabilities.includes(Capability.END_USER_WHITELIST)) {
@@ -24,7 +24,7 @@ export function createMumsSignUpRuleProvisionTask(mumsOptions, mumsSignUpRuleMan
       throw new ArgumentNullError('carrierId');
     }
     const rules = [whitelistBlockAll];
-    const res = await mumsSignUpRuleManagement.create({ carrierId, rules });
+    const res = await signUpRuleManagement.create({ carrierId, rules });
     const { savedIds, failedMessages } = res.body;
     if (!_.isArray(savedIds) || savedIds.length === 0) {
       logger.error('Fail to provision sign up rules');
@@ -43,10 +43,10 @@ export function createMumsSignUpRuleProvisionTask(mumsOptions, mumsSignUpRuleMan
   }
 
   provisionSignUpRules.$meta = {
-    name: MUMS_SIGNUP_RULE_PROVISION,
+    name: SIGNUP_RULE_PROVISION,
   };
 
   return provisionSignUpRules;
 }
 
-export default createMumsSignUpRuleProvisionTask;
+export default createSignUpRuleProvisionTask;

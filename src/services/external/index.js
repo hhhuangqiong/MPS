@@ -11,7 +11,7 @@ export * from './CarrierManagement';
 export * from './CertificateManagement';
 export * from './CompanyManagement';
 export * from './FeatureSetManagement';
-export * from './MumsSignUpRuleMgmt';
+export * from './SignUpRuleMgmt';
 export * from './NotificationManagement';
 export * from './VerificationManagement';
 export * from './VoiceProvisioningManagement';
