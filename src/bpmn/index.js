@@ -26,6 +26,8 @@ import {
   createVoiceCapabilityActivationTask,
   createVerificationProfileCreationTask,
   createWlpAccessCreationTask,
+  createSmsRealmCreationTask,
+  createSmsServicePlanCreationTask,
 
   gateways,
   createDefaultHandler,
@@ -191,6 +193,18 @@ export function register(container) {
     createWlpAccessCreationTask,
     'iamOptions',
     'AccessManagement'
+  );
+  registerBpmnHandler(
+    bpmnEvents.SMS_REALM_CREATION,
+    createSmsRealmCreationTask,
+    'cpsOptions',
+    'SmsRealmManagement'
+  );
+  registerBpmnHandler(
+    bpmnEvents.SMS_SERVICE_PLAN_CREATION,
+    createSmsServicePlanCreationTask,
+    'cpsOptions',
+    'SmsServicePlanManagement'
   );
 
   registerBpmnHandler(bpmnEvents.JOIN_CAPABILITY_AND_FEATURE_SET, () => gateways.joinCapabilityAndFeatureSetGateway);

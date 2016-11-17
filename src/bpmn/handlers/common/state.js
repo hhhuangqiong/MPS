@@ -39,6 +39,8 @@ export const PUBLIC_STATE_SCHEMA = Joi.object({
     userCarrierProfileId: Joi.string().allow(null),
     verificationProfileId: Joi.string().allow(null),
     voiceProfileId: Joi.string().allow(null),
+    smsServicePlanId: Joi.string().allow(null),
+    smsRealmId: Joi.string().allow(null),
   }).options({ presence: 'required' }),
   errors: Joi.array().items(PUBLIC_ERROR_SCHEMA),
 });
@@ -66,4 +68,6 @@ export const DEFAULT_PUBLIC_STATE = {
   userCarrierProfileId: null,
   verificationProfileId: null,
   voiceProfileId: null,
+  smsServicePlanId: null,
+  smsRealmId: null,
 };

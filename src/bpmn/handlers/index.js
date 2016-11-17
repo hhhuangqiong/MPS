@@ -33,3 +33,5 @@ export * from './userCarrierProfileCreationTask';
 export * from './verificationProfileCreationTask';
 export * from './voiceCapabilityActivationTask';
 export * from './wlpAccessCreationTask';
+export * from './smsServicePlanCreationTask';
+export * from './smsRealmCreationTask';

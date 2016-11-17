@@ -36,9 +36,21 @@ const profileSchema = {
   smsc: {
     // whether to need to charge sms through OCS. i.e. Boss Provision
     needBilling: { type: Boolean, required: true },
-    defaultRealm: { type: String, required: true },
-    servicePlanId: { type: String, required: true },
+    defaultRealm: { type: String },
+    servicePlanId: { type: String },
     sourceAddress: { type: String, required: true },
+    realm: {
+      type: Schema.Types.Mixed,
+      systemId: { type: String },
+      password: { type: String },
+      bindingDetails: [{
+        ip: { type: String },
+        port: { type: Number },
+        // exclude _id in the array
+        _id: false,
+      }],
+      default: undefined,
+    },
   },
   // fields to be generated in process, not required
   companyId: { type: String },

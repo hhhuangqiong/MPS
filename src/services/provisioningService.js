@@ -47,9 +47,20 @@ export function provisioningService(logger, Provisioning, eventBus) {
     }).required(),
     smsc: Joi.object({
       needBilling: Joi.boolean().required(),
-      defaultRealm: Joi.string().required(),
-      servicePlanId: Joi.string().required(),
+      defaultRealm: Joi.string(),
+      servicePlanId: Joi.string(),
       sourceAddress: Joi.string().required(),
+      realm: Joi.object({
+        systemId: Joi.string().required(),
+        password: Joi.string().required(),
+        bindingDetails: Joi.array()
+          .items(Joi.object({
+            ip: Joi.string().ip().required(),
+            port: Joi.number().integer().required(),
+          })).min(1)
+          .unique()
+          .required(),
+      }).optional(),
     }).required(),
   });
 
@@ -194,6 +205,15 @@ export function provisioningService(logger, Provisioning, eventBus) {
         defaultRealm: Joi.string(),
         servicePlanId: Joi.string(),
         sourceAddress: Joi.string(),
+        realm: Joi.object({
+          systemId: Joi.string(),
+          password: Joi.string(),
+          bindingDetails: Joi.array()
+            .items(Joi.object({
+              ip: Joi.string(),
+              port: Joi.number(),
+            })),
+        }),
       }),
     }).required(),
   });
