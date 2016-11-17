@@ -158,7 +158,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_0k57iug" sourceRef="im_to_sms_capability_activation" targetRef="topup_capability_activation" />
     <bpmn:sequenceFlow id="SequenceFlow_0339nsk" sourceRef="parallel_all_start" targetRef="Task_11auq0v" />
     <bpmn:sequenceFlow id="SequenceFlow_1xhqr90" sourceRef="Task_11auq0v" targetRef="parallel_all_end" />
-    <bpmn:serviceTask id="Task_11auq0v" name="SIGNUP_RULE_PROVISION">
+    <bpmn:serviceTask id="Task_11auq0v" name="SIGN_UP_RULE_PROVISION">
       <bpmn:incoming>SequenceFlow_0339nsk</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1xhqr90</bpmn:outgoing>
     </bpmn:serviceTask>

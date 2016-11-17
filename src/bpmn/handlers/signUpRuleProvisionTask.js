@@ -3,7 +3,7 @@ import { ArgumentNullError } from 'common-errors';
 
 import { check } from './../../util';
 import { Capability } from './../../domain';
-import { SIGNUP_RULE_PROVISION } from './bpmnEvents';
+import { SIGN_UP_RULE_PROVISION } from './bpmnEvents';
 
 export function createSignUpRuleProvisionTask(signUpRuleOptions, signUpRuleManagement) {
   check.ok('signUpRuleOptions', signUpRuleOptions);
@@ -43,7 +43,7 @@ export function createSignUpRuleProvisionTask(signUpRuleOptions, signUpRuleManag
   }
 
   provisionSignUpRules.$meta = {
-    name: SIGNUP_RULE_PROVISION,
+    name: SIGN_UP_RULE_PROVISION,
   };
 
   return provisionSignUpRules;
