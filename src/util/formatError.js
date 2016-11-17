@@ -38,9 +38,16 @@ function formatAnyError(err) {
 }
 
 function formatJoiError(err) {
-  const formatted = _.pick(err, KNOWN_ERROR_PROPERTIES);
-  formatted.status = 422;
-  return formatted;
+  return {
+    name: err.name,
+    message: err.message,
+    status: 422,
+    details: err.details.map(d => ({
+      path: d.path,
+      message: d.message,
+      code: d.type,
+    })),
+  };
 }
 
 function formatMongooseValidationError(err) {
@@ -51,7 +58,7 @@ function formatMongooseValidationError(err) {
     details: _(err.errors).map((info, key) => ({
       path: key,
       message: info.message,
-      type: info.type,
+      code: info.kind,
     })),
   };
 }
@@ -61,7 +68,7 @@ function formatValidationError(err) {
   formatted.details = err.errors.map(fieldError => ({
     message: fieldError.message,
     path: fieldError.field,
-    type: fieldError.code,
+    code: fieldError.code,
   }));
   return formatted;
 }

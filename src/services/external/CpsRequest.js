@@ -1,13 +1,34 @@
-import isEmpty from 'lodash/isEmpty';
+import _ from 'lodash';
 import BaseRequest from './BaseRequest';
 
 import {
   HttpStatusError,
-  NotImplementedError,
   NotFoundError,
+  ValidationError,
 } from 'common-errors';
 
+const ERROR_NAME = {
+  INVALID_PARAMETER: 'INVALID_PARAMETER',
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+  USER_CARRIER_PROFILE_ALREADY_EXISTS: 'USER_CARRIER_PROFILE_ALREADY_EXISTS',
+  CARRIER_PROFILE_ALREADY_EXISTS: 'CARRIER_PROFILE_ALREADY_EXISTS',
+  CARRIER_ALREADY_EXISTS: 'CARRIER_ALREADY_EXISTS',
+};
+
+const ERROR_CODE_TO_NAME = {
+  34000: ERROR_NAME.INVALID_PARAMETER,
+  30000: ERROR_NAME.INTERNAL_SERVER_ERROR,
+  50103: ERROR_NAME.USER_CARRIER_PROFILE_ALREADY_EXISTS,
+  50102: ERROR_NAME.CARRIER_PROFILE_ALREADY_EXISTS,
+  50101: ERROR_NAME.CARRIER_ALREADY_EXISTS,
+};
+
 export class CpsRequest extends BaseRequest {
+  constructor(logger, options) {
+    super(logger, options);
+    this.errorNames = ERROR_NAME;
+  }
+
   get(uri) {
     return super.get(uri)
       .catch(e => this.handleError(e));
@@ -19,39 +40,38 @@ export class CpsRequest extends BaseRequest {
   }
 
   handleError(error) {
-    const isHttpStatusError = !isEmpty(error.body);
-
-    if (isHttpStatusError) {
-      const parsedError = new HttpStatusError(error.status, error.body.error.message);
-      parsedError.code = error.body.error.code;
-
-      throw parsedError;
+    const parsedError = this.parseError(error);
+    if (parsedError) {
+      throw this.mapError(parsedError);
     }
-
-    let responseError;
+  }
+  parseError(superagentError) {
+    let parsedError = _.get(superagentError, 'body.error');
+    if (parsedError) {
+      return parsedError;
+    }
     try {
-      responseError = JSON.parse(error.res.text).error;
+      parsedError = JSON.parse(superagentError.res.text).error;
     } catch (e) {
-      this.logger.warning('Unexpected response from CPS: ', error);
-      throw new ReferenceError(`Unexpected response from CPS ${error.res}`);
+      this.logger.warning('Unexpected response from CPS: ', superagentError);
+      throw new ReferenceError(`Unexpected response from CPS ${superagentError.res.text}`);
     }
-
-    let parsedError;
-
-    switch (responseError.code) {
-      case 21000:
-        parsedError = new NotFoundError(responseError.message);
-        break;
-
-      default:
-        parsedError = new NotImplementedError(responseError.message);
-    }
-
-    parsedError.code = responseError.code;
-    parsedError.status = responseError.status;
-
-    throw parsedError;
+    return parsedError;
   }
 }
+
+CpsRequest.prototype.mapError = _.cond([
+  [e => e.status === 400, e => new ValidationError(e.message, ERROR_CODE_TO_NAME[e.code] || e.code.toString())],
+  [e => e.status === 404, e => {
+    const error = new NotFoundError(e.message);
+    error.message = e.message;
+    return error;
+  }],
+  [_.constant(true), e => {
+    const error = new HttpStatusError(e.status, e.message);
+    error.code = e.code;
+    return error;
+  }],
+]);
 
 export default CpsRequest;

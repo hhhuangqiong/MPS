@@ -3,6 +3,8 @@ import Joi from 'joi';
 const PUBLIC_ERROR_SCHEMA = Joi.object({
   message: Joi.string().required(),
   name: Joi.string().default('SystemError').required(),
+  code: Joi.string(),
+  path: Joi.string(),
   traceId: Joi.string(),
   eventName: Joi.string(),
 }).options({ allowUnknown: true });

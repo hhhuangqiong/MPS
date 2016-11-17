@@ -401,12 +401,18 @@ definitions:
     required:
       - message
       - name
+    discriminator: name
     properties:
       message:
         type: string
         description: error message in english
       name:
-        $ref: '#/definitions/ProvisioningErrorType'
+        $ref: '#/definitions/ProvisioningErrorName'
+      code:
+        $ref: '#/definitions/ProvisioningErrorCode'
+      path:
+        type: string
+        description: form field path (for validation errors)
       traceId:
         type: string
         description: trace id associated with the error
@@ -415,11 +421,18 @@ definitions:
         type: string
         description: associated event name
         example: NOTIFICATION_CREATION
-  ProvisioningErrorType:
+  ProvisioningErrorCode:
     type: string
-    description: error code / type
+    description: error code (concrete error case)
+    enum:
+      - SYSTEM_ERROR
+      - CARRIER_ALREADY_EXISTS
+  ProvisioningErrorName:
+    type: string
+    description: error category (concrete case)
     enum:
       - SystemError
+      - ValidationError
   CompanyInfo:
     type: object
     required:
@@ -543,9 +556,13 @@ definitions:
         type: number
         format: int32
         example: 404
+  SystemError:
+    allOf:
+      - $ref: ''
   ValidationError:
     allOf:
       - $ref: '#/definitions/Error'
+      - $ref: '#/definitions/ValidationErrorDetail'
       - type: object
         properties:
           details:
@@ -563,7 +580,7 @@ definitions:
       path:
         type: string
         example: 'nested.field'
-      type:
+      code:
         type: string
         example: 'string.min'
   PageMeta:
