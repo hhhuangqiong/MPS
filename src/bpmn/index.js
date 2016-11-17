@@ -115,7 +115,7 @@ export function register(container) {
     'cpsOptions'
   );
   registerBpmnHandler(
-    bpmnEvents.SIGNUP_RULE_PROVISION,
+    bpmnEvents.SIGN_UP_RULE_PROVISION,
     createSignUpRuleProvisionTask,
     'signUpRuleOptions',
     'SignUpRuleMgmt'
