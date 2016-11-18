@@ -226,7 +226,6 @@ export function provisioningService(logger, Provisioning, eventBus) {
       throw new NotFoundError('Provisioning');
     }
     const { profile: existingProfile, status } = provisioning;
-    const taskResults = provisioning.taskResults || {};
     if (status !== ProcessStatus.COMPLETE && status !== ProcessStatus.ERROR) {
       throw new InvalidOperationError(`Cannot update provisioning when status is ${status}`);
     }
@@ -241,21 +240,38 @@ export function provisioningService(logger, Provisioning, eventBus) {
     if (existingProfile.serviceType !== newProfile.serviceType) {
       throw new ValidationError('Service type cannot be updated', 'FIELD_IN_SERVICE', 'profile.serviceType');
     }
-    // TODO: is it possible to reuse existing process from bpmn?
+    const processId = uuid.v4();
+
+    const query = {
+      $and: [
+        { _id: provisioningId },
+        {
+          $or: [
+            { status: ProcessStatus.COMPLETE },
+            { status: ProcessStatus.ERROR },
+          ],
+        },
+      ],
+    };
+    const update = {
+      $set: {
+        status: ProcessStatus.UPDATING,
+        profile: newProfile,
+        processId,
+      },
+    };
+    provisioning = await Provisioning.findOneAndUpdate(query, update, { new: true });
+    if (!provisioning) {
+      throw new InvalidOperationError(`Provisioning ${provisioningId} has been already started.`);
+    }
     const event = {
       provisioningId,
       processId: uuid.v4(),
       profile: newProfile,
-      previousResults: taskResults,
+      previousResults: provisioning.taskResults || {},
     };
+    logger.info(`Going to run process with processId ${processId}...`);
     eventBus.emit(PROVISIONING_EVENT.PROVISIONING_START_REQUESTED, event);
-    // update storage if process execution success
-    logger.info(`Run process with processId ${event.processId}.`);
-    provisioning = await Provisioning.findByIdAndUpdate(provisioningId, {
-      status: ProcessStatus.UPDATING,
-      processId: event.processId,
-      profile: newProfile,
-    });
     // TODO: return updated entity here?
     return { id: provisioningId };
   }
