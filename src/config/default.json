@@ -184,7 +184,10 @@
         "whitelist": ["create", "update", "read", "delete"],
         "role": ["create", "update", "read", "delete"],
         "user": ["create", "update", "read", "delete"],
-        "company": []
+        "company": [],
+        "endUserExport": ["read"],
+        "imExport": ["read"],
+        "callExport": ["read"]
       }
     }
   },
