@@ -7,6 +7,7 @@ export function createOffnetCapabilityActivationTask(capabilitiesManagement) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
   const activateOffnet = createCapabilityActivationTask(capabilitiesManagement, {
+    requirements: [Capability.CALL_OFFNET],
     internal: Capability.CALL_OFFNET,
     external: CapabilityType.OFFNET,
   });

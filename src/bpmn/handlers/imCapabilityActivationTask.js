@@ -7,6 +7,7 @@ export function createImCapabilityActivationTask(capabilitiesManagement) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
   const activateIm = createCapabilityActivationTask(capabilitiesManagement, {
+    requirements: [Capability.IM],
     internal: Capability.IM,
     external: CapabilityType.IM,
   });

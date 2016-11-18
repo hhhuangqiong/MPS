@@ -28,7 +28,7 @@ export * from './saveApplicationTask';
 export * from './sipGatewayCreationTask';
 export * from './sipRoutingCreationTask';
 export * from './smsCapabilityActivationTask';
-export * from './topupCapabilityActiviationTask';
+export * from './topupCapabilityActivationTask';
 export * from './userCarrierProfileCreationTask';
 export * from './verificationProfileCreationTask';
 export * from './voiceCapabilityActivationTask';

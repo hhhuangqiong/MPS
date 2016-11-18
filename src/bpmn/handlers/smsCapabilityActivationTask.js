@@ -11,6 +11,7 @@ export function createSmsCapabilityActivationTask(capabilitiesManagement, cpsOpt
   const { template } = cpsOptions.sms;
 
   const activateSms = createSmsProfileCapabilityActivationTask(cpsOptions, capabilitiesManagement, {
+    requirements: [Capability.VERIFICATION_SMS],
     internal: Capability.VERIFICATION_SMS,
     external: CapabilityType.SMS,
     template,

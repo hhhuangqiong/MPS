@@ -7,6 +7,7 @@ export function createTopUpCapabilityActivationTask(capabilitiesManagement) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
   const activateTopUp = createCapabilityActivationTask(capabilitiesManagement, {
+    requirements: [Capability.TOP_UP],
     internal: Capability.TOP_UP,
     external: CapabilityType.TOP_UP,
   });

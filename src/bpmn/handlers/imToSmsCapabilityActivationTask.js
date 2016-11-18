@@ -12,6 +12,7 @@ export function createImToSmsCapabilityActivationTask(capabilitiesManagement, cp
   const { template } = cpsOptions['im-to-sms'];
 
   const activateImToSms = createSmsProfileCapabilityActivationTask(cpsOptions, capabilitiesManagement, {
+    requirements: [Capability.IM_TO_SMS],
     internal: Capability.IM_TO_SMS,
     external: CapabilityType.IM_TO_SMS,
     template,

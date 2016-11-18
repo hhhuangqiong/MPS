@@ -7,7 +7,8 @@ export function createPushCapabilityActivationTask(capabilitiesManagement) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
 
   const activatePush = createCapabilityActivationTask(capabilitiesManagement, {
-    internal: [Capability.PUSH, Capability.IM, Capability.CALL_ONNET],
+    requirements: [Capability.PUSH, Capability.IM, Capability.CALL_ONNET],
+    internal: Capability.PUSH,
     external: CapabilityType.PUSH,
   });
 
