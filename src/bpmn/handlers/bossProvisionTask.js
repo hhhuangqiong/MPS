@@ -8,6 +8,7 @@ import {
   Capability,
   ChargeWallet,
   CpsCapabilityType,
+  translateTo10DigitOffnetPrefix,
 } from './../../domain';
 import { BOSS_PROVISION } from './bpmnEvents';
 import { check } from './../../util';
@@ -163,7 +164,7 @@ export function createBossProvisionTask(bossOptions, bossProvisionManagement, ca
 
     let offnetPrefixes;
     if (hasOffnet(profile)) {
-      offnetPrefixes = await getOffnetPrefix(carrierId);
+      offnetPrefixes = _.map(await getOffnetPrefix(carrierId), translateTo10DigitOffnetPrefix);
       if (!offnetPrefixes.length) {
         throw new ArgumentNullError('offnetPrefixes');
       }
