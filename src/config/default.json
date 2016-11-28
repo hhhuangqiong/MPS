@@ -18,6 +18,10 @@
       }
     }
   },
+  "maaiiRate": {
+    "baseUrl": "http://192.168.118.127:9126",
+    "timeout": 15000
+  },
   "boss": {
     "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
     "timeout": 15000

@@ -13,6 +13,7 @@ import {
   SignUpRuleMgmt,
   SmsRealmManagement,
   SmsServicePlanManagement,
+  MaaiiRateManagement,
 } from './external';
 import presetService from './presetService';
 import provisioningService from './provisioningService';
@@ -46,6 +47,7 @@ export function register(container) {
   container.service('NotificationManagement', NotificationManagement, 'logger', 'cpsApiOptions');
   container.service('SmsRealmManagement', SmsRealmManagement, 'logger', 'cpsApiOptions');
   container.service('SmsServicePlanManagement', SmsServicePlanManagement, 'logger', 'cpsApiOptions');
+  container.service('MaaiiRateManagement', MaaiiRateManagement, 'logger', 'maaiiRateOptions');
   // IAM services
   container.service('CompanyManagement', CompanyManagement, 'logger', 'iamApiOptions');
   container.service('AccessManagement', AccessManagement, 'logger', 'iamApiOptions');

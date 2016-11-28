@@ -28,6 +28,8 @@ import {
   createWlpAccessCreationTask,
   createSmsRealmCreationTask,
   createSmsServicePlanCreationTask,
+  createOffnetChargingRateTask,
+  createSmsChargingRateTask,
 
   gateways,
   createDefaultHandler,
@@ -82,6 +84,16 @@ export function register(container) {
     createCarrierCreationTask,
     'TemplateService',
     'CarrierManagement'
+  );
+  registerBpmnHandler(
+    bpmnEvents.OFFNET_CHARGING_RATE_CREATION,
+    createOffnetChargingRateTask,
+    'MaaiiRateManagement'
+  );
+  registerBpmnHandler(
+    bpmnEvents.SMS_CHARGING_RATE_CREATION,
+    createSmsChargingRateTask,
+    'MaaiiRateManagement'
   );
   registerBpmnHandler(
     bpmnEvents.CARRIER_PROFILE_CREATION,

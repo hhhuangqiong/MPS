@@ -44,6 +44,12 @@ node "Maaii BOSS" {
 
 [BPMN] -right-> BOSS_REST
 
+node "Maaii Rate" {
+  interface "REST API" as RATE_REST
+}
+
+[BPMN] -right-> RATE_REST
+
 {% endplantuml %}
 
 The architecture diagram above demostrates the connected components from MPS perspective.
@@ -82,3 +88,9 @@ Service of Maaii Platform that provides a set of RESTful APIs for all carrier pr
 ## Maaii BOSS
 
 Service of BOSS that provides a provision API for billing provisioning.
+
+## Maaii Rate
+
+Rate module handles all the requests to retrieve all kins of infomation related to charging rate from database. The database includes three colletions: i.e. ChargingRate, ExchangeRate and AreaCountry.
+
+For details, see [Maaii Rates Documentation](https://issuetracking.maaii.com:9443/display/MAAIIP/Maaii+Rates#MaaiiRates-1.Background)

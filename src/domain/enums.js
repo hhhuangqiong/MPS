@@ -25,6 +25,11 @@ export const BossServiceType = {
 };
 export const BossServiceTypes = _.values(BossServiceType);
 
+export const ChargingRateType = {
+  OFFNET_CALL: 'OFFNET_CALL',
+  SMS: 'SMS',
+};
+
 export const Capability = {
   IM: 'im',
   IM_TO_SMS: 'im.im-to-sms',

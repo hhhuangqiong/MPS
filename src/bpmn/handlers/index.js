@@ -35,3 +35,5 @@ export * from './voiceCapabilityActivationTask';
 export * from './wlpAccessCreationTask';
 export * from './smsServicePlanCreationTask';
 export * from './smsRealmCreationTask';
+export * from './offnetChargingRateCreationTask';
+export * from './smsChargingRateCreationTask';

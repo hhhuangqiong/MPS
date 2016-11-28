@@ -29,6 +29,10 @@ export function create(config) {
     ...config.iam,
     proxyUrl: config.httpDebugProxyUrl,
   });
+  app.constant('maaiiRateOptions', {
+    ...config.maaiiRate,
+    proxyUrl: config.httpDebugProxyUrl,
+  });
   app.constant('signUpRuleApiOptions', {
     ...config.signUpRule,
     proxyUrl: config.httpDebugProxyUrl,

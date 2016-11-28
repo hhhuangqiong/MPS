@@ -17,3 +17,4 @@ export * from './VerificationManagement';
 export * from './VoiceProvisioningManagement';
 export * from './SmsRealmManagement';
 export * from './SmsServicePlanManagement';
+export * from './MaaiiRateManagement';

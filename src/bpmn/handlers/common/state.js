@@ -34,6 +34,8 @@ export const PUBLIC_STATE_SCHEMA = Joi.object({
       app: Joi.object().required(),
       platform: Joi.string().required(),
     })),
+    offnetChargingRateId: Joi.string().allow(null),
+    smsChargingRateId: Joi.string().allow(null),
     sipGateways: Joi.array(Joi.string()),
     sipRoutingProfileId: Joi.string().allow(null),
     userCarrierProfileId: Joi.string().allow(null),
@@ -70,4 +72,6 @@ export const DEFAULT_PUBLIC_STATE = {
   voiceProfileId: null,
   smsServicePlanId: null,
   smsRealmId: null,
+  offnetChargingRateId: null,
+  smsChargingRateId: null,
 };

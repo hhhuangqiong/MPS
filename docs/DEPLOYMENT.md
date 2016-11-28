@@ -23,16 +23,18 @@ The application can be configured using docker container environment variables. 
 |Key|Description| Defaults | e.g. |
 | --- | --- | --- | --- |
 |TZ|NodeJs runtime timezone|Asia/Hong_Kong| |
-|`mongodb__uri`| MongoDB URI in [Standard Connection String](https://docs.mongodb.com/manual/reference/connection-string/) format |`mongodb://testbed-usr:testbed-pw@192.168.119.71,192.168.119.73/m800-whitelabel-portal?connectTimeoutMS=300000` | |
+|`mongodb__uri`| MongoDB URI in [Standard Connection String](https://docs.mongodb.com/manual/reference/connection-string/) format |`mongodb://testbed-usr:testbed-pw@192.168.119.71,192.168.119.73/m800-whitelabel-portal?connectTimeoutMS=300000` | mongodb://localhost:27017/maaii-provisioning-service |
 |`monogdb__server`| Options for MongoDB connection. Namespace to provide extra mongoDB server options for connection. For available configurations, see [Node.js MongoDB Driver API](http://mongodb.github.io/node-mongodb-native/2.2/api/Server.html) | | monogdb__server__socketOptions__autoReconnect=true |
 |`cps__baseUrl`| CPS API Endpoint |`http://192.168.118.34:80` |  |
 |`cps__timeout`| CPS API Endpoint Timeout | 60000 | |
 |`boss__baseUrl`| BOSS API Endpoint |`http://192.168.135.167:10080` | |
 |`boss__timeout`| BOSS API Timeout | 15000 | |
 |`iam__baseUrl` | IAM API Endpoint | `http://deploy.dev.maaii.com:4004` | |
-|`iam__timeout` | IAM API Endpoint Timeout | `15000` | |
+|`iam__timeout` | IAM API Endpoint Timeout | 15000 | |
 |`signUpRule__baseUrl` | Sign up rule service API Endpoint | `http://192.168.118.127:8083` | |
-|`signUpRule__timeout` | Sign up rule service API Endpoint Timeout | `15000` | |
+|`signUpRule__timeout` | Sign up rule service API Endpoint Timeout | 15000 | |
+|`maaiiRate__baseUrl` | MAAII RATE API Endpoint | `http://192.168.118.127:9126` | |
+|`maaiiRate__timeout` | MAAII RATE API Timeout | 15000 | |
 |`bpmn__maxConcurrentRequests` | Max concurrent requests that would sent to backend APIs during single BPMN stage | `4`
 |`bpmn__templates__collectionName` | MongoDB collection name for provisioning templates configuration | `config`
 |`bpmn__templates__documentId` | MongoDB document _id where templates are stored | `templates`
