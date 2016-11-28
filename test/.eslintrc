@@ -1,0 +1,12 @@
+{
+  "env": {
+    "node": true,
+    "mocha": true,
+  },
+  "globals": {
+    "describe": true,
+    "before": true,
+    "after": true,
+    "it": true,
+  }
+}

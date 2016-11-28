@@ -1,7 +1,7 @@
 import path from 'path';
-
 import chalk from 'chalk';
 import minimist from 'minimist';
+
 import gulp from 'gulp';
 import sourcemaps from 'gulp-sourcemaps';
 import babel from 'gulp-babel';
@@ -9,11 +9,13 @@ import changed from 'gulp-changed';
 import changedInPlace from 'gulp-changed-in-place';
 import nodemon from 'gulp-nodemon';
 import eslint from 'gulp-eslint';
+import mocha from 'gulp-mocha';
 
 const ROOT = __dirname;
 const PATHS = {
   SRC_ALL_FILES: path.join(ROOT, 'src/**/*'),
   SRC_JS_FILES: path.join(ROOT, 'src/**/*.js'),
+  TEST_JS_FILES: path.join(ROOT, 'test/**/*.js'),
   SRC_RESOURCE_FILES: path.join(ROOT, 'src/**/!(*.js)'),
   BUILD_DIR: path.join(ROOT, 'build/src'),
   BUILD_ENTRYPOINT_FILE: path.join(ROOT, 'build/src'),
@@ -45,7 +47,7 @@ gulp.task('compile', () => {
     .pipe(changed(PATHS.BUILD_DIR))
     .pipe(sourcemaps.init())
     .pipe(babel())
-    .on('error', function (e) {
+    .on('error', (e) => {
       if (options.env === ENVS.DEVELOPMENT) {
         console.error(chalk.red(e.message));
         console.error(e.codeFrame);
@@ -71,7 +73,7 @@ gulp.task('build', ['lint', 'compile', 'copy-resources']);
 // Run this if you don't want to start a dev server,
 // but only compile files on changes. For example if you are using and IDE to debug
 gulp.task('watch', ['build'], () => {
-  gulp.watch(PATHS.SRC_ALL_FILES, ['build']);
+  gulp.watch(PATHS.SRC_ALL_FILES, ['build', 'test']);
 });
 
 gulp.task('dev', ['watch'], () => {
@@ -79,5 +81,14 @@ gulp.task('dev', ['watch'], () => {
     script: PATHS.BUILD_ENTRYPOINT_FILE,
     watch: PATHS.BUILD_DIR,
   });
+  return stream;
+});
+
+gulp.task('test', () => {
+  const stream = gulp.src(PATHS.TEST_JS_FILES)
+    .pipe(babel())
+    .pipe(mocha({
+      require: ['babel-polyfill'],
+    }));
   return stream;
 });
