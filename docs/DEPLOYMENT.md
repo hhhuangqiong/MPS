@@ -41,12 +41,12 @@ Note: Keys defined with __ in between words are due to default setup of [nconf](
 
 ## Provisioning Process Configuration
 
-Application reads provisioning configuration template from MongoDB. 
-See the [previous section](#Application-Configurations-Docker-Container-Environment-Variables)
+Application reads provisioning configuration template from MongoDB.
+See the [previous section](#application-configurations---docker-container-environment-variables)
 to see how to configure collection name and document id.
- 
-If the configuration is not provided in the database, application will read the default 
-configuration which is shipped with the source code. 
+
+If the configuration is not provided in the database, application will read the default
+configuration which is shipped with the source code.
 
 You can update the template configuration using simple mongo shell script
 ```js
@@ -58,5 +58,3 @@ db.config.update({_id: 'templates'}, doc, {upsert: true});
 You can use the following default `templates.json` as a reference
 
 [include](../src/services/templates.json)
-
-

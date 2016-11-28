@@ -25,7 +25,7 @@ export function createSmsRealmCreationTask(templateService, smsRealmManagement) 
     }
 
     const templateParams = { carrierId, ...realm };
-    const smsRealm = await templateService.render('cps.sms.realm', templateParams);
+    const smsRealm = await templateService.render('cps.smsRealm', templateParams);
     smsRealm.connection_strategy.binding_details = realm.bindingDetails;
 
     const response = await smsRealmManagement.create(smsRealm);

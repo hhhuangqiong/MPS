@@ -25,7 +25,7 @@ export function createSmsServicePlanCreationTask(templateService, smsServicePlan
     }
 
     const templateParams = { carrierId };
-    const servicePlan = await templateService.render('cps.sms.servicePlan', templateParams);
+    const servicePlan = await templateService.render('cps.smsServicePlan', templateParams);
 
     const response = await smsServicePlanManagement.create(servicePlan);
     const { id: smsServicePlanId } = response.body;

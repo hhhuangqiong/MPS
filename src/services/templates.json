@@ -21,20 +21,20 @@
       "service_plan_id":"whitelabel",
       "systemId":"WhiteLabel",
       "systemType":"testSystem",
-      "validate_source_address":false,
-      "realm": {
-        "identifier": "{{ carrierId }}.sms-realm",
-        "connection_strategy": {
-          "type": "explicit",
-          "system_id": "{{ systemId }}",
-          "password": "{{ password }}",
-          "bindings_per_smsc": 100
-        }
-      },
-      "servicePlan": {
-        "identifier": "{{ carrierId }}.sms-service-plan",
-        "description": "Service plan for {{ carrierId }}"
+      "validate_source_address":false
+    },
+    "smsRealm": {
+      "identifier": "{{ carrierId }}.sms-realm",
+      "connection_strategy": {
+        "type": "explicit",
+        "system_id": "{{ systemId }}",
+        "password": "{{ password }}",
+        "bindings_per_smsc": 100
       }
+    },
+    "smsServicePlan": {
+      "identifier": "{{ carrierId }}.sms-service-plan",
+      "description": "Service plan for {{ carrierId }}"
     },
     "im-to-sms":{
       "charging_profile":"{{ userChargeProfile }}",
