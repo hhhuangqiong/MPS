@@ -31,8 +31,8 @@ The application can be configured using docker container environment variables. 
 |`boss__timeout`| BOSS API Timeout | 15000 | |
 |`iam__baseUrl` | IAM API Endpoint | `http://deploy.dev.maaii.com:4004` | |
 |`iam__timeout` | IAM API Endpoint Timeout | `15000` | |
-|`signUpRule__api__baseUrl` | Sign up rule service API Endpoint | `http://192.168.118.127:8083` | |
-|`signUpRule__api__timeout` | Sign up rule service API Endpoint Timeout | `15000` | |
+|`signUpRule__baseUrl` | Sign up rule service API Endpoint | `http://192.168.118.127:8083` | |
+|`signUpRule__timeout` | Sign up rule service API Endpoint Timeout | `15000` | |
 |`bpmn__maxConcurrentRequests` | Max concurrent requests that would sent to backend APIs during single BPMN stage | `4`
 |`bpmn__templates__collectionName` | MongoDB collection name for provisioning templates configuration | `config`
 |`bpmn__templates__documentId` | MongoDB document _id where templates are stored | `templates`
