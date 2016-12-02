@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { ArgumentError, ReferenceError } from 'common-errors';
-import { createMaaiiRateTask } from '../../src/bpmn/handlers/createMaaiiRateTask';
+import { createMaaiiRateTask } from '../../../src/bpmn/handlers/createMaaiiRateTask';
 const OFFNET_CALL = 'OFFNET_CALL';
 const SMS = 'SMS';
 
@@ -17,7 +17,7 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
     };
     expect(() => createMaaiiRateTask(MaaiiRateManagement, null)).to.throw(ArgumentError);
   });
-  describe('maaiiRateTask', async () => {
+  describe('maaiiRateTask', () => {
     it('throws ArgumentError when state.results.carrierId is empty', async () => {
       const state = {
         results: {

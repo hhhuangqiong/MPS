@@ -25,7 +25,7 @@ export function createCarrierProfileCreationTask(carrierManagement) {
     const response = await carrierManagement.createCarrierProfile(params);
     const { id: carrierProfileId } = response.body;
     if (!carrierProfileId) {
-      throw new ReferenceError('id not defined in response from carrier profile creation');
+      throw new ReferenceError('id is not defined in response from carrier profile creation');
     }
     return {
       results: {

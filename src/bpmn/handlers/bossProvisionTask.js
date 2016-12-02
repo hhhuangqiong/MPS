@@ -165,9 +165,6 @@ export function createBossProvisionTask(templateService, bossProvisionManagement
     let offnetPrefixes;
     if (hasOffnet(profile)) {
       offnetPrefixes = _.map(await getOffnetPrefix(carrierId), translateTo10DigitOffnetPrefix);
-      if (!offnetPrefixes.length) {
-        throw new ArgumentNullError('offnetPrefixes');
-      }
     }
 
     const provisionRequirements = {

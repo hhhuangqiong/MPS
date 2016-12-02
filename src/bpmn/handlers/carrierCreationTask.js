@@ -31,6 +31,7 @@ export function createCarrierCreationTask(templateService, carrierManagement) {
       companyCode: profile.companyCode,
       domain,
     });
+
     logger.debug('CPS create Carrier request sent');
     try {
       const response = await carrierManagement.createCarrier(params);

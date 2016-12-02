@@ -25,7 +25,7 @@
     "jenkins:merge": "npm run jenkins:commit && npm run docs"
   },
   "nyc": {
-    "check-coverage": true,
+    "check-coverage": false,
     "lines": 90,
     "statements": 90,
     "functions": 100,
