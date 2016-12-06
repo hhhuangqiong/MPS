@@ -45,7 +45,7 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
       expect(errorThrown).to.be.true;
     });
 
-    it('throws ReferenceError after getChargingRateTables function return the empty chargingTable', async () => {
+    it('returns null when there are no charging rate tables', async () => {
       const state = {
         results: {
           carrierId: 'test',
@@ -63,18 +63,11 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
         createChargingRateTable: sinon.stub().returns(Promise.resolve(chargingRateObj)),
       };
       const maaiiRateTask = createMaaiiRateTask(MaaiiRateManagement, OFFNET_CALL);
-      let errorThrown = false;
-      // test async function
-      try {
-        await maaiiRateTask(state, profile);
-      } catch (err) {
-        expect(err).to.be.instanceOf(ReferenceError);
-        errorThrown = true;
-      }
-      expect(errorThrown).to.be.true;
+      const result = await maaiiRateTask(state, profile);
+      expect(result).to.be.null;
     });
 
-    it('throws ReferenceError if the there is not matched rate after validation', async () => {
+    it('returns null when there is no active charging rate', async () => {
       const state = {
         results: {
           carrierId: 'test',
@@ -121,15 +114,9 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
         createChargingRateTable: sinon.stub().returns(Promise.resolve(chargingRateObj)),
       };
       const maaiiRateTask = createMaaiiRateTask(MaaiiRateManagement, OFFNET_CALL);
-      let errorThrown = false;
-      // test async function
-      try {
-        await maaiiRateTask(state, profile);
-      } catch (err) {
-        expect(err).to.be.instanceOf(ReferenceError);
-        errorThrown = true;
-      }
-      expect(errorThrown).to.be.true;
+
+      const result = await maaiiRateTask(state, profile);
+      expect(result).to.be.null;
     });
 
     it('throws ReferenceError after createChargingRateTable does not return chargingRateId ', async () => {
@@ -145,7 +132,34 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
         body: { id: null },
       };
       const resellerRateTableToRes = {
-        body: [],
+        body: [
+          {
+            id: '58325916bdcd0b0001c5c6b6',
+            carrier: 'sparkle.maaiii.org',
+            startDate: '2016-09-01T00:00:00Z',
+            endDate: '2017-10-08T00:00:00Z',
+            type: 'OFFNET_CALL',
+            currency: 840,
+            rates: [
+              {
+                destinationCountryCode: 'HK',
+                destinationIso3CountryCode: 'HKG',
+                name: 'HONG KONG Mobile',
+                packageId: 5170,
+                homeArea: 'World',
+                originArea: 'World',
+                destinationPrefixes: [
+                  +8529,
+                  +8526,
+                  +8525,
+                ],
+                connectionFee: 0.0,
+                rate: 1.0,
+                rateUnit: 'min',
+              },
+            ],
+          },
+        ],
       };
       const MaaiiRateManagement = {
         getChargingRateTables: sinon.stub().returns(Promise.resolve(resellerRateTableToRes)),

@@ -14,14 +14,11 @@ export function createMaaiiRateTask(maaiiRateManagement, type) {
     }
 
     const resellerRateTables = await maaiiRateManagement.getChargingRateTables(profile.resellerCarrierId, type);
-    if (_.isEmpty(resellerRateTables.body)) {
-      throw new ReferenceError('Unexpected response from  maaiiRate server: empty array');
-    }
-
     const activeRateTable = getActiveChargingRateTable(resellerRateTables.body);
-    // If fail to find any validation rates,  fail the task directly.
-    if (_.isEmpty(activeRateTable)) {
-      throw new ReferenceError('Unexpected response from  maaiiRate server: no matched rate');
+    // it is acceptable to has no rate because it will use the default rate in the back end side.
+    // If fail to find any validation rates, early return.
+    if (_.isNil(activeRateTable)) {
+      return null;
     }
 
     // post as SME charging rate
