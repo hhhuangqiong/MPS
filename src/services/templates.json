@@ -12,6 +12,14 @@
       "company":"m800_charge_profile",
       "user":"m800_charge_profile"
     },
+    "applicationVersion": {
+      "version_numbers": {
+         "version_major": 1,
+         "version_minor": 0,
+         "version_patch": 0
+      },
+      "version_status": "RELEASED"
+    },
     "sms":{
       "charging_profile":"{{ companyChargeProfile }}",
       "identifier":"{{ carrierId }}.sms-profile",

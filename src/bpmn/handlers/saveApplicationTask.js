@@ -50,7 +50,7 @@ export function createSaveApplicationTask(templateService, applicationManagement
 
   async function createApplication(
     platform,
-    { applicationIdentifier, serviceType, featureSetIdentifier, developerId }
+    { applicationIdentifier, serviceType, featureSetIdentifier, developerId, applicationVersion }
     ) {
     const platformIdentifier = generatePlatformIdentifier(platform);
 
@@ -58,17 +58,12 @@ export function createSaveApplicationTask(templateService, applicationManagement
       throw new ArgumentNullError('featureSetIdentifier');
     }
 
-    const firstApplicationVersion = {
-      version_numbers: {
-        version_major: 1,
-        version_minor: 0,
-        version_patch: 0,
-      },
-      version_status: 'UN_RELEASED',
-    };
+    if (!applicationVersion) {
+      throw new ArgumentNullError('Application version');
+    }
 
     if (serviceType === ServiceType.WHITE_LABEL) {
-      firstApplicationVersion.feature_set_identifier = featureSetIdentifier;
+      applicationVersion.feature_set_identifier = featureSetIdentifier;
     }
 
     const applicationKey = generateApplicationKey();
@@ -77,7 +72,7 @@ export function createSaveApplicationTask(templateService, applicationManagement
     const params = {
       identifier: applicationIdentifier,
       name: applicationIdentifier,
-      application_versions: [firstApplicationVersion],
+      application_versions: [applicationVersion],
       platform: platformIdentifier,
       developer: developerId,
       status: 'ACTIVE',
@@ -114,6 +109,7 @@ export function createSaveApplicationTask(templateService, applicationManagement
 
     const cpsOptions = await templateService.get('cps');
     const applicationIdentifier = generateApplicationId(serviceType, companyCode, cpsOptions);
+    const applicationVersion = cpsOptions.applicationVersion;
 
     let error = null;
     try {
@@ -123,6 +119,7 @@ export function createSaveApplicationTask(templateService, applicationManagement
           serviceType,
           featureSetIdentifier,
           developerId,
+          applicationVersion,
         };
         const result = await createApplication(platform, params);
         currentApplications = [...currentApplications, {
