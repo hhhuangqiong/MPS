@@ -51,9 +51,28 @@ export function provisioningProcessManager(logger, mongoOptions, bpmnHandlers, e
     .mapValues(handler => decorateBpmnTask(handler, logger))
     .value();
 
+  // handler for the persist data
+  function doneSavingHandler(error) {
+    if (!error) {
+      return;
+    }
+    const processId = this.getProcessId();
+    logger.error(`[BPMN] Failure when persisting data with process id ${processId}`);
+
+    // since it fails to save when duplicate key `processId`, retry to persist data again.
+    // it will persist the current state into storage.
+    if (error.code === 11000) {
+      logger.warning(`[BPMN] Retry to persist data with process id ${processId}`);
+      // get the current process and persist again
+      const process = this._getImplementation();
+      process.persist();
+    }
+  }
+
   const allHandlers = {
     ...decoratedHandlers,
     ...decoratedTasks,
+    doneSavingHandler,
   };
   bpmn.addBpmnFilePath(BPMN_FILE_PATH, allHandlers);
 

@@ -19,6 +19,8 @@ const PATHS = {
   SRC_RESOURCE_FILES: path.join(ROOT, 'src/**/!(*.js)'),
   BUILD_DIR: path.join(ROOT, 'build/src'),
   BUILD_ENTRYPOINT_FILE: path.join(ROOT, 'build/src'),
+  BUILD_MIGRAION_DIR: path.join(ROOT, 'build/migrations'),
+  SRC_MIGRATION_FILES: path.join(ROOT, 'migrations/**/*'),
 };
 const ENVS = {
   DEVELOPMENT: 'development',
@@ -90,5 +92,12 @@ gulp.task('test', () => {
     .pipe(mocha({
       require: ['babel-polyfill'],
     }));
+  return stream;
+});
+
+gulp.task('compileMigration', () => {
+  const stream = gulp.src(PATHS.SRC_MIGRATION_FILES)
+    .pipe(babel())
+    .pipe(gulp.dest(PATHS.BUILD_MIGRAION_DIR));
   return stream;
 });
