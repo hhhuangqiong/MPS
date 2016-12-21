@@ -188,6 +188,7 @@
         "endUserExport": ["read"],
         "imExport": ["read"],
         "callExport": ["read"],
+        "smsExport": ["read"],
         "company":[]
       }
     }
