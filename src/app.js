@@ -11,6 +11,7 @@ export function create(config) {
 
   const ENV = process.env.NODE_ENV || 'development';
   const mongoOptions = config.mongodb;
+  mongoOptions.debug = mongoOptions.debug === 'true';
   const serverOptions = {
     env: ENV,
     port: process.env.PORT || 3000,

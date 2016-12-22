@@ -16,6 +16,7 @@ export function provisioningProcessManager(logger, mongoOptions, bpmnHandlers, e
   check.schema('mongoOptions', mongoOptions, Joi.object({
     uri: Joi.string().required(),
     server: Joi.object().required(),
+    debug: Joi.boolean(),
   }));
   check.members('bpmnHandlers', bpmnHandlers, _.values(bpmnEvents));
   check.ok('eventBus', eventBus);

@@ -25,6 +25,7 @@ The application can be configured using docker container environment variables. 
 |TZ|NodeJs runtime timezone|Asia/Hong_Kong| |
 |`mongodb__uri`| MongoDB URI in [Standard Connection String](https://docs.mongodb.com/manual/reference/connection-string/) format |`mongodb://testbed-usr:testbed-pw@192.168.119.71,192.168.119.73/m800-whitelabel-portal?connectTimeoutMS=300000` | mongodb://localhost:27017/maaii-provisioning-service |
 |`monogdb__server`| Options for MongoDB connection. Namespace to provide extra mongoDB server options for connection. For available configurations, see [Node.js MongoDB Driver API](http://mongodb.github.io/node-mongodb-native/2.2/api/Server.html) | | monogdb__server__socketOptions__autoReconnect=true |
+|`monogdb__debug`| Enable the mongo debug | false | `true` |
 |`cps__baseUrl`| CPS API Endpoint |`http://192.168.118.34:80` |  |
 |`cps__timeout`| CPS API Endpoint Timeout | 60000 | |
 |`boss__baseUrl`| BOSS API Endpoint |`http://192.168.135.167:10080` | |
@@ -35,9 +36,9 @@ The application can be configured using docker container environment variables. 
 |`signUpRule__timeout` | Sign up rule service API Endpoint Timeout | 15000 | |
 |`maaiiRate__baseUrl` | MAAII RATE API Endpoint | `http://192.168.118.127:9126` | |
 |`maaiiRate__timeout` | MAAII RATE API Timeout | 15000 | |
-|`bpmn__maxConcurrentRequests` | Max concurrent requests that would sent to backend APIs during single BPMN stage | `4`
-|`bpmn__templates__collectionName` | MongoDB collection name for provisioning templates configuration | `config`
-|`bpmn__templates__documentId` | MongoDB document _id where templates are stored | `templates`
+|`bpmn__maxConcurrentRequests` | Max concurrent requests that would sent to backend APIs during single BPMN stage | `4` | |
+|`bpmn__templates__collectionName` | MongoDB collection name for provisioning templates configuration | `config`| |
+|`bpmn__templates__documentId` | MongoDB document _id where templates are stored | `templates` | |
 
 Note: Keys defined with __ in between words are due to default setup of [nconf](https://github.com/indexzero/nconf), an npm module that we used to organize application configurations.
 
