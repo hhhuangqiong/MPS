@@ -18,7 +18,7 @@ export function createMongooseConnection(logger, mongoOptions) {
 
   mongoose.set('debug', debug);
 
-  ['open', 'connecting', 'connected', 'reconnected', 'disconnected', 'close'].forEach(evt => {
+  ['open', 'connecting', 'connected', 'reconnected', 'disconnected', 'close', 'fullsetup'].forEach(evt => {
     mongoose.connection.on(evt, () => {
       logger.info(`Mongoose connection is ${evt}.`);
     });
@@ -27,6 +27,19 @@ export function createMongooseConnection(logger, mongoOptions) {
   mongoose.connection.on('error', error => {
     logger.error(`Error connecting to MongoDB [${uri}]: ${error.message}`, error);
   });
+
+  // monitor the replicaset
+  if (mongoose.connection.db.serverConfig.s.replset) {
+    ['joined', 'left'].forEach(evt => {
+      mongoose.connection.db.serverConfig.s.replset.on(evt, (type, serverObj) => {
+        logger.info(`Replset event: ${type} ${evt}`, serverObj.ismaster);
+      });
+    });
+
+    mongoose.connection.db.serverConfig.s.replset.on('error', error => {
+      logger.error(`Replset error: ${error.message}`, error);
+    });
+  }
 
   return connection;
 }
