@@ -2,14 +2,14 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import Joi from 'joi';
 import { ReferenceError, Error } from 'common-errors';
+import { check } from 'm800-util';
 
 import { IncompleteResultError } from './common';
-import { check } from './../../util';
 import { NOTIFICATION_CREATION } from './bpmnEvents';
 
 export function createNotificationCreationTask(notificationManagement, concurrencyOptions) {
   check.ok('notificationManagement', notificationManagement);
-  concurrencyOptions = check.schema('concurrencyOptions', concurrencyOptions, Joi.object({
+  concurrencyOptions = check.sanitizeSchema('concurrencyOptions', concurrencyOptions, Joi.object({
     maxConcurrentRequests: Joi.number().default(4),
   }));
 

@@ -1,7 +1,7 @@
 import { ArgumentNullError } from 'common-errors';
 import escapeStringRegexp from 'escape-string-regexp';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { SIP_ROUTING_CREATION } from './bpmnEvents';
 
 export function createSipRoutingCreationTask(templateService, voiceProvisioningManagement) {

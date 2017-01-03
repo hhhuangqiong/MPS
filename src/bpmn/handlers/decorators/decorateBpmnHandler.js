@@ -3,8 +3,8 @@ import { Logger } from 'winston';
 import Promise from 'bluebird';
 import Joi from 'joi';
 import serializeError from 'serialize-error';
+import { check } from 'm800-util';
 
-import { check } from './../../../util';
 import { createStore } from './../common';
 
 export function decorateBpmnHandler(handler, logger) {

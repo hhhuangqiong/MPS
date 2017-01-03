@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ReferenceError, NotImplementedError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { COMPANY_CREATION } from './bpmnEvents';
 
 export function createCompanyCreationTask(companyManagement) {

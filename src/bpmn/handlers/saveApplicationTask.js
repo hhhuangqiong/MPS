@@ -1,13 +1,14 @@
 import uuid from 'uuid';
 import _ from 'lodash';
 import { NotImplementedError, ArgumentNullError } from 'common-errors';
+import { check } from 'm800-util';
 
 import {
   ServiceType,
   Capability,
 } from './../../domain';
 import { IncompleteResultError } from './common';
-import { check } from './../../util';
+
 import { SAVE_APPLICATION } from './bpmnEvents';
 
 export function createSaveApplicationTask(templateService, applicationManagement) {

@@ -2,8 +2,8 @@ import _ from 'lodash';
 import mongoose, { Schema } from 'mongoose';
 import unqiueValidator from 'mongoose-unique-validator';
 import timestamps from 'mongoose-timestamp';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import {
   ServiceTypes,
   Capabilities,

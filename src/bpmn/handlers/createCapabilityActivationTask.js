@@ -1,11 +1,12 @@
 import Joi from 'joi';
 import _ from 'lodash';
-import { check } from './../../util';
+import { check } from 'm800-util';
+
 import { Capabilities, CapabilityTypes } from './../../domain';
 
 export function createCapabilityActivationTask(capabilitiesManagement, capabilityOptions) {
   check.ok('capabilitiesManagement', capabilitiesManagement);
-  capabilityOptions = check.schema('capabilityOptions', capabilityOptions, Joi.object({
+  capabilityOptions = check.sanitizeSchema('capabilityOptions', capabilityOptions, Joi.object({
     requirements: Joi.array()
       .items(Joi.string().allow(Capabilities))
       .single()

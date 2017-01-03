@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ReferenceError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { VOICE_CAPABILITY_ACTIVATION } from './bpmnEvents';
 import { Capability } from './../../domain';
 

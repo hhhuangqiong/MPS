@@ -2,8 +2,7 @@ import _ from 'lodash';
 import serializeError from 'serialize-error';
 import { ValidationError, HttpStatusError } from 'common-errors';
 import mongooseErrors from 'mongoose/lib/error';
-
-import check from './checkArgument';
+import { check } from 'm800-util';
 
 const UNKNOWN_ERROR_MESSAGE = 'Unknown error occurred.';
 const KNOWN_ERROR_PROPERTIES = [

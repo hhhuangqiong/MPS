@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import Joi from 'joi';
 import { ReferenceError, ArgumentNullError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { Capability, CapabilityType } from './../../domain';
 
 export function createSmsProfileCapabilityActivationTask(templateService, capabilitiesManagement, capabilityOptions) {
   check.ok('templateService', templateService);
   check.ok('capabilitiesManagement', capabilitiesManagement);
-  capabilityOptions = check.schema('capabilityOptions', capabilityOptions, Joi.object({
+  capabilityOptions = check.sanitizeSchema('capabilityOptions', capabilityOptions, Joi.object({
     requirements: Joi.array()
       .items(Joi.string().allow([Capability.IM_TO_SMS, Capability.VERIFICATION_SMS]))
       .single()

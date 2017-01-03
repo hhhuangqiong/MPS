@@ -1,6 +1,5 @@
 import winston from 'winston';
-
-import { check } from './../util';
+import { check } from 'm800-util';
 
 const LOG = {
   colors: {

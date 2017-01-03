@@ -1,6 +1,6 @@
 import _ from 'lodash';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { decorateController } from './controllersUtil';
 
 export function presetController(presetService) {

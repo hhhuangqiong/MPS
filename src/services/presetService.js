@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { NotFoundError } from 'common-errors';
+import { check } from 'm800-util';
 
 import {
   ServiceTypes,
@@ -7,7 +8,7 @@ import {
   ChargeWallets,
   Capabilities,
 } from './../domain';
-import { validator, check } from './util';
+import { validator } from './util';
 
 export function presetService(Preset) {
   check.ok('Preset', Preset);

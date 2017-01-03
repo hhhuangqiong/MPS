@@ -1,6 +1,7 @@
 import _ from 'lodash';
-import { check } from './../../util';
+import { check } from 'm800-util';
 import { ReferenceError, ArgumentNullError } from 'common-errors';
+
 import { getActiveChargingRateTable } from '../../domain';
 
 export function createMaaiiRateTask(maaiiRateManagement, type) {

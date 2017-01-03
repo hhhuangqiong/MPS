@@ -1,6 +1,6 @@
 import { ArgumentNullError, ReferenceError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { SMS_REALM_CREATION } from './bpmnEvents';
 
 export function createSmsRealmCreationTask(templateService, smsRealmManagement) {

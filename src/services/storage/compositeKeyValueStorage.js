@@ -1,6 +1,5 @@
 import _ from 'lodash';
-
-import { check } from './../util';
+import { check } from 'm800-util';
 
 export function compositeKeyValueStorage(storages) {
   check.predicate('storages', storages, _.isArray, 'Storages should be an array of key-value storages');

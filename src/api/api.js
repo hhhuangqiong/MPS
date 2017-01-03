@@ -1,14 +1,13 @@
 import { Router } from 'express';
 import { NotFoundError } from 'common-errors';
-
-import { check } from './../util';
+import { check } from 'm800-util';
 
 export function api(controllers, middlewares) {
-  check.members('controllers', [
+  check.members('controllers', controllers, [
     'presetController',
     'provisioningController',
   ]);
-  check.members('middlewares', [
+  check.members('middlewares', middlewares, [
     'errorMiddleware',
   ]);
 

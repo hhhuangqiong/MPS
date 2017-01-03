@@ -1,4 +1,4 @@
-import { check } from './../../util';
+import { check } from 'm800-util';
 import { ChargingRateType } from './../../domain';
 import { createMaaiiRateTask } from './createMaaiiRateTask';
 import { OFFNET_CHARGING_RATE_CREATION } from './bpmnEvents';

@@ -1,7 +1,7 @@
 import { ReferenceError } from 'common-errors';
 import _ from 'lodash';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { SIP_GATEWAY_CREATION } from './bpmnEvents';
 import { IncompleteResultError } from './common';
 

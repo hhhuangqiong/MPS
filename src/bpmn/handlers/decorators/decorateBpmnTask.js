@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import Joi from 'joi';
 import Promise from 'bluebird';
+import { check } from 'm800-util';
 
-import { check } from './../../../util';
 import { createStore, IncompleteResultError, PUBLIC_STATE_SCHEMA } from './../common';
 import { decorateBpmnHandler } from './decorateBpmnHandler';
 

@@ -2,8 +2,7 @@
 import * as _ from 'lodash';
 import Joi from 'joi';
 import { ValidationError } from 'common-errors';
-
-import { check } from './../../util';
+import { check } from 'm800-util';
 
 function joiErrorToValidationError(joiError) {
   return new ValidationError(joiError.message, joiError.type, joiError.path);

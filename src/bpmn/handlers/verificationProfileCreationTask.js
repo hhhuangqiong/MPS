@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ArgumentNullError, ReferenceError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import {
   Capability,
   VerificationMethod,
