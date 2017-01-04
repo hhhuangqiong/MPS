@@ -3,8 +3,7 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import metricsMiddleware from 'm800-prometheus-express';
 import healthCheck from 'm800-health-check';
-
-import { check } from './util';
+import { check } from 'm800-util';
 
 export function createServer(logger, api, mongooseConnection, serverOptions) {
   check.ok('logger', logger);

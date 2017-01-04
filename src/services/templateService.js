@@ -1,9 +1,9 @@
 import { NotFoundError } from 'common-errors';
 import _ from 'lodash';
 import _deep from 'lodash-deep';
-_.mixin(_deep);
+import { check } from 'm800-util';
 
-import { check } from './../util';
+_.mixin(_deep);
 
 export function compileObjectTemplate(template) {
   check.predicate('template', template, _.isPlainObject, 'Template should be a plain object');

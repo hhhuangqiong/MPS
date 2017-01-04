@@ -1,6 +1,6 @@
 import { ReferenceError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import * as bpmnEvents from './bpmnEvents';
 
 export function createApiCapabilityActivationTask(capabilitiesManagement) {

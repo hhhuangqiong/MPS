@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import serializeError from 'serialize-error';
+import { check } from 'm800-util';
 
-import { check, formatError, isClientError } from './../util';
+import { formatError, isClientError } from './../util';
 
 export function createErrorMiddleware(logger, env) {
   check.ok('logger', logger);

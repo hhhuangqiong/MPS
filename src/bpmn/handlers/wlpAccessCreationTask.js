@@ -1,6 +1,6 @@
 import { ReferenceError, NotImplementedError, ArgumentNullError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { WLP_ACCESS_CREATION } from './bpmnEvents';
 
 export function createWlpAccessCreationTask(templateService, accessManagement) {

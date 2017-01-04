@@ -3,8 +3,9 @@ import Promise from 'bluebird';
 import { InvalidOperationError, NotFoundError, ValidationError } from 'common-errors';
 import Joi from 'joi';
 import _ from 'lodash';
+import { check } from 'm800-util';
 
-import { validator, check } from './util';
+import { validator } from './util';
 import {
   ProcessStatus,
   ProcessStatuses,
@@ -284,7 +285,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
 
   async function completeProvisioning(command) {
     // check is used here instead of validator as it is system method, so it always expects valid data
-    const sanitizedCommand = check.schema('command', command, COMPLETE_PROVISIONING_SCHEMA);
+    const sanitizedCommand = check.sanitizeSchema('command', command, COMPLETE_PROVISIONING_SCHEMA);
     const {
       errors,
       results,

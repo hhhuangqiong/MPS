@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ArgumentNullError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { FEATURE_SET_CREATION } from './bpmnEvents';
 
 export function createFeatureSetCreationTask(featureSetManagement) {

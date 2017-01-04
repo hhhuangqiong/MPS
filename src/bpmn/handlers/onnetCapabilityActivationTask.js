@@ -1,4 +1,5 @@
-import { check } from './../../util';
+import { check } from 'm800-util';
+
 import { Capability, CapabilityType } from './../../domain';
 import { createCapabilityActivationTask } from './createCapabilityActivationTask';
 import { ONNET_CAPABILITY_ACTIVATION } from './bpmnEvents';

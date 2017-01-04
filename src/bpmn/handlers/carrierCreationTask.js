@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import { NotImplementedError, ReferenceError, ValidationError } from 'common-errors';
+import { check } from 'm800-util';
 
 import { CARRIER_CREATION } from './bpmnEvents';
-import { check } from './../../util';
+
 import {
   ServiceType,
 } from './../../domain';

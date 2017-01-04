@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Joi from 'joi';
+import { check } from 'm800-util';
 
-import { check } from './../../../util';
 import { PROVISIONING_START } from '../bpmnEvents';
 import { createStore, DEFAULT_PUBLIC_STATE } from './../common';
 

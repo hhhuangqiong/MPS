@@ -4,8 +4,8 @@ import _ from 'lodash';
 import Joi from 'joi';
 import { ProcessManager } from 'bpmn';
 import Promise from 'bluebird';
+import { check } from 'm800-util';
 
-import { check } from './../util';
 import { PROVISIONING_EVENT } from './../domain';
 import { bpmnEvents, decorateBpmnTask, decorateBpmnHandler } from './handlers';
 

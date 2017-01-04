@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import uuid from 'uuid';
 import { ArgumentNullError, ReferenceError } from 'common-errors';
+import { check } from 'm800-util';
 
 import {
   BossServiceType,
@@ -11,7 +12,7 @@ import {
   translateTo10DigitOffnetPrefix,
 } from './../../domain';
 import { BOSS_PROVISION } from './bpmnEvents';
-import { check } from './../../util';
+
 
 export function createBossProvisionTask(templateService, bossProvisionManagement, capabilitiesManagement) {
   check.ok('templateService', templateService);

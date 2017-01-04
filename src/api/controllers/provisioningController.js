@@ -1,7 +1,7 @@
 import _ from 'lodash';
+import { check } from 'm800-util';
 
 import { decorateController } from './controllersUtil';
-import { check } from './../../util';
 
 export function provisioningController(provisioningService) {
   check.ok('provisioningService', provisioningService);

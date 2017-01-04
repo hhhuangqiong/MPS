@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ArgumentNullError } from 'common-errors';
+import { check } from 'm800-util';
 
-import { check } from './../../util';
 import { Capability } from './../../domain';
 import { SIGN_UP_RULE_PROVISION } from './bpmnEvents';
 

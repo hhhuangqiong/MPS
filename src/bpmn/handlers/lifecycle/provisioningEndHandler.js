@@ -1,4 +1,5 @@
-import { check } from './../../../util';
+import { check } from 'm800-util';
+
 import { PROVISIONING_END } from '../bpmnEvents';
 import { createStore } from './../common';
 

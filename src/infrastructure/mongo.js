@@ -1,10 +1,10 @@
 import Joi from 'joi';
 import Promise from 'bluebird';
 import mongoose from 'mongoose';
+import { check } from 'm800-util';
+
 // Use bluebird promises instead of mpromise
 mongoose.Promise = Promise;
-
-import { check } from './../util';
 
 export function createMongooseConnection(logger, mongoOptions) {
   check.schema('mongoOptions', mongoOptions, Joi.object({
