@@ -41,7 +41,7 @@ describe('bpmn/handlers/createVoiceCapabilityActivationTask', () => {
       },
     };
     const profile = { capabilities: [] };
-    await expect(voiceCapabilityActivationTask(state, profile)).to.be.fulfiled;
+    await expect(voiceCapabilityActivationTask(state, profile)).to.be.fulfilled;
     expect(templateService.get.calledOnce).to.be.false;
     expect(capabilitiesManagement.enableVoiceCapability.calledOnce).to.be.false;
   });

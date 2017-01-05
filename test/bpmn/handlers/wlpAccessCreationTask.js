@@ -53,7 +53,7 @@ describe('bpmn/handlers/createWlpAccessCreationTask', () => {
     const state = { results: { adminRoleCreated: true, companyId: 'companyId' } };
     const profile = { isReseller: false };
     const context = { logger: new Logger() };
-    await expect(wlpAccessCreationTask(state, profile, context)).to.be.fulfiled;
+    await expect(wlpAccessCreationTask(state, profile, context)).to.be.fulfilled;
     expect(templateService.render.calledOnce).to.be.false;
     expect(accessManagement.createRole.calledOnce).to.be.false;
   });

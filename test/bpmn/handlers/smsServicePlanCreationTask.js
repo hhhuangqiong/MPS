@@ -49,7 +49,7 @@ describe('bpmn/handlers/createSmsServicePlanCreationTask', () => {
         servicePlanId: 'servicePlanId',
       },
     };
-    await expect(smsServicePlanCreationTask(state, profile)).to.be.fulfiled;
+    await expect(smsServicePlanCreationTask(state, profile)).to.be.fulfilled;
     expect(smsServicePlanManagement.create.calledOnce).to.be.false;
   });
 

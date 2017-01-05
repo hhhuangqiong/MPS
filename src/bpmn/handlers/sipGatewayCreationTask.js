@@ -13,14 +13,12 @@ export function createSipGatewayCreationTask(templateService, voiceProvisioningM
     const { logger } = context;
     const { sipGateways, carrierId } = state.results;
     const { profiles } = await templateService.get('cps.sip.gateway');
-
     const profilesToGenerate = profiles.length;
-
-    if (_.keys(sipGateways).length >= profilesToGenerate) {
+    const start = _.keys(sipGateways).length;
+    if (start >= profilesToGenerate) {
       logger.info(`Skip on rerun as all sip gateways generated: profilesToGenerate=${profilesToGenerate}`);
       return null;
     }
-    const start = _.keys(sipGateways).length;
     logger.info(`Creating ${profilesToGenerate} sip gateways for ${carrierId} starting from ${start}`);
     let currentSipGateways = sipGateways;
     let error = null;

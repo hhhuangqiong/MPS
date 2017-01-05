@@ -44,7 +44,7 @@ describe('bpmn/handlers/createVerificationProfileCreationTask', () => {
     const state = { results: { carrierId: 'carrierId' } };
     const profile = { capabilities: [Capability.CALL_ONNET] };
     const context = { logger: new Logger() };
-    await expect(verificationProfileCreationTask(state, profile, context)).to.be.fulfiled;
+    await expect(verificationProfileCreationTask(state, profile, context)).to.be.fulfilled;
     expect(templateService.render.calledOnce).to.be.false;
     expect(verificationManagement.saveProfile.calledOnce).to.be.false;
     expect(capabilitiesManagement.getProfile.calledOnce).to.be.false;

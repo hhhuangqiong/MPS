@@ -96,7 +96,7 @@ export function createSaveApplicationTask(templateService, applicationManagement
   }
 
   async function saveApplication(state, profile) {
-    if (state.results.applicationId) {
+    if (state.results.applicationIdentifier) {
       return null;
     }
     const { applications, featureSetIdentifier, developerId } = state.results;
@@ -108,6 +108,9 @@ export function createSaveApplicationTask(templateService, applicationManagement
       .difference(_.keys(currentApplications))
       .value();
 
+    if (platforms.length === 0) {
+      return null;
+    }
     const cpsOptions = await templateService.get('cps');
     const applicationIdentifier = generateApplicationId(serviceType, companyCode, cpsOptions);
     const applicationVersion = cpsOptions.applicationVersion;

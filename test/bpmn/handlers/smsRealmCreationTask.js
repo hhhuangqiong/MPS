@@ -47,7 +47,7 @@ describe('bpmn/handlers/createSmsRealmCreationTask', () => {
     const profile = {
       smsc: {},
     };
-    await expect(smsRealmCreationTask(state, profile)).to.be.fulfiled;
+    await expect(smsRealmCreationTask(state, profile)).to.be.fulfilled;
     expect(smsRealmManagement.create.calledOnce).to.be.false;
   });
 
