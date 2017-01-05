@@ -7,7 +7,7 @@ describe('bpmn/handlers/offnetChargingRateCreationTask', () => {
   it('throws ArgumentError when maaiiRateManagement is not provided', () => {
     expect(() => createOffnetChargingRateTask(null, OFFNET_CALL)).to.throw(ArgumentError);
   });
-  it('should return a function which name is OFFNET_CHARGING_RATE_CREATION', () => {
+  it('returns a function which name is OFFNET_CHARGING_RATE_CREATION', () => {
     const MaaiiRateManagement = {
       getChargingRateTables: () => {},
       createChargingRateTable: () => {},

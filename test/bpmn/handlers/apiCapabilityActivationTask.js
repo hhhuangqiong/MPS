@@ -7,7 +7,7 @@ describe('bpmn/handlers/apiCapabilityActivationTask', () => {
   it('throws ArgumentError when capabilitiesManagement is not provided', () => {
     expect(() => createApiCapabilityActivationTask(null)).to.throw(ArgumentError);
   });
-  it('should return a function which name is API_CAPABILITY_ACTIVATION', () => {
+  it('returns a function which name is API_CAPABILITY_ACTIVATION', () => {
     const capabilitiesManagement = {};
     const result = createApiCapabilityActivationTask(capabilitiesManagement);
     expect(result.$meta.name).to.equal(bpmnEvents.API_CAPABILITY_ACTIVATION);
@@ -35,7 +35,7 @@ describe('bpmn/handlers/apiCapabilityActivationTask', () => {
       }
       expect(errorThrown).to.be.true;
     });
-    it('will skip the task if developerId is already exists in the process state',
+    it('skips the task if developerId is already exists in the process state',
       async () => {
         const state = {
           results: {

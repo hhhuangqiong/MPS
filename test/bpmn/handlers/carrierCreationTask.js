@@ -12,7 +12,7 @@ describe('bpmn/handlers/carrierCreationTask', () => {
     expect(() => createCarrierCreationTask(null, carrierManagement)).to.throw(ArgumentError);
     expect(() => createCarrierCreationTask(templateService, null)).to.throw(ArgumentError);
   });
-  it('should return a function which name is CARRIER_CREATION', () => {
+  it('returns a function which name is CARRIER_CREATION', () => {
     const templateService = {};
     const carrierManagement = {};
     const result = createCarrierCreationTask(templateService, carrierManagement);

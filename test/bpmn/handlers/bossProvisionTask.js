@@ -15,7 +15,7 @@ describe('bpmn/handlers/bossProvisionTask', () => {
       .to.throw(ArgumentError);
     expect(() => createBossProvisionTask(templateService, bossProvisionManagement, null)).to.throw(ArgumentError);
   });
-  it('should return a function which name is BOSS_PROVISION', () => {
+  it('returns a function which name is BOSS_PROVISION', () => {
     const templateService = {};
     const bossProvisionManagement = {};
     const capabilitiesManagement = {};
@@ -23,7 +23,7 @@ describe('bpmn/handlers/bossProvisionTask', () => {
     expect(result.$meta.name).to.equal(bpmnEvents.BOSS_PROVISION);
   });
   describe('provisionBoss', () => {
-    it('will early return if state already contains bossProvisionId', async () => {
+    it('early returns when state already contains bossProvisionId', async () => {
       const state = {
         results: {
           bossProvisionId: '122333',
@@ -41,7 +41,7 @@ describe('bpmn/handlers/bossProvisionTask', () => {
       await provisionBossTask(state, profile);
       expect(capabilitiesManagement.getProfile.called).to.be.false;
     });
-    it('will early return if it is not using company wallet', async () => {
+    it('early returns when it is not using company wallet', async () => {
       const state = {
         results: {
           bossProvisionId: '122333',
@@ -331,7 +331,7 @@ describe('bpmn/handlers/bossProvisionTask', () => {
       }
       expect(errorThrown).to.be.true;
     });
-    it('should return boss provision id when provisioning boss successfully', async () => {
+    it('returns boss provision id when provisioning boss successfully', async () => {
       const state = {
         results: {
           carrierId: 'test',

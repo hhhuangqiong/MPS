@@ -7,14 +7,14 @@ describe('bpmn/handlers/carrierProfileCreationTask', () => {
   it('throws ArgumentError when carrierManagement is not provided', () => {
     expect(() => createCarrierProfileCreationTask(null)).to.throw(ArgumentError);
   });
-  it('should return a function which name is CARRIER_PROFILE_CREATION', () => {
+  it('returns a function which name is CARRIER_PROFILE_CREATION', () => {
     const templateService = {};
     const carrierManagement = {};
     const result = createCarrierProfileCreationTask(templateService, carrierManagement);
     expect(result.$meta.name).to.equal(bpmnEvents.CARRIER_PROFILE_CREATION);
   });
   describe('createCarrierProfile', () => {
-    it('should early return if the carrierProfileId is already exists', async () => {
+    it('early returns if the carrierProfileId is already exists', async () => {
       const state = {
         results: {
           carrierProfileId: '123',

@@ -7,7 +7,7 @@ describe('bpmn/handlers/smsChargingRateCreationTask', () => {
   it('throws ArgumentError when maaiiRateManagement is not provided', () => {
     expect(() => createSmsChargingRateTask(null, SMS)).to.throw(ArgumentError);
   });
-  it('should return a function which name is SMS_CHARGING_RATE_CREATION', () => {
+  it('returns a function which name is SMS_CHARGING_RATE_CREATION', () => {
     const MaaiiRateManagement = {
       getChargingRateTables: () => {},
       createChargingRateTable: () => {},
