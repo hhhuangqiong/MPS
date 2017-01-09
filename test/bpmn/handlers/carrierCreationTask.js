@@ -124,7 +124,7 @@ describe('bpmn/handlers/carrierCreationTask', () => {
     const result = await createCarrierTask(state, profile, context);
     expect(result.results.carrierId).to.be.equal(resCarrier.body.id);
   });
-  it('return the user validation error when user error occurs', async () => {
+  it('returns the user validation error when user error occurs', async () => {
     const context = {
       logger: new Logger(),
     };

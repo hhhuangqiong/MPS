@@ -76,7 +76,7 @@ describe('bpmn/handlers/apiCapabilityActivationTask', () => {
       }
       expect(errorThrown).to.be.true;
     });
-    it('should return developerId when provisioning capabilities successfully', async() => {
+    it('returns developerId when provisioning capabilities successfully', async() => {
       const state = {
         results: {
           carrierId: '123456',

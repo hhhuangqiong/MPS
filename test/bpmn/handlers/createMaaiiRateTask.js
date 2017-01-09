@@ -177,7 +177,7 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
       expect(errorThrown).to.be.true;
     });
 
-    it('should return the offnetChargingRateId if the type is OFFNET_CALL and these functions will be called once', async () => {
+    it('returns the offnetChargingRateId if the type is OFFNET_CALL and these functions will be called once', async () => {
       const state = {
         results: {
           carrierId: 'test',
@@ -230,7 +230,7 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
       expect(MaaiiRateManagement.createChargingRateTable.calledOnce).to.be.true;
       expect(result.results.offnetChargingRateId).to.equal(chargingRateObj.body.id);
     });
-    it('should return the smsChargingRateId if the type is SMS and these functions will be called once', async () => {
+    it('returns the smsChargingRateId if the type is SMS and these functions will be called once', async () => {
       const state = {
         results: {
           carrierId: 'test',
