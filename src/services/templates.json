@@ -189,7 +189,9 @@
         "imExport": ["read"],
         "callExport": ["read"],
         "smsExport": ["read"],
-        "company":[]
+        "company":[],
+        "callCostExport": ["read"],
+        "smsCostExport": ["read"]
       }
     }
   },
