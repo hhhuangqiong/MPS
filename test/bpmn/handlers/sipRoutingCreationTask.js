@@ -34,6 +34,31 @@ describe('bpmn/handlers/createSipRoutingCreationTask', () => {
     await expect(smsServicePlanCreationTask(state, profile, context)).to.be.rejectedWith(ArgumentNullError);
   });
 
+  it('returns null when sipRoutingProfileId was created', async () => {
+    const voiceProvisioningManagement = {
+      sipRoutingProfileCreation: sinon.stub(),
+    };
+    const templateService = {
+      render: sinon.stub(),
+    };
+    const sipRoutingCreationTask = createSipRoutingCreationTask(templateService, voiceProvisioningManagement);
+
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+        sipRoutingProfileId: 'sipRoutingProfileId',
+      },
+    };
+    const profile = {};
+    const context = {
+      logger: new Logger(),
+    };
+    const res = await sipRoutingCreationTask(state, profile, context);
+    expect(voiceProvisioningManagement.sipRoutingProfileCreation.called).to.be.false;
+    expect(templateService.render.called).to.be.false;
+    expect(res).to.be.null;
+  });
+
   it('creates sip routing and return the sip routing profile id', async () => {
     const sipRoutingTemplate = {
       identifier: 'carrierId.profile',

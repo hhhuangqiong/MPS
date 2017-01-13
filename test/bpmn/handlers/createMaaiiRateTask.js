@@ -177,6 +177,25 @@ describe('bpmn/handlers/createMaaiiRateTask', () => {
       expect(errorThrown).to.be.true;
     });
 
+    it('skips when Maaii Rate was created', async () => {
+      const state = {
+        results: {
+          offnetChargingRateId: 'test',
+        },
+      };
+      const profile = {
+        resellerCarrierId: 'sparkle.maaii.org',
+      };
+      const MaaiiRateManagement = {
+        getChargingRateTables: sinon.stub(),
+        createChargingRateTable: sinon.stub(),
+      };
+      const maaiiRateTask = createMaaiiRateTask(MaaiiRateManagement, OFFNET_CALL);
+      await expect(maaiiRateTask(state, profile)).to.be.fulfilled;
+      expect(MaaiiRateManagement.getChargingRateTables.called).to.be.false;
+      expect(MaaiiRateManagement.createChargingRateTable.called).to.be.false;
+    });
+
     it('returns the offnetChargingRateId if the type is OFFNET_CALL and these functions will be called once', async () => {
       const state = {
         results: {

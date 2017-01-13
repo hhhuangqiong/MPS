@@ -27,6 +27,32 @@ describe('bpmn/handlers/createSignUpRuleProvisionTask', () => {
     expect(sipGatewayCreationTask.$meta.name).to.equal(bpmnEvents.SIGN_UP_RULE_PROVISION);
   });
 
+  it('returns null when signUpRuleIds was created', async () => {
+    const templateService = {
+      get: sinon.stub(),
+    };
+    const signUpRuleManagement = {
+      create: sinon.stub(),
+    };
+    const signUpRuleProvisionTask = createSignUpRuleProvisionTask(templateService, signUpRuleManagement);
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+        signUpRuleIds: ['signUpRuleId'],
+      },
+    };
+    const profile = {
+      capabilities: [Capability.END_USER_WHITELIST],
+    };
+    const context = {
+      logger: new Logger(),
+    };
+    const res = await signUpRuleProvisionTask(state, profile, context);
+    expect(signUpRuleManagement.create.called).to.be.false;
+    expect(templateService.get.called).to.be.false;
+    expect(res).to.be.null;
+  });
+
   it('skips sign up rule provision when no capability END_USER_WHITELIST in profile', async () => {
     const templateService = {
       get: sinon.stub().returns({}),

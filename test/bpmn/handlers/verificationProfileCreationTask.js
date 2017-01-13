@@ -29,6 +29,32 @@ describe('bpmn/handlers/createVerificationProfileCreationTask', () => {
     expect(verificationProfileCreationTask.$meta.name).to.equal(bpmnEvents.VERIFICATION_PROFILE_CREATION);
   });
 
+  it('returns null when verificationProfileId was created', async () => {
+    const templateService = {
+      render: sinon.stub(),
+    };
+    const verificationManagement = {
+      saveProfile: sinon.stub(),
+    };
+    const capabilitiesManagement = {
+      getProfile: sinon.stub(),
+    };
+    const verificationProfileCreationTask = createVerificationProfileCreationTask(templateService,
+      verificationManagement, capabilitiesManagement);
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+        verificationProfileId: 'verificationProfileId',
+      },
+    };
+    const profile = { capabilities: [Capability.VERIFICATION_SMS] };
+    const context = { logger: new Logger() };
+    const res = await verificationProfileCreationTask(state, profile, context);
+    expect(res).to.be.null;
+    expect(verificationManagement.saveProfile.called).to.be.false;
+    expect(capabilitiesManagement.getProfile.called).to.be.false;
+  });
+
   it('won\'t save verification profile when no verification capabilitiy', async () => {
     const templateService = {
       render: sinon.stub().returns({}),

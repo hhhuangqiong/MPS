@@ -53,6 +53,30 @@ describe('bpmn/handlers/createNotificationCreationTask', () => {
     expect(notificationManagement.save.called).to.be.false;
   });
 
+  it('returns null when notifcations are created', async () => {
+    const carrierId = 'carrierId';
+    const notificationManagement = {
+      getTemplates: sinon.stub(),
+      save: sinon.stub(),
+    };
+    const concurrencyOptions = { maxConcurrentRequests: 5 };
+    const notificationCreationTask = createNotificationCreationTask(notificationManagement, concurrencyOptions);
+    const state = {
+      results: {
+        notifications: [],
+        notificationsCreated: true,
+        carrierId,
+      },
+    };
+    const profile = {
+      resellerCarrierId: 'resellerId',
+    };
+    const res = await notificationCreationTask(state, profile);
+    expect(res).to.be.null;
+    expect(notificationManagement.save.called).to.be.false;
+    expect(notificationManagement.getTemplates.called).to.be.false;
+  });
+
   it('creates notification', async () => {
     const carrierId = 'carrierId';
     const getTemplatesResponse = {

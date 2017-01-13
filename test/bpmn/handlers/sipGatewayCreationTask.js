@@ -27,7 +27,7 @@ describe('bpmn/handlers/createSipGatewayCreationTask', () => {
     expect(sipGatewayCreationTask.$meta.name).to.equal(bpmnEvents.SIP_GATEWAY_CREATION);
   });
 
-  it('skips sip gateway creation when all sip gateways in profile are created', async () => {
+  it('returns null when all sip gateways in profile are created', async () => {
     const sipGatewaysProfiles = [{
       identifier: 'carrierId.gateway.tsbc1',
       description: 'Transcoding SBC #1',
@@ -69,6 +69,45 @@ describe('bpmn/handlers/createSipGatewayCreationTask', () => {
     };
     await expect(sipGatewayCreationTask(state, profile, context)).to.be.fulfilled;
     expect(sipGatewayCreationStub.called).to.be.false;
+  });
+
+  it('skips creation when sipGatewaysProfiles were created', async () => {
+    const sipGatewaysProfiles = [{
+      identifier: 'carrierId.gateway.tsbc1',
+      description: 'Transcoding SBC #1',
+      host: '192.168.35.50',
+      port: 5080,
+    }, {
+      identifier: 'carrierId.gateway.tsbc2',
+      description: 'Transcoding SBC #2',
+      host: '192.168.35.50',
+      port: 5080,
+    }];
+    const voiceProvisioningManagement = {
+      sipGatewayCreation: sinon.stub(),
+    };
+    const templateService = {
+      get: sinon.stub().returns({
+        profiles: sipGatewaysProfiles,
+      }),
+      render: sinon.stub(),
+    };
+    const sipGatewayCreationTask = createSipGatewayCreationTask(templateService, voiceProvisioningManagement);
+
+    const state = {
+      results: {
+        sipGateways: ['carrierId.gateway.tsbc1', 'carrierId.gateway.tsbc2'],
+      },
+    };
+    const profile = {};
+    const context = {
+      logger: new Logger(),
+    };
+    const res = await sipGatewayCreationTask(state, profile, context);
+    expect(res).to.be.null;
+    expect(templateService.get.calledOnce).to.be.true;
+    expect(templateService.render.called).to.be.false;
+    expect(voiceProvisioningManagement.sipGatewayCreation.called).to.be.false;
   });
 
   it('creates sip gateway when sip gateways in profile aren\'t created', async () => {

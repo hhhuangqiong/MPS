@@ -87,6 +87,32 @@ describe('bpmn/handlers/carrierCreationTask', () => {
     }
     expect(errorThrown).to.be.true;
   });
+  it('returns null if the carrierId was created', async () => {
+    const context = {
+      logger: new Logger(),
+    };
+    const profile = {
+      serviceType: ServiceType.WHITE_LABEL,
+    };
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+      },
+    };
+    const templateService = {
+      get: sinon.stub(),
+      render: sinon.stub(),
+    };
+    const carrierManagement = {
+      createCarrier: sinon.stub(),
+    };
+    const createCarrierTask = createCarrierCreationTask(templateService, carrierManagement);
+    const result = await createCarrierTask(state, profile, context);
+    expect(result).to.be.null;
+    expect(carrierManagement.createCarrier.called).to.be.false;
+    expect(templateService.get.called).to.be.false;
+    expect(templateService.render.called).to.be.false;
+  });
   it('returns carrierId if the task is success', async () => {
     const context = {
       logger: new Logger(),

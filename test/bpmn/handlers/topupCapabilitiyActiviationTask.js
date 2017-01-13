@@ -3,7 +3,7 @@ import { ArgumentError } from 'common-errors';
 
 import { createTopUpCapabilityActivationTask, bpmnEvents } from '../../../src/bpmn';
 
-describe('bpmn/handlers/createUserCarrierProfileCreationTask', () => {
+describe('bpmn/handlers/createTopUpCapabilityActivationTask', () => {
   it('throws ArgumentError when maaiiRateManagement is not provided', () => {
     expect(createTopUpCapabilityActivationTask).to.throw(ArgumentError);
   });

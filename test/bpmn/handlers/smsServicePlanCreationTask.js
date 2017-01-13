@@ -53,6 +53,30 @@ describe('bpmn/handlers/createSmsServicePlanCreationTask', () => {
     expect(smsServicePlanManagement.create.calledOnce).to.be.false;
   });
 
+  it('returns null when smsServicePlanId was created', async () => {
+    const smsServicePlanManagement = {
+      create: sinon.stub(),
+    };
+    const templateService = {
+      render: sinon.stub(),
+    };
+    const smsServicePlanCreationTask = createSmsServicePlanCreationTask(templateService, smsServicePlanManagement);
+
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+        smsServicePlanId: 'smsServicePlanId',
+      },
+    };
+    const profile = {
+      smsc: {},
+    };
+    const res = await smsServicePlanCreationTask(state, profile);
+    expect(smsServicePlanManagement.create.called).to.be.false;
+    expect(templateService.render.called).to.be.false;
+    expect(res).to.be.null;
+  });
+
   it('creates sms service plan when no servicePlanId in profile', async () => {
     const smsServicePlanTemplate = {
       identifier: 'carrierId.sms-service-plan',

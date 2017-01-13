@@ -9,6 +9,15 @@ export function createMaaiiRateTask(maaiiRateManagement, type) {
   check.predicate('type', type, _.isString);
 
   async function maaiiRate(state, profile) {
+    const ChargeRateIdName = {
+      OFFNET_CALL: 'offnetChargingRateId',
+      SMS: 'smsChargingRateId',
+    };
+    // early return if it is already created the charge rate id
+    if (state.results[ChargeRateIdName[type]]) {
+      return null;
+    }
+
     const { carrierId } = state.results;
     if (!carrierId) {
       throw new ArgumentNullError('carrierId');
@@ -35,10 +44,6 @@ export function createMaaiiRateTask(maaiiRateManagement, type) {
     if (!chargingRateId) {
       throw new ReferenceError('offnetCallChargeRateId is not defined in response body');
     }
-    const ChargeRateIdName = {
-      OFFNET_CALL: 'offnetChargingRateId',
-      SMS: 'smsChargingRateId',
-    };
 
     return {
       results: {

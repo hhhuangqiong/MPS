@@ -26,6 +26,28 @@ describe('bpmn/handlers/createVoiceCapabilityActivationTask', () => {
     expect(voiceCapabilityActivationTask.$meta.name).to.equal(bpmnEvents.VOICE_CAPABILITY_ACTIVATION);
   });
 
+  it('returns null when voiceProfileId was created', async () => {
+    const templateService = {
+      get: sinon.stub(),
+    };
+    const capabilitiesManagement = {
+      enableVoiceCapability: sinon.stub(),
+    };
+    const voiceCapabilityActivationTask = createVoiceCapabilityActivationTask(templateService, capabilitiesManagement);
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+        sipRoutingProfileId: 'sipRoutingProfileId',
+        voiceProfileId: 'voiceProfileId',
+      },
+    };
+    const profile = { capabilities: [Capability.CALL_ONNET] };
+    const res = await voiceCapabilityActivationTask(state, profile);
+    expect(res).to.be.null;
+    expect(templateService.get.calledOnce).to.be.false;
+    expect(capabilitiesManagement.enableVoiceCapability.calledOnce).to.be.false;
+  });
+
   it('won\'t enable voice capability when no capability in profile', async () => {
     const templateService = {
       get: sinon.stub().returns({}),

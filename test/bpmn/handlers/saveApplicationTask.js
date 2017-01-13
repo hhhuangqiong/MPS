@@ -8,7 +8,7 @@ import { createSaveApplicationTask, bpmnEvents } from '../../../src/bpmn';
 
 chai.use(chaiPromised);
 
-describe('bpmn/handlers/createSignUpRuleProvisionTask', () => {
+describe('bpmn/handlers/createSaveApplicationTask', () => {
   it('throws ArgumentError when any of dependencies is not provided', () => {
     const applicationManagement = {};
     const templateService = {};
@@ -26,7 +26,7 @@ describe('bpmn/handlers/createSignUpRuleProvisionTask', () => {
     expect(saveApplicationTask.$meta.name).to.equal(bpmnEvents.SAVE_APPLICATION);
   });
 
-  it('skips save application when no platform capabiities in profile', async () => {
+  it('returns null when no platform capabiities in profile', async () => {
     const applicationManagement = {
       saveApplication: sinon.stub(),
     };
@@ -45,7 +45,7 @@ describe('bpmn/handlers/createSignUpRuleProvisionTask', () => {
       serviceType: ServiceType.WHITE_LABEL,
       capabilities: [Capability.IM],
     };
-    await expect(saveApplicationTask(state, profile)).to.be.fulfiled;
+    await expect(saveApplicationTask(state, profile)).to.be.fulfilled;
     expect(applicationManagement.saveApplication.called).to.be.false;
   });
 
@@ -189,6 +189,34 @@ describe('bpmn/handlers/createSignUpRuleProvisionTask', () => {
     };
     await expect(saveApplicationTask(state, profile)).to.be.rejectedWith(IncompleteResultError);
     expect(applicationManagement.saveApplication.calledOnce).to.be.true;
+  });
+
+  it('skips save application when applicationIdentifier was created', async () => {
+    const applicationManagement = {
+      saveApplication: sinon.stub(),
+    };
+    const templateService = {
+      get: sinon.stub(),
+    };
+    const saveApplicationTask = createSaveApplicationTask(templateService, applicationManagement);
+
+    const state = {
+      results: {
+        featureSetIdentifier: 'carrierId.feature-set',
+        developerId: '58512b1e46e0fb000113963c',
+        applications: [],
+        applicationIdentifier: 'applicationIdentifier',
+      },
+    };
+    const profile = {
+      companyCode: 'companyCode',
+      serviceType: ServiceType.WHITE_LABEL,
+      capabilities: [Capability.PLATFORM_ANDROID],
+    };
+    const res = await saveApplicationTask(state, profile);
+    expect(res).to.be.null;
+    expect(templateService.get.called).to.be.false;
+    expect(applicationManagement.saveApplication.called).to.be.false;
   });
 
   it('saves application when there are multiple platform capabilities with white label service type', async () => {

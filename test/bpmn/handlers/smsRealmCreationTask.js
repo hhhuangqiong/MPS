@@ -51,6 +51,35 @@ describe('bpmn/handlers/createSmsRealmCreationTask', () => {
     expect(smsRealmManagement.create.calledOnce).to.be.false;
   });
 
+  it('returns null when smsRealmId was created', async () => {
+    const smsRealmManagement = {
+      create: sinon.stub(),
+    };
+    const templateService = {
+      render: sinon.stub(),
+    };
+    const smsRealmCreationTask = createSmsRealmCreationTask(templateService, smsRealmManagement);
+
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+        smsRealmId: 'smsRealmId',
+      },
+    };
+    const profile = {
+      smsc: {
+        realm: {
+          ip: '192.168.0.1',
+          port: '1234',
+        },
+      },
+    };
+    const res = await smsRealmCreationTask(state, profile);
+    expect(smsRealmManagement.create.called).to.be.false;
+    expect(templateService.render.called).to.be.false;
+    expect(res).to.be.null;
+  });
+
   it('creates sms realm when has realm in profile', async () => {
     const smsRealmTemplate = {
       identifier: 'carrierId.sms-realm',

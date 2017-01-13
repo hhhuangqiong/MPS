@@ -25,6 +25,22 @@ describe('bpmn/handlers/createUserCarrierProfileCreationTask', () => {
     await expect(userCarrierProfileCreationTask(state)).to.be.rejectedWith(ArgumentNullError);
   });
 
+  it('returns null when user carrier profile was created', async () => {
+    const carrierManagement = {
+      createUserCarrierProfile: sinon.stub(),
+    };
+    const state = {
+      results: {
+        carrierId: 'carrierId',
+        userCarrierProfileId: 'userCarrierProfileId',
+      },
+    };
+    const userCarrierProfileCreationTask = createUserCarrierProfileCreationTask(carrierManagement);
+    const res = await userCarrierProfileCreationTask(state);
+    expect(res).to.be.null;
+    expect(carrierManagement.createUserCarrierProfile.called).to.be.false;
+  });
+
   it('creates user carrier profile', async () => {
     const createUserCarrierProfileResponse = {
       body: {
