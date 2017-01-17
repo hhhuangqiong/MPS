@@ -89,4 +89,18 @@ export default class BaseRequest {
       .send(normalizedParams)
       .promise();
   }
+
+  postFile(uri, fieldName, file) {
+    const url = this.getUrl(uri);
+    let req = request.post(url);
+    if (this.proxyUrl) {
+      req = req.proxy(this.proxyUrl);
+    }
+    return req
+      .timeout(this.timeout)
+      .use(saLogger({ outgoing: true, timestamp: true }))
+      .set('Content-Type', 'multipart/form-data')
+      .attach(fieldName, file.buffer, file.originalname)
+      .promise();
+  }
 }
