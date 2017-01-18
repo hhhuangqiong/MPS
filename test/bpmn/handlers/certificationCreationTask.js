@@ -22,7 +22,7 @@ describe('bpmn/handlers/createCertificationCreationTask', () => {
       };
       const state = {
         results: {
-          certificatesCreated: '123',
+          certificatesCreated: true,
         },
       };
       const profile = {};
@@ -167,6 +167,60 @@ describe('bpmn/handlers/createCertificationCreationTask', () => {
       expect(response.results.certificatesCreated).to.be.true;
       expect(certificationManagement.getTemplates.calledOnce).to.be.true;
       expect(certificationManagement.create.called).to.be.true;
+    });
+
+    it('creates certificate that is not created before', async () => {
+      const res = {
+        body: {
+          group: 'abc',
+          certificates: [{
+            type: 'GCM',
+            platform_id: 'com.maaii.platform.android',
+            simple_api_key: '1234124',
+            project_id: '271811580218',
+          }, {
+            type: 'APNS',
+            platform_id: 'com.maaii.platform.ios',
+            sandbox: false,
+            certificate_password: '',
+            certificate: '123132',
+            voip_certificate_password: '',
+            voip_certificate: '123',
+            topic: '123sa',
+          }],
+        },
+      };
+      const resCertificate = {
+        body: {
+          id: '585bsdfba4285b52e58592e3f18',
+        },
+      };
+      const certificationManagement = {
+        getTemplates: sinon.stub().returns(res),
+        create: sinon.stub().returns(resCertificate),
+      };
+      const state = {
+        results: {
+          certificatesCreated: false,
+          applicationIdentifier: 'org.maaiii.wl.web472',
+          certificates: [{
+            certificateId: '585bba4285b52e58592e3f18',
+            templateId: 'org.maaiii.wl.web472:com.maaii.platform.android:GCM',
+          }],
+        },
+      };
+      const profile = {
+        resellerCarrierId: 'resellerId',
+      };
+      const createCertificates = createCertificationCreationTask(certificationManagement);
+      const response = await createCertificates(state, profile);
+      expect(response.results.certificates).to.have.lengthOf(2);
+      expect(response.results.certificates[1].certificateId).to.equal(resCertificate.body.id);
+      expect(response.results.certificates[1].templateId).to.equal('org.maaiii.wl.web472:com.maaii.platform.ios:APNS');
+      expect(response.results.certificatesCreated).to.be.true;
+      expect(certificationManagement.getTemplates.calledOnce).to.be.true;
+      expect(certificationManagement.create.calledOnce).to.be.true;
+      expect(certificationManagement.create.args[0][0].type).to.equal('APNS');
     });
   });
 });

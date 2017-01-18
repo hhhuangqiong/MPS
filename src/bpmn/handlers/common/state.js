@@ -7,7 +7,7 @@ const PUBLIC_ERROR_SCHEMA = Joi.object({
   path: Joi.string(),
   traceId: Joi.string(),
   eventName: Joi.string(),
-}).options({ allowUnknown: true });
+}).options({ allowUnknown: true, presence: 'optional' });
 
 export const PUBLIC_STATE_SCHEMA = Joi.object({
   results: Joi.object({

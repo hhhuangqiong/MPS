@@ -39,7 +39,7 @@ export function createCertificationCreationTask(certificateManagement) {
     if (!templates.group || !_.isArray(templates.certificates)) {
       throw new ReferenceError('Unexpected response from CPS: key attr \'group\' missing');
     }
-    const certificatesByTemplateId = _.keyBy(templates.certificates, x => x.templateId);
+    const certificatesByTemplateId = _.keyBy(currentCertificates, x => x.templateId);
     const certificateTemplates = templates.certificates
       .filter(t => !certificatesByTemplateId[getKey(t, applicationIdentifier)]);
     let error = null;
