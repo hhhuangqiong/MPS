@@ -11,7 +11,8 @@ export function createProvisioningEndHandler(provisioningService) {
     const store = createStore(this);
     const state = store.get();
 
-    logger.debug('Input profile: ', profile);
+    // stringify and parse profile because it will also print out the _bsontype which is mongoDB internal property
+    logger.debug('Input profile: ', JSON.parse(JSON.stringify(profile)));
     logger.debug('Final process state: ', state);
 
     const params = {

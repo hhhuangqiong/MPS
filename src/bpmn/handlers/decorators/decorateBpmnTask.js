@@ -84,7 +84,7 @@ export function decorateBpmnTask(handler, rootLogger) {
       // Throwing an error in a task handler will mean system error
       let rethrownError = e;
       if (e instanceof IncompleteResultError) {
-        handleSuccess(e.state);
+        handleSuccess(e.updates);
         handleSystemError(e.inner_error);
         rethrownError = e.inner_error;
       } else {
