@@ -16,13 +16,13 @@ export function createServer(logger, api, mongooseConnection, serverOptions) {
   server.use(morgan('common'));
   server.use(bodyParser.json());
 
-  async function start() {
-    await mongooseConnection;
+  function start() {
     healthCheck(server, {
       mongodb: {
         mongoose: mongooseConnection,
       },
     });
+
     server.use(api);
     server.listen(serverOptions.port);
     logger.debug(`Server is listening at port ${serverOptions.port}...`);

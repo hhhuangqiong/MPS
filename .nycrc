@@ -1,0 +1,20 @@
+{
+  "check-coverage": false,
+  "lines": 90,
+  "statements": 90,
+  "functions": 100,
+  "branches": 80,
+  "include": [
+    "src/**/*.js"
+  ],
+  "exclude": [
+    "src/util/formatError.js",
+    "src/services/external/**.js"
+  ],
+  "reporter": [
+    "html",
+    "lcov",
+    "text",
+    "text-summary"
+  ]
+}

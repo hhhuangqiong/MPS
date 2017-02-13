@@ -14,32 +14,33 @@ export function createMongooseConnection(logger, mongoOptions) {
   }));
   const { uri, server, debug } = mongoOptions;
 
-  const connection = mongoose.connect(uri, { server });
+  // to support multiple connections
+  const connection = mongoose.createConnection(uri, { server });
 
   mongoose.set('debug', debug);
 
   ['open', 'connecting', 'connected', 'reconnected', 'disconnected', 'close', 'fullsetup'].forEach(evt => {
-    mongoose.connection.on(evt, () => {
+    connection.on(evt, () => {
       logger.info(`Mongoose connection is ${evt}.`);
     });
   });
 
-  mongoose.connection.on('error', error => {
+  connection.on('error', error => {
     logger.error(`Error connecting to MongoDB [${uri}]: ${error.message}`, error);
   });
 
   // monitor the replicaset
-  if (mongoose.connection.db.serverConfig.s.replset) {
+  if (connection.db.serverConfig.s.replset) {
     ['joined', 'left'].forEach(evt => {
-      mongoose.connection.db.serverConfig.s.replset.on(evt, (type, serverObj) => {
+      connection.db.serverConfig.s.replset.on(evt, (type, serverObj) => {
         logger.info(`Replset event: ${type} ${evt}`, serverObj.ismaster);
       });
     });
 
-    mongoose.connection.db.serverConfig.s.replset.on('error', error => {
+    connection.db.serverConfig.s.replset.on('error', error => {
       logger.error(`Replset error: ${error.message}`, error);
     });
   }
 
-  return connection;
+  return Promise.promisifyAll(connection);
 }
