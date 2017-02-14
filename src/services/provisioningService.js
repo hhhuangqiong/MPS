@@ -63,6 +63,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
           .required(),
       }).optional(),
     }).required(),
+    logo: Joi.object(),
   });
 
   async function createProvisioning(command) {

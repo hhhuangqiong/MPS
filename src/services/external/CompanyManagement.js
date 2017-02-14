@@ -43,6 +43,12 @@ export class CompanyManagement extends BaseRequest {
       .catch(e => this.errorHandler(e));
   }
 
+  postCompanyLogo(id, logo) {
+    const uri = `/identity/companies/${id}/logo`;
+    return this.postFile(uri, 'logo', logo)
+      .catch(e => this.errorHandler(e));
+  }
+
   errorHandler(error) {
     const body = error.res.body;
     const statusCode = error.status;

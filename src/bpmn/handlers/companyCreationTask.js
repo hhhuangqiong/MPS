@@ -24,6 +24,10 @@ export function createCompanyCreationTask(companyManagement) {
       throw new ReferenceError('id is not defined in response body for carrier creation');
     }
 
+    if (profile.logo) {
+      await companyManagement.postCompanyLogo(id, profile.logo);
+    }
+
     return {
       results: {
         companyId: id,
