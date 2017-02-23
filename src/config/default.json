@@ -1,32 +1,47 @@
 {
+  "cluster": {
+    "zkConnectionString": "192.168.118.11:2181,192.168.118.12:2181,192.168.118.13:2181",
+    "region": "hongkong-all",
+    "name": "mps",
+    "sequentialId": null
+  },
   "cps": {
+    "serviceName": "cps",
     "baseUrl": "http://192.168.118.34:80",
     "timeout": 60000
   },
   "iam": {
+    "serviceName": "iam",
     "baseUrl": "http://deploy.dev.maaii.com:4004",
     "timeout": 15000
   },
   "mongodb": {
+    "serviceName": null,
     "uri": "mongodb://localhost:27017/maaii-provisioning-service",
-    "server": {
-      "auto_reconnect": true,
-      "poolSize": 5,
-      "socketOptions": {
-        "autoReconnect": true,
-        "keepAlive": 3000
+    "database": "maaii-provisioning-service",
+    "connectionOptions": {
+      "server": {
+        "auto_reconnect": true,
+        "poolSize": 5,
+        "socketOptions": {
+          "autoReconnect": true,
+          "keepAlive": 3000
+        }
       }
     }
   },
   "maaiiRate": {
+    "serviceName": "rates-deployment",
     "baseUrl": "http://192.168.118.127:9126",
     "timeout": 15000
   },
   "boss": {
-    "baseUrl": "http://192.168.135.167:10080/MaaiiBossApiServer",
+    "serviceName": null,
+    "baseUrl": "http://192.168.135.167:10080",
     "timeout": 15000
   },
   "signUpRule": {
+    "serviceName": "signup-rule",
     "baseUrl": "http://192.168.118.127:8083",
     "timeout": 15000
   },

@@ -45,20 +45,19 @@ export default class BaseRequest {
     return validateSchema(params, rules);
   }
 
-  getUrl(uri = '') {
+  async getUrl(uri = '') {
     if (typeof uri !== 'string') {
       throw new URIError('uri is not a string');
     }
-
     if (!uri.length) {
       throw new URIError('uri is empty');
     }
-
-    return `${this.baseUrl}${uri}`;
+    const baseUrl = _.isString(this.baseUrl) ? this.baseUrl : await this.baseUrl();
+    return `${baseUrl}${uri}`;
   }
 
-  get(uri) {
-    const url = this.getUrl(uri);
+  async get(uri) {
+    const url = await this.getUrl(uri);
     this.logger.debug(`[${(new Date()).toUTCString()}] Sending GET Request to ${url}`);
     let req = request.get(url);
     if (this.proxyUrl) {
@@ -71,8 +70,8 @@ export default class BaseRequest {
       .promise();
   }
 
-  post(uri, params) {
-    const url = this.getUrl(uri);
+  async post(uri, params) {
+    const url = await this.getUrl(uri);
     const normalizedParams = this.normalizeParams(params);
     this.logger.debug(
       `[${(new Date()).toUTCString()}] Sending POST Request to ${url} with params:`,

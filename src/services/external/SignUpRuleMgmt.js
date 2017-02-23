@@ -21,12 +21,12 @@ const PolicyTypes = {
 const SignUpRuleCreationSchema = Joi.object({
   carrierId: Joi.string().required(),
   rules: Joi.array().items(Joi.object({
-    applicationVersionStatus: Joi.string().required().valid(Object.values(ApplicationVersionStatus)),
+    applicationVersionStatus: Joi.string().required().valid(_.values(ApplicationVersionStatus)),
     group: Joi.string().required(),
-    identityType: Joi.string().required().valid(Object.values(IdentityTypes)),
+    identityType: Joi.string().required().valid(_.values(IdentityTypes)),
     identity: Joi.string().required(),
     regex: Joi.boolean().required().default(false),
-    policy: Joi.string().required().valid(Object.values(PolicyTypes)),
+    policy: Joi.string().required().valid(_.values(PolicyTypes)),
     order: Joi.number().required(),
     updatedUser: Joi.string().required(),
     comments: Joi.string().required(),
@@ -63,7 +63,8 @@ export class SignUpRuleMgmt extends BaseRequest {
     try {
       responseError = JSON.parse(error.res.text).error;
     } catch (e) {
-      throw new ReferenceError(`Unexpected response from Sign Up Rule Service: ${_.get(error, 'res.text', 'Empty response body')}`, e);
+      const message = _.get(error, 'res.text', 'Empty response body');
+      throw new ReferenceError(`Unexpected response from Sign Up Rule Service: ${message}`, e);
     }
 
     let parsedError;

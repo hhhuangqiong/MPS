@@ -36,7 +36,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
     resellerCompanyId: Joi.string().required().regex(REGEX_MONGO_OBJECT_ID),
     resellerCarrierId: Joi.string().required(),
     capabilities: Joi.array()
-      .items(Joi.string().valid(Object.values(Capabilities)))
+      .items(Joi.string().valid(_.values(Capabilities)))
       .unique()
       .required(),
     paymentMode: Joi.string().required().valid(PaymentModes),
@@ -192,14 +192,14 @@ export function provisioningService(logger, Provisioning, eventBus) {
       }),
       country: Joi.string(),
       companyCode: Joi.string().regex(REGEX_NUMBER_LOWERCASE_ONLY),
-      serviceType: Joi.string().valid(Object.values(ServiceTypes)),
+      serviceType: Joi.string().valid(_.values(ServiceTypes)),
       resellerCompanyId: Joi.string().regex(REGEX_MONGO_OBJECT_ID),
       resellerCarrierId: Joi.string(),
       capabilities: Joi.array()
-        .items(Joi.string().valid(Object.values(Capabilities)))
+        .items(Joi.string().valid(_.values(Capabilities)))
         .unique(),
       paymentMode: Joi.string().valid(PaymentModes),
-      chargeWallet: Joi.string().valid(Object.values(ChargeWallets)),
+      chargeWallet: Joi.string().valid(_.values(ChargeWallets)),
       billing: Joi.object({
         smsPackageId: Joi.number().min(0),
         offnetPackageId: Joi.number().min(0),

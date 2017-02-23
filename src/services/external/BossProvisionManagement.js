@@ -54,7 +54,7 @@ const BossProvisionCreateSchema = Joi.object({
 export class BossProvisionManagement extends BaseRequest {
 
   create(params) {
-    const uri = '/api/provision';
+    const uri = '/MaaiiBossApiServer/api/provision';
     const validationError = this.validateParams(params, BossProvisionCreateSchema);
 
     if (validationError) {

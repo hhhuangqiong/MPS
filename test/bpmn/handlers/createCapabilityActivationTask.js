@@ -2,8 +2,9 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import chaiPromised from 'chai-as-promised';
 import { ArgumentError } from 'common-errors';
-import createCapabilityActivationTask
-  from '../../../src/bpmn/handlers/createCapabilityActivationTask';
+
+import createCapabilityActivationTask from './../../../src/bpmn/handlers/createCapabilityActivationTask';
+import { Capability, CapabilityType } from './../../../src/domain';
 chai.use(chaiPromised);
 
 describe('bpmn/handlers/createCapabilityActivationTask', () => {
@@ -14,25 +15,20 @@ describe('bpmn/handlers/createCapabilityActivationTask', () => {
   describe('activateCapability', () => {
     it('returns null if it should not be activated', async () => {
       const capabilityOptions = {
-        requirements: ['im.im-to-sms'],
-        internal: 'im.im-to-sms',
-        external: 'im',
+        requirements: [Capability.IM],
+        internal: Capability.IM,
+        external: CapabilityType.IM,
       };
       const state = {
         results: {
-          capabilities: ['call.onnet'],
+          capabilities: [Capability.IM],
           carrierId: '123',
         },
       };
-      const inputProfile = [
-        { capabilities: ['im'] },
-        { capabilities: ['im.im-to-sms'] },
-      ];
-      const capabilitiesManagement = {};
+      const profile = { capabilities: ['im'] };
+      const capabilitiesManagement = { enableCapabilityByType: sinon.stub() };
       const activateCapability = createCapabilityActivationTask(capabilitiesManagement, capabilityOptions);
-      inputProfile.forEach(async args => {
-        await expect(activateCapability(state, args)).to.eventually.equal(null);
-      });
+      await expect(activateCapability(state, profile)).to.eventually.equal(null);
     });
     it('returns capabilities which are activated', async () => {
       const capabilityOptions = {
