@@ -75,7 +75,8 @@ const schema = new Schema({
 schema.set('toJSON', {
   getters: true,
   transform: (doc, ret) => {
-    ret.id = ret._id;
+    // convert from Object to plain string
+    ret.id = ret._id.toString();
     delete ret._id;
   },
 });

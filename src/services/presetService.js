@@ -37,7 +37,7 @@ export function presetService(Preset) {
     const { presetId } = sanitizedCommand;
     const options = { upsert: true, new: true };
     const preset = await Preset.findOneAndUpdate({ presetId }, sanitizedCommand, options);
-    return preset;
+    return preset.toJSON();
   }
 
   const GET_PRESET_SCHEMA = Joi.object({
@@ -50,7 +50,7 @@ export function presetService(Preset) {
     if (!preset) {
       throw new NotFoundError('Preset');
     }
-    return preset;
+    return preset.toJSON();
   }
 
   return {

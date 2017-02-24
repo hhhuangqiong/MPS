@@ -75,7 +75,7 @@ gulp.task('build', ['lint', 'compile', 'copy-resources']);
 // Run this if you don't want to start a dev server,
 // but only compile files on changes. For example if you are using and IDE to debug
 gulp.task('watch', ['build'], () => {
-  gulp.watch(PATHS.SRC_ALL_FILES, ['build', 'test']);
+  gulp.watch(PATHS.SRC_ALL_FILES, ['build']);
 });
 
 gulp.task('dev', ['watch'], () => {

@@ -72,7 +72,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
     // TODO: can we use a single id here?
     const event = {
       processId: uuid.v4(),
-      provisioningId: provisioning.id,
+      provisioningId: provisioning.id.toString(),
       profile,
       previousResults: null,
     };
@@ -80,7 +80,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
     provisioning.processId = event.processId;
     provisioning.status = ProcessStatus.IN_PROGRESS;
     await provisioning.save();
-    return _.pick(provisioning, PUBLIC_PROPS);
+    return _.pick(provisioning.toJSON(), PUBLIC_PROPS);
   }
 
   const schemaGetProvisioning = Joi.object({
@@ -89,7 +89,11 @@ export function provisioningService(logger, Provisioning, eventBus) {
 
   async function getProvisioning(command) {
     const sanitizedCommand = validator.sanitize(command, schemaGetProvisioning);
-    return await Provisioning.findById(sanitizedCommand.provisioningId).exec();
+    const provisioning = await Provisioning.findById(sanitizedCommand.provisioningId).exec();
+    if (!provisioning) {
+      return null;
+    }
+    return _.pick(provisioning.toJSON(), PUBLIC_PROPS);
   }
 
   const GET_PROVISIONINGS_SCHEMA = Joi.object({
