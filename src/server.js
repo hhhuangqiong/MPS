@@ -1,5 +1,8 @@
+import http from 'http';
+
 import express from 'express';
 import bodyParser from 'body-parser';
+import Promise from 'bluebird';
 import morgan from 'morgan';
 import metricsMiddleware from 'm800-prometheus-express';
 import healthCheck from 'm800-health-check';
@@ -11,21 +14,23 @@ export function createServer(logger, api, mongooseConnection, serverOptions) {
   check.ok('mongooseConnection', mongooseConnection);
   check.members('serverOptions', serverOptions, ['env', 'port']);
 
-  const server = express();
-  server.use(metricsMiddleware());
-  server.use(morgan('common'));
-  server.use(bodyParser.json());
+  const app = express();
+  app.use(metricsMiddleware());
+  app.use(morgan('common'));
+  app.use(bodyParser.json());
 
-  function start() {
-    healthCheck(server, {
+  async function start() {
+    healthCheck(app, {
       mongodb: {
         mongoose: mongooseConnection,
       },
     });
+    app.use(api);
 
-    server.use(api);
-    server.listen(serverOptions.port);
+    const server = Promise.promisifyAll(http.createServer(app));
+    await server.listenAsync(serverOptions.port);
     logger.debug(`Server is listening at port ${serverOptions.port}...`);
+    return server;
   }
 
   return {

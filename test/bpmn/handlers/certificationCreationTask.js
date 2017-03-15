@@ -133,7 +133,7 @@ describe('bpmn/handlers/createCertificationCreationTask', () => {
       expect(certificationManagement.getTemplates.calledOnce).to.be.true;
       expect(certificationManagement.create.calledOnce).to.be.true;
     });
-    it('updates certificates after the function is finished', async () => {
+    it('creates certificates when they are not yet created', async () => {
       const res = {
         body: {
           group: 'abc',
@@ -154,8 +154,6 @@ describe('bpmn/handlers/createCertificationCreationTask', () => {
       const state = {
         results: {
           applicationIdentifier: '123',
-          certificates:
-          { templateId: '123:test:offnet', certificateId: 'm800' },
         },
       };
       const profile = {

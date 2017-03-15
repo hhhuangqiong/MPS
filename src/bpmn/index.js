@@ -43,10 +43,10 @@ import { provisioningProcessManager } from './provisioningProcessManager';
 export * from './handlers';
 export * from './provisioningProcessManager';
 
-export function register(container) {
+export function register(registry) {
   const BPMN_PREFIX = 'bpmn__';
   function registerBpmnHandler(eventName, handler, ...deps) {
-    container.service(`${BPMN_PREFIX}${eventName}`, handler, ...deps);
+    registry.factory(`${BPMN_PREFIX}${eventName}`, container => handler(...deps.map(d => container[d])));
   }
 
   // BPMN Handlers
@@ -223,7 +223,7 @@ export function register(container) {
   registerBpmnHandler(bpmnEvents.PARALLEL_ALL_START, () => gateways.parallelAllStartGateway);
   registerBpmnHandler(bpmnEvents.PARALLEL_ALL_END, () => gateways.parallelAllEndGateway);
 
-  container.factory('bpmnHandlers', c => {
+  registry.factory('bpmnHandlers', c => {
     // Grab all handlers starting with bpmn prefix
     const handlers = _(c)
       .keys()
@@ -235,11 +235,12 @@ export function register(container) {
   });
 
   // BPMN Process Manager
-  container.service(
+  registry.service(
     'ProvisioningProcessManager',
     provisioningProcessManager,
     'logger',
-    'mongoOptions',
+    'mongoUriResolver',
+    'mongoConnectionOptions',
     'bpmnHandlers',
     'eventBus',
   );

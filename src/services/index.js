@@ -37,24 +37,24 @@ export * from './provisioningService';
 
 export function register(container) {
   // CPS services
-  container.service('CarrierManagement', CarrierManagement, 'logger', 'cpsApiOptions');
-  container.service('CapabilitiesManagement', CapabilitiesManagement, 'logger', 'cpsApiOptions');
-  container.service('FeatureSetManagement', FeatureSetManagement, 'logger', 'cpsApiOptions');
-  container.service('ApplicationManagement', ApplicationManagement, 'logger', 'cpsApiOptions');
-  container.service('VoiceProvisioningManagement', VoiceProvisioningManagement, 'logger', 'cpsApiOptions');
-  container.service('VerificationManagement', VerificationManagement, 'logger', 'cpsApiOptions');
-  container.service('CertificateManagement', CertificateManagement, 'logger', 'cpsApiOptions');
-  container.service('NotificationManagement', NotificationManagement, 'logger', 'cpsApiOptions');
-  container.service('SmsRealmManagement', SmsRealmManagement, 'logger', 'cpsApiOptions');
-  container.service('SmsServicePlanManagement', SmsServicePlanManagement, 'logger', 'cpsApiOptions');
-  container.service('MaaiiRateManagement', MaaiiRateManagement, 'logger', 'maaiiRateOptions');
+  container.service('CarrierManagement', CarrierManagement, 'logger', 'cpsClientOptions');
+  container.service('CapabilitiesManagement', CapabilitiesManagement, 'logger', 'cpsClientOptions');
+  container.service('FeatureSetManagement', FeatureSetManagement, 'logger', 'cpsClientOptions');
+  container.service('ApplicationManagement', ApplicationManagement, 'logger', 'cpsClientOptions');
+  container.service('VoiceProvisioningManagement', VoiceProvisioningManagement, 'logger', 'cpsClientOptions');
+  container.service('VerificationManagement', VerificationManagement, 'logger', 'cpsClientOptions');
+  container.service('CertificateManagement', CertificateManagement, 'logger', 'cpsClientOptions');
+  container.service('NotificationManagement', NotificationManagement, 'logger', 'cpsClientOptions');
+  container.service('SmsRealmManagement', SmsRealmManagement, 'logger', 'cpsClientOptions');
+  container.service('SmsServicePlanManagement', SmsServicePlanManagement, 'logger', 'cpsClientOptions');
+  container.service('MaaiiRateManagement', MaaiiRateManagement, 'logger', 'maaiiRateClientOptions');
   // IAM services
-  container.service('CompanyManagement', CompanyManagement, 'logger', 'iamApiOptions');
-  container.service('AccessManagement', AccessManagement, 'logger', 'iamApiOptions');
+  container.service('CompanyManagement', CompanyManagement, 'logger', 'iamClientOptions');
+  container.service('AccessManagement', AccessManagement, 'logger', 'iamClientOptions');
   // BOSS services
-  container.service('BossProvisionManagement', BossProvisionManagement, 'logger', 'bossApiOptions');
+  container.service('BossProvisionManagement', BossProvisionManagement, 'logger', 'bossClientOptions');
   // sign up rule services
-  container.service('SignUpRuleMgmt', SignUpRuleMgmt, 'logger', 'signUpRuleApiOptions');
+  container.service('SignUpRuleMgmt', SignUpRuleMgmt, 'logger', 'signUpRuleClientOptions');
 
   // Models
   container.service('Provisioning', createProvisioningModel, 'mongooseConnection');

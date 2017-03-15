@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import mongoose from 'mongoose';
 import Promise from 'bluebird';
 
-import { createTestContext } from '../test-context';
+import { createTestContext } from './test-context';
 import { createProvisioningModel } from '../../src/services/models';
 import { provisioningService as createProvisioningService } from '../../src/services';
 import {

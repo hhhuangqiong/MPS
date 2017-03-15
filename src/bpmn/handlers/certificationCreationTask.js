@@ -51,10 +51,10 @@ export function createCertificationCreationTask(certificateManagement) {
         if (!certificateId) {
           throw new ReferenceError('Unexpected resposne from CPS: key attr \'id\' is missing');
         }
-        currentCertificates = [...currentCertificates, {
+        currentCertificates = (currentCertificates || []).concat([{
           templateId: templateKey,
           certificateId,
-        }];
+        }]);
       }
     } catch (e) {
       error = e;

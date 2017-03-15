@@ -4,9 +4,8 @@ import { ValidationError, NotFoundError } from 'common-errors';
 import chaiPromised from 'chai-as-promised';
 import Promise from 'bluebird';
 
-import { createTestContext } from '../test-context';
-import { createPresetModel } from '../../src/services/models';
-import { presetService as createPresetService } from '../../src/services';
+import { createTestContext } from './test-context';
+import { createPresetModel, presetService as createPresetService } from '../../src/services';
 import {
   ServiceType,
   PaymentMode,
@@ -29,7 +28,9 @@ function decorate(test) {
         presetService,
       }));
     } finally {
-      await connection.closeAsync();
+      if (connection) {
+        await connection.closeAsync();
+      }
     }
   };
 }

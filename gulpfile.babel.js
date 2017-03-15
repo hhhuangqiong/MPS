@@ -16,8 +16,12 @@ const PATHS = {
   SRC_ALL_FILES: path.join(ROOT, 'src/**/*'),
   SRC_JS_FILES: path.join(ROOT, 'src/**/*.js'),
   TEST_JS_FILES: path.join(ROOT, 'test/**/*.js'),
-  SRC_RESOURCE_FILES: path.join(ROOT, 'src/**/!(*.js)'),
-  BUILD_DIR: path.join(ROOT, 'build/src'),
+  SRC_RESOURCE_FILES: [
+    path.join(ROOT, 'src/**/!(*.js)'),
+    path.join(ROOT, 'package.json'),
+  ],
+  BUILD_DIR: path.join(ROOT, 'build'),
+  BUILD_SRC_DIR: path.join(ROOT, 'build/src'),
   BUILD_ENTRYPOINT_FILE: path.join(ROOT, 'build/src'),
   BUILD_MIGRAION_DIR: path.join(ROOT, 'build/migrations'),
   SRC_MIGRATION_FILES: path.join(ROOT, 'migrations/**/*'),
@@ -46,7 +50,7 @@ gulp.task('lint', () => {
 
 gulp.task('compile', () => {
   const stream = gulp.src(PATHS.SRC_JS_FILES)
-    .pipe(changed(PATHS.BUILD_DIR))
+    .pipe(changed(PATHS.BUILD_SRC_DIR))
     .pipe(sourcemaps.init())
     .pipe(babel())
     .on('error', (e) => {
@@ -59,12 +63,12 @@ gulp.task('compile', () => {
       throw e;
     })
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(PATHS.BUILD_DIR));
+    .pipe(gulp.dest(PATHS.BUILD_SRC_DIR));
   return stream;
 });
 
 gulp.task('copy-resources', () => {
-  const stream = gulp.src(PATHS.SRC_RESOURCE_FILES)
+  const stream = gulp.src(PATHS.SRC_RESOURCE_FILES, { base: ROOT })
     .pipe(changed(PATHS.BUILD_DIR))
     .pipe(gulp.dest(PATHS.BUILD_DIR));
   return stream;
@@ -81,7 +85,7 @@ gulp.task('watch', ['build'], () => {
 gulp.task('dev', ['watch'], () => {
   const stream = nodemon({
     script: PATHS.BUILD_ENTRYPOINT_FILE,
-    watch: PATHS.BUILD_DIR,
+    watch: PATHS.BUILD_SRC_DIR,
   });
   return stream;
 });
@@ -89,9 +93,7 @@ gulp.task('dev', ['watch'], () => {
 gulp.task('test', () => {
   const stream = gulp.src(PATHS.TEST_JS_FILES)
     .pipe(babel())
-    .pipe(mocha({
-      require: ['babel-polyfill'],
-    }));
+    .pipe(mocha());
   return stream;
 });
 
