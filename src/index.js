@@ -17,17 +17,23 @@ async function run() {
       serviceDiscoveryAgent: discovery,
     } = app;
 
-    const [httpServer] = await Promise.all([
+    await Promise.all([
       server.start(),
       discovery.connect(),
       bpmn.start(),
     ]);
     if (ENV !== 'development') {
-      await discovery.registry.registerHttpServer(httpServer, {
+      const endpoint = {
+        host: config.cluster.host,
+        port: config.cluster.port,
+        protocol: config.cluster.protocol,
+      };
+      const meta = {
         name: config.cluster.name,
         version: packageJson.version,
         sequentialId: config.cluster.sequentialId,
-      });
+      };
+      await discovery.registry.registerApi(endpoint, meta);
     }
   } catch (e) {
     logger.error('Failed to start the service: %s', e.message, e);

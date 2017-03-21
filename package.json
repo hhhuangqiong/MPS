@@ -75,7 +75,7 @@
     "m800-health-check": "^0.3.3-snapshot.121",
     "m800-initializers": "^0.1.2",
     "m800-prometheus-express": "^0.1.0",
-    "m800-service-discovery": "^0.2.1-snapshot.126",
+    "m800-service-discovery": "^0.3.0-snapshot.137",
     "m800-util": "^0.7.0-snapshot.113",
     "m800-winston": "^0.1.1",
     "method-override": "^2.3.6",

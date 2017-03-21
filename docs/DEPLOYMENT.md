@@ -27,6 +27,9 @@ The application can be configured using docker container environment variables. 
 |`cluster__region`| Maaii cluster region | `hongkong-all` | |
 |`cluster__name`| Service name in the Maaii cluster | `mps` | |
 |`cluster__sequentialId`| Sequential instance index in the cluster | `null` | |
+|`cluster__host`| Public domain name or IP address of the host which should be used by external services. | `localhost` | |
+|`cluster__port`| Public port which should used by external services. | `3000` | |
+|`cluster__protocol`| Endpoint protocol which should be used by external services. | `http` | |
 |`mongodb__uri`| MongoDB URI in [Standard Connection String](https://docs.mongodb.com/manual/reference/connection-string/) format |`mongodb://testbed-usr:testbed-pw@192.168.119.71,192.168.119.73/m800-whitelabel-portal?connectTimeoutMS=300000` | mongodb://localhost:27017/maaii-provisioning-service |
 |`mongodb__serviceName`| MongoDB service name in the Maaii cluster | `null` |
 |`mongodb__database`| MongoDB database name. Used only with service discovery (when `mongodb__serviceName` is specified) | |
@@ -51,12 +54,12 @@ The application can be configured using docker container environment variables. 
 |`bpmn__templates__collectionName` | MongoDB collection name for provisioning templates configuration | `config`| |
 |`bpmn__templates__documentId` | MongoDB document _id where templates are stored | `templates` | |
 
-**Notes** 
+**Notes**
 1. Keys defined with __ in between words are due to default setup of [nconf](https://github.com/indexzero/nconf), an npm module that we used to organize application configurations.
 2. Service discovery is the preferred way to lookup external services. Hardcoded service urls and database
-connection strings in environment variables, such as `mongodb__uri`, `cps__baseUrl`, etc., will eventually 
-be obsoleted. 
- 
+connection strings in environment variables, such as `mongodb__uri`, `cps__baseUrl`, etc., will eventually
+be obsoleted.
+
 ## Provisioning Process Configuration
 
 Application reads provisioning configuration template from MongoDB.
