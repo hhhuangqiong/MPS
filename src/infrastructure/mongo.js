@@ -44,12 +44,17 @@ export function mongooseConnectionFactory(logger, resolveUri, options = {}) {
     });
     const replicaSet = connection.db.serverConfig.s.replset;
     if (replicaSet) {
-      REPLICA_SET_EVENTS.forEach(name =>
-        replicaSet.on(name, (type, server) => {
-          logger.info('MongoDB replica set changed: %s (%s).', name, type, { server });
-        })
-      );
-      replicaSet.on('error', e => logger.error('MongoDB replica set error: %s', e.message, e));
+      REPLICA_SET_EVENTS.forEach(eventName => {
+        replicaSet.on(eventName, (type, serverObj) => {
+          logger.info('Replica set event %s %s received', type, eventName, {
+            isMaster: serverObj.ismaster,
+          });
+        });
+      });
+
+      replicaSet.on('error', error => {
+        logger.error('Replica set error: %s', error.message, error);
+      });
     }
     await new Promise((resolve, reject) => {
       connection.once('connected', resolve);
@@ -62,4 +67,3 @@ export function mongooseConnectionFactory(logger, resolveUri, options = {}) {
     connect,
   };
 }
-
