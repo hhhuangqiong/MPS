@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { Schema } from 'mongoose';
 import { check } from 'm800-util';
 
-import { stringToPath } from './../util';
+import { stringToPath } from './../../util';
 
 export function mongoKeyValueStorage(mongooseConnection, options = {}) {
   check.ok('mongooseConnection', mongooseConnection);

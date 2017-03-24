@@ -108,7 +108,6 @@ export const VerificationMethod = {
 
 export const VerificationMethods = _.values(VerificationMethod);
 
-
 export default {
   ProcessStatus,
   ProcessStatuses,

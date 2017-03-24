@@ -1,7 +1,7 @@
 import logger from 'winston';
 import Promise from 'bluebird';
 
-import config from './../../src/config';
+import config from './../config';
 import { mongooseConnectionFactory } from '../../src/infrastructure';
 
 export async function createTestContext() {

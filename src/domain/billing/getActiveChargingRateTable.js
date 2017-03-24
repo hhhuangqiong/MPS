@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export function getActiveChargingRateTable(chargingRateTables) {
+export default function getActiveChargingRateTable(chargingRateTables) {
   // validate reseller rate : the endDate should be larger than current time
   // and will pick the first matched charging rate
   const currentTime = new Date();

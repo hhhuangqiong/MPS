@@ -13,7 +13,7 @@ export const PUBLIC_STATE_SCHEMA = Joi.object({
   results: Joi.object({
     adminRoleCreated: Joi.boolean(),
     applicationIdentifier: Joi.string().allow(null),
-    applications: Joi.array(Joi.object({
+    applications: Joi.array().items(Joi.object({
       app: Joi.object().required(),
       platform: Joi.string().required(),
     })),
@@ -21,7 +21,7 @@ export const PUBLIC_STATE_SCHEMA = Joi.object({
     capabilities: Joi.array().items(Joi.string()),
     carrierId: Joi.string().allow(null),
     carrierProfileId: Joi.string().allow(null),
-    certificates: Joi.array(Joi.object({
+    certificates: Joi.array().items(Joi.object({
       certificateId: Joi.string().required(),
       templateId: Joi.string().required(),
     })),
@@ -34,7 +34,7 @@ export const PUBLIC_STATE_SCHEMA = Joi.object({
     notificationsCreated: Joi.boolean(),
     offnetChargingRateId: Joi.string().allow(null),
     signUpRuleIds: Joi.array().items(Joi.string()),
-    sipGateways: Joi.array(Joi.string()),
+    sipGateways: Joi.array().items(Joi.string()),
     sipRoutingProfileId: Joi.string().allow(null),
     smsChargingRateId: Joi.string().allow(null),
     smsProfileId: Joi.string().allow(null),

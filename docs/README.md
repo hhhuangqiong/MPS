@@ -21,6 +21,4 @@ node ./build/src/server
 ## Roadmap
 
 - [ ] Scaling - enable MPS to horizontal scale
-- [ ] API Documentation - generate API documentation using selected tool
 - [ ] Toggle services on/off on update(PUT) - Sparkle Phase 2
-- [ ] Metrics integration - monitoring
