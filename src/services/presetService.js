@@ -8,7 +8,7 @@ import {
   ChargeWallets,
   Capabilities,
 } from './../domain';
-import { validator } from './util';
+import { sanitize } from './util';
 
 export function presetService(Preset) {
   check.ok('Preset', Preset);
@@ -33,7 +33,7 @@ export function presetService(Preset) {
   });
 
   async function setPreset(command) {
-    const sanitizedCommand = validator.sanitize(command, SET_PRESET_SCHEMA);
+    const sanitizedCommand = sanitize(command, SET_PRESET_SCHEMA);
     const { presetId } = sanitizedCommand;
     const options = { upsert: true, new: true };
     const preset = await Preset.findOneAndUpdate({ presetId }, sanitizedCommand, options);
@@ -45,7 +45,7 @@ export function presetService(Preset) {
   });
 
   async function getPreset(command) {
-    const { presetId } = validator.sanitize(command, GET_PRESET_SCHEMA);
+    const { presetId } = sanitize(command, GET_PRESET_SCHEMA);
     const preset = await Preset.findOne({ presetId });
     if (!preset) {
       throw new NotFoundError('Preset');

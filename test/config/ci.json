@@ -1,0 +1,5 @@
+{
+  "mongodb": {
+    "uri": "mongodb://deploy.dev.maaii.com:27018/maaii-provisioning-service-ci-test"
+  }
+}

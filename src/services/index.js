@@ -18,6 +18,7 @@ import {
 import presetService from './presetService';
 import provisioningService from './provisioningService';
 import templateService from './templateService';
+import billingPlanService from './billingPlanService';
 import {
   memoryKeyValueStorage,
   mongoKeyValueStorage,
@@ -27,13 +28,19 @@ import templates from './templates.json';
 import {
   createProvisioningModel,
   createPresetModel,
+  createBillingPlanModel,
+  createOffNetCallRateTableModel,
+  createSmsRateTableModel,
+  createExchangeRateTableModel,
+  createRateTableModel,
 } from './models';
 
 export * from './models';
-export * from './util';
 export * from './storage';
+export * from './util';
 export * from './presetService';
 export * from './provisioningService';
+export * from './billingPlanService';
 
 export function register(container) {
   // CPS services
@@ -59,9 +66,19 @@ export function register(container) {
   // Models
   container.service('Provisioning', createProvisioningModel, 'mongooseConnection');
   container.service('Preset', createPresetModel, 'mongooseConnection');
+  container.service('RateTable', createRateTableModel, 'mongooseConnection');
+  container.service('SmsRateTable', createSmsRateTableModel, 'RateTable');
+  container.service('OffNetCallRateTable', createOffNetCallRateTableModel, 'RateTable');
+  container.service('ExchangeRateTable', createExchangeRateTableModel, 'RateTable');
+  container.service('BillingPlan', createBillingPlanModel, 'mongooseConnection');
   container.factory('models', c => ({
     Provisioning: c.Provisioning,
     Preset: c.Preset,
+    RateTable: c.RateTable,
+    ExchangeRateTable: c.ExchangeRateTable,
+    SmsRateTable: c.SmsRateTable,
+    OffNetCallRateTable: c.OffNetCallRateTable,
+    BillingPlan: c.BillingPlan,
   }));
 
   // Storage services
@@ -81,6 +98,7 @@ export function register(container) {
   container.service('PresetService', presetService, 'Preset');
   container.service('ProvisioningService', provisioningService, 'logger', 'Provisioning', 'eventBus');
   container.service('TemplateService', templateService, 'TemplateStorage');
+  container.service('BillingPlanService', billingPlanService, 'models');
 
   return container;
 }

@@ -5,7 +5,7 @@ import Joi from 'joi';
 import _ from 'lodash';
 import { check } from 'm800-util';
 
-import { validator } from './util';
+import { sanitize, formatPage, mapPagingParameters } from './util';
 import {
   ProcessStatus,
   ProcessStatuses,
@@ -67,7 +67,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
   });
 
   async function createProvisioning(command) {
-    const profile = validator.sanitize(command, CREATE_PROVISIONING_SCHEMA);
+    const profile = sanitize(command, CREATE_PROVISIONING_SCHEMA);
     const provisioning = await Provisioning.create({ profile });
     // TODO: can we use a single id here?
     const event = {
@@ -88,7 +88,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
   });
 
   async function getProvisioning(command) {
-    const sanitizedCommand = validator.sanitize(command, schemaGetProvisioning);
+    const sanitizedCommand = sanitize(command, schemaGetProvisioning);
     const provisioning = await Provisioning.findById(sanitizedCommand.provisioningId).exec();
     if (!provisioning) {
       return null;
@@ -152,35 +152,28 @@ export function provisioningService(logger, Provisioning, eventBus) {
       const isCsvField = _.includes(PROVISIONING_FILTERS, key) && _.isString(value);
       return isCsvField ? value.split(',') : value;
     });
-    const sanitizedCommand = validator.sanitize(command, GET_PROVISIONINGS_SCHEMA);
+    const sanitizedCommand = sanitize(command, GET_PROVISIONINGS_SCHEMA);
     const filters = _(sanitizedCommand)
       .pick(PROVISIONING_FILTERS)
       .mapValues(arr => ({ $in: arr }))
       .value();
-    const { search, page, pageSize } = sanitizedCommand;
+    const { search } = sanitizedCommand;
     if (search) {
       filters['profile.companyCode'] = { $regex: new RegExp(`.*${search}.*`) };
     }
-    const offset = (page - 1) * pageSize;
+    const { skip, limit } = mapPagingParameters(sanitizedCommand, 10);
     const query = () => Provisioning.find(filters);
     const { items, total } = await Promise.props({
       items: query()
-        .skip(offset)
-        .limit(pageSize)
+        .skip(skip)
+        .limit(limit)
         .select(PUBLIC_PROPS.join(' '))
         .sort({ createdAt: -1 })
         .exec()
         .then(i => i.map(x => x.toJSON())),
       total: query().count(),
     });
-    const pageTotal = Math.ceil(total / pageSize);
-    return {
-      page,
-      pageSize,
-      pageTotal,
-      total,
-      items,
-    };
+    return formatPage(sanitizedCommand, items, total);
   }
 
   const UPDATE_PROVISIONING_SCHEMA = Joi.object({
@@ -225,7 +218,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
   });
 
   async function updateProvisioning(command) {
-    const { provisioningId, profile } = validator.sanitize(command, UPDATE_PROVISIONING_SCHEMA);
+    const { provisioningId, profile } = sanitize(command, UPDATE_PROVISIONING_SCHEMA);
     let provisioning = await Provisioning.findById(provisioningId).exec();
     if (!provisioning) {
       // not found
@@ -289,7 +282,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
   });
 
   async function completeProvisioning(command) {
-    // check is used here instead of validator as it is system method, so it always expects valid data
+    // check is used here instead of sanitize as it is system method, so it always expects valid data
     const sanitizedCommand = check.sanitizeSchema('command', command, COMPLETE_PROVISIONING_SCHEMA);
     const {
       errors,

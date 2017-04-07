@@ -91,9 +91,10 @@ gulp.task('dev', ['watch'], () => {
 });
 
 gulp.task('test', () => {
-  const stream = gulp.src(PATHS.TEST_JS_FILES)
-    .pipe(babel())
-    .pipe(mocha());
+  const stream = gulp.src(PATHS.TEST_JS_FILES, { read: false })
+    .pipe(mocha({
+      compilers: 'js:babel-register',
+    }));
   return stream;
 });
 

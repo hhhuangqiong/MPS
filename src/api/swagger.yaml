@@ -1,7 +1,7 @@
 swagger: '2.0'
 host: 'deploy.dev.maaii.com:4005'
 info:
-  version: '1.1.0'
+  version: '1.3.0'
   title: MPS (Maaii Provisioning Service)
   description: >
     MPS enables automation of service provisioning offered by Maaii / M800.
@@ -246,7 +246,308 @@ paths:
           description: any error
           schema:
             $ref: "#/definitions/ErrorWrapper"
+  /billing-plans:
+    get:
+      summary: Get billing plans
+      operationId: getBillingPlans
+      tags:
+        - Billing Plan
+      parameters:
+        - name: companyId
+          type: string
+          in: query
+          required: false
+        - name: isAvailable
+          description: availability flag to filter by
+          type: boolean
+          in: query
+          required: false
+        - name: searchQuery
+          description: search query (by name, description and rate table file names)
+          type: string
+          in: query
+          required: false
+        - name: page
+          in: query
+          description: one-based page number (all items will be returned when not specified)
+          required: false
+          minimum: 1
+          type: number
+          format: int32
+        - name: pageSize
+          in: query
+          description: number of items per page (all items will be returned when not specified)
+          required: false
+          maximum: 500
+          type: number
+          format: int32
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: page of billing plans
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/definitions/BillingPlanWithMeta"
+              - $ref: "#/definitions/PageMeta"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
+    post:
+      summary: Create billing plan
+      operationId: createBillingPlan
+      tags:
+        - Billing Plan
+      parameters:
+        - name: billingPlan
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/BillingPlan"
+      responses:
+        '201':
+          description: created billing plan
+          schema:
+            $ref: "#/definitions/BillingPlanWithMeta"
+        '422':
+          description: validation error
+          schema:
+            $ref: "#/definitions/ValidationErrorWrapper"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
+  /billing-plans/{billingPlanId}:
+    get:
+      summary: Get billing plan
+      operationId: getBillingPlan
+      tags:
+        - Billing Plan
+      parameters:
+        - name: billingPlanId
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: billing plan
+          schema:
+            $ref: "#/definitions/BillingPlanWithMeta"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
+    put:
+      summary: Update billing plan
+      operationId: updateBillingPlan
+      tags:
+        - Billing Plan
+      parameters:
+        - name: billingPlanId
+          in: path
+          type: string
+          required: true
+        - name: billingPlan
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/BillingPlan"
+      responses:
+        '200':
+          description: updated billing plan
+          schema:
+            $ref: "#/definitions/BillingPlanWithMeta"
+        '422':
+          description: validation error
+          schema:
+            $ref: "#/definitions/ValidationErrorWrapper"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
+    delete:
+      summary: Remove billing plan
+      operationId: removeBillingPlan
+      tags:
+        - Billing Plan
+      parameters:
+        - name: billingPlanId
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: removed billing plan
+  /billing-plans/{billingPlanId}/rate-tables/{rateTableType}:
+    get:
+      summary: Download rate table from billing plan
+      operationId: downloadRateTableFromBillingPlan
+      tags:
+        - Billing Plan
+      produces:
+        - text/csv
+      parameters:
+        - name: billingPlanId
+          in: path
+          type: string
+          required: true
+        - name: rateTableType
+          in: path
+          type: string
+          enum:
+            - sms
+            - offnet-call
+            - currency-exchange
+      responses:
+        '200':
+          description: rate table csv
+          schema:
+            type: file
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
+  /rate-tables:
+    post:
+      summary: Upload rate table
+      operationId: uploadRateTable
+      tags:
+        - Billing Plan
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: rateTableFile
+          in: formData
+          type: file
+          required: true
+        - name: data
+          description: rate table metadata (type, baseCurrency), serialized to json
+          in: formData
+          type: string
+          required: true
+      responses:
+        '201':
+          description: uploaded rate table identity
+          schema:
+            $ref: "#/definitions/RateTableIdentity"
+        '422':
+          description: validation error
+          schema:
+            $ref: "#/definitions/ValidationErrorWrapper"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
+  /rate-tables/{rateTableId}:
+    get:
+      summary: Download rate table
+      operationId: downloadRateTable
+      tags:
+        - Billing Plan
+      produces:
+        - text/csv
+      parameters:
+        - name: rateTableId
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+            description: rate table csv
+            schema:
+              type: file
+        '422':
+          description: validation error
+          schema:
+            $ref: "#/definitions/ValidationErrorWrapper"
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
+    delete:
+      summary: Delete rate table
+      operationId: deleteRateTable
+      tags:
+        - Billing Plan
+      parameters:
+        - name: rateTableId
+          in: path
+          type: string
+          required: true
+      responses:
+        '204':
+          description: rate table was deleted
+        default:
+          description: any error
+          schema:
+            $ref: "#/definitions/ErrorWrapper"
 definitions:
+  RateTableIdentity:
+    type: object
+    properties:
+      id:
+        type: string
+  BillingPlanWithMeta:
+    allOf:
+      - $ref: "#/definitions/BillingPlan"
+      - $ref: "#/definitions/BillingPlanIdentity"
+      - $ref: "#/definitions/TimestampMeta"
+  BillingPlanIdentity:
+      type: object
+      properties:
+        id:
+          type: string
+  BillingPlan:
+    type: object
+    required:
+      - name
+      - companyId
+      - isAvailable
+      - rateTables
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      companyId:
+        type: string
+      isAvailable:
+        type: boolean
+      baseCurrency:
+        type: number
+      rateTables:
+        type: array
+        items:
+          $ref: "#/definitions/RateTableReference"
+  RateTableReference:
+    type: object
+    required:
+      - type
+    properties:
+      id:
+        type: string
+        description: rate table id
+      name:
+        type: string
+        description: original rate table file name
+      type:
+        $ref: "#/definitions/RateTableType"
+      url:
+        type: string
+  RateTableType:
+    type: string
+    enum:
+      - SMS
+      - OFFNET_CALL
+      - CURRENCY_EXCHANGE
   ProvisioningWithMeta:
     allOf:
       - $ref: "#/definitions/Provisioning"
