@@ -788,12 +788,13 @@ describe('services/billingPlanService', () => {
           },
         ],
       }));
-      const query = {};
+      const query = { pageSize: 5 };
 
       await Promise.all(billingPlans.map(plan => plan.save()));
       const page = await billingPlanService.getBillingPlans(query);
       expect(page).to.exist;
       expect(page.page).to.equal(1);
+      expect(page.pageSize).to.equal(query.pageSize);
       expect(page.items).to.be.an('array');
       expect(page.items).to.have.length(billingPlans.length);
     }));

@@ -7,7 +7,7 @@ const PAGING_PARAMS_SCHEMA = Joi.object({
   pageSize: Joi.number().min(1).optional(),
 });
 
-export function mapPagingParameters(params, defaultPageSize = 20) {
+export function convertToMongoPagingParameters(params, defaultPageSize = 20) {
   check.schema('params', params, PAGING_PARAMS_SCHEMA);
   check.predicate('defaultPageSize', defaultPageSize, x => _.isNumber(x) && x > 0);
 
@@ -30,12 +30,18 @@ export function formatPage(pageParams, items, total) {
   check.schema('pageParams', pageParams, PAGING_PARAMS_SCHEMA);
   check.predicate('items', items, _.isArray);
   check.predicate('total', total, _.isNumber);
+  check.predicate(
+    'total',
+    total,
+    x => x >= items.length,
+    'Total number of items should be greater or equal to number of page items.'
+  );
 
   const { page, pageSize } = pageParams;
 
   const finalPage = _.isNumber(page) ? page : 1;
   const finalPageSize = _.isNumber(pageSize) ? pageSize : items.length;
-  const pageTotal = Math.ceil(total / finalPageSize);
+  const pageTotal = finalPageSize === 0 ? 0 : Math.ceil(total / finalPageSize);
 
   return {
     page: finalPage,

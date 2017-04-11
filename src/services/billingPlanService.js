@@ -6,7 +6,7 @@ import _ from 'lodash';
 import mime from 'mime';
 import { check } from 'm800-util';
 
-import { sanitize, mapPagingParameters, formatPage } from './util';
+import { sanitize, convertToMongoPagingParameters, formatPage } from './util';
 import {
   RateTableTypes,
   RateTableType,
@@ -283,9 +283,9 @@ export function billingPlanService(models) {
     const mongoQuery = filters.length === 0
       ? {}
       : { $and: filters };
-    const pagingParams = mapPagingParameters({ page, pageSize });
+    const pagingParams = { page, pageSize };
     const mongoOptions = {
-      ...pagingParams,
+      ...convertToMongoPagingParameters(pagingParams),
       sort: { createdAt: -1 },
       lean: true,
     };

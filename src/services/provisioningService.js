@@ -5,7 +5,7 @@ import Joi from 'joi';
 import _ from 'lodash';
 import { check } from 'm800-util';
 
-import { sanitize, formatPage, mapPagingParameters } from './util';
+import { sanitize, formatPage, convertToMongoPagingParameters } from './util';
 import {
   ProcessStatus,
   ProcessStatuses,
@@ -161,7 +161,7 @@ export function provisioningService(logger, Provisioning, eventBus) {
     if (search) {
       filters['profile.companyCode'] = { $regex: new RegExp(`.*${search}.*`) };
     }
-    const { skip, limit } = mapPagingParameters(sanitizedCommand, 10);
+    const { skip, limit } = convertToMongoPagingParameters(sanitizedCommand, 10);
     const query = () => Provisioning.find(filters);
     const { items, total } = await Promise.props({
       items: query()

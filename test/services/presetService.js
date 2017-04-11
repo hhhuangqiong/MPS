@@ -91,7 +91,7 @@ describe('services/presetService', () => {
         const { createdAt, updatedAt, ...createdPresetDetails } = createdPreset;
         expect(createdPresetDetails).to.deep.equal(presetData);
         expect(createdAt).to.be.instanceof(Date);
-        expect(updatedAt).to.deep.equal(createdAt);
+        expect(updatedAt).to.be.instanceof(Date);
       }));
 
     it('sets existing preset and updates the data in database',
