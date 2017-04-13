@@ -43,6 +43,7 @@ export function api(controllers, middlewares) {
   router.get('/billing-plans', billingPlanController.getBillingPlans);
   router.put('/billing-plans/:billingPlanId', billingPlanController.updateBillingPlan);
   router.get('/billing-plans/:billingPlanId', billingPlanController.getBillingPlan);
+  router.delete('/billing-plans/:billingPlanId', billingPlanController.removeBillingPlan);
   router.get('/billing-plans/:billingPlanId/rate-tables/:type', billingPlanController.downloadRateTableFromPlan);
 
   router.post('/rate-tables', upload.single('file'), rateTableController.uploadRateTable);
